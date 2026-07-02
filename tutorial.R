@@ -13,18 +13,14 @@
 # ANTES DE RODAR: aponte o diretorio de trabalho para a pasta que contem
 # a subpasta data/.
 #   No RStudio: menu Session > Set Working Directory > To Source File Location
-#   (com este .R salvo ao lado da pasta data/).
-# Ou descomente a linha abaixo e ajuste o caminho:
+# Ou descomente e ajuste:
 # setwd("C:/caminho/para/workshop-pns")
 # =====================================================================
 
-# instala (se preciso) e carrega os pacotes usados no tutorial
 pacotes  <- c("survey", "dplyr", "ggplot2")
 faltando <- setdiff(pacotes, rownames(installed.packages()))
 if (length(faltando) > 0) install.packages(faltando)
 invisible(lapply(pacotes, library, character.only = TRUE))
-
-# opcoes usadas em todo o tutorial
 options(scipen = 999, survey.lonely.psu = "adjust")
 
 
@@ -46,7 +42,7 @@ round(tapply(pop$saude_ruim, pop$regiao, mean), 3)   # tapply: a mesma média, c
 
 
 ######################################################################
-## 🤔 Decida antes: sorteando 300 das `r N` pessoas, quão perto da verdade (`r round(P,3)`) a estimativa deve cair?
+## Decida antes: sorteando 300 das `r N` pessoas, quão perto da verdade (`r round(P,3)`) a estimativa deve cair?
 ######################################################################
 
 set.seed(1)               # fixa o gerador aleatório (resultados reproduzíveis)
@@ -69,7 +65,7 @@ confint(svymean(~saude_ruim, des_aas))
 
 
 ######################################################################
-## 🤔 Decida antes: estratificar por região vai melhorar a precisão? E vai melhorar **igual** para a saúde e para a renda?
+## Decida antes: estratificar por região vai melhorar a precisão? E vai melhorar **igual** para a saúde e para a renda?
 ######################################################################
 
 set.seed(2)
@@ -97,7 +93,28 @@ svymean(~rdpc,       des_est)   # e a média da renda domiciliar per capita
 
 
 ######################################################################
-## 🤔 Decida antes: sorteando 15 municípios e 25 pessoas em cada (n = 375), o erro-padrão vai subir ou descer em relação à AAS?
+## Alocação desproporcional → pesos desiguais
+######################################################################
+
+# alocação DESPROPORCIONAL: sobre-amostra o Nordeste (120) frente às outras regiões
+set.seed(4)
+am_d <- bind_rows(
+  filter(pop, regiao == "Norte")        |> slice_sample(n = 40),
+  filter(pop, regiao == "Nordeste")     |> slice_sample(n = 120),
+  filter(pop, regiao == "Centro-Oeste") |> slice_sample(n = 40),
+  filter(pop, regiao == "Sudeste")      |> slice_sample(n = 50),
+  filter(pop, regiao == "Sul")          |> slice_sample(n = 50)
+) |>
+  left_join(Nh_df, by = "regiao") |>
+  group_by(regiao) |> mutate(peso = Nh / n()) |> ungroup()   # peso = Nh/nh (varia entre estratos)
+
+mean(am_d$saude_ruim)                                          # média SEM peso (ingênua)
+svymean(~saude_ruim, svydesign(ids = ~1, strata = ~regiao,    # média COM peso (correta)
+                               weights = ~peso, data = am_d))
+
+
+######################################################################
+## Decida antes: sorteando 15 municípios e 25 pessoas em cada (n = 375), o erro-padrão vai subir ou descer em relação à AAS?
 ######################################################################
 
 muns <- unique(pop$municipio); M <- length(muns)   # M = total de municípios na população
@@ -119,40 +136,6 @@ am_c  <- am_c |>
 #   ids = ~municipio -> diz ao survey que o sorteio foi por conglomerados (municípios)
 des_cl <- svydesign(ids = ~municipio, weights = ~peso, data = am_c)
 svymean(~saude_ruim, des_cl, deff = TRUE)          # deff = TRUE -> também reporta o efeito de plano amostral
-
-
-######################################################################
-## 🤔 Decida antes: vamos sobre-amostrar o Nordeste (onde a saúde é pior). A média **sem peso** vai ficar acima ou abaixo da verdade?
-######################################################################
-
-# uma função que sorteia UMA amostra SOBRE-AMOSTRANDO o Nordeste (120) frente às outras regiões:
-sortear_desigual <- function() {
-  bind_rows(
-    filter(pop, regiao == "Norte")        |> slice_sample(n = 40),
-    filter(pop, regiao == "Nordeste")     |> slice_sample(n = 120),
-    filter(pop, regiao == "Centro-Oeste") |> slice_sample(n = 40),
-    filter(pop, regiao == "Sudeste")      |> slice_sample(n = 50),
-    filter(pop, regiao == "Sul")          |> slice_sample(n = 50)
-  ) |>
-    left_join(Nh_df, by = "regiao") |>                       # cola o tamanho do estrato (Nh)
-    group_by(regiao) |> mutate(peso = Nh / n()) |> ungroup() # peso = Nh / nh
-}
-
-set.seed(4)
-am_w <- sortear_desigual()
-
-mean(am_w$saude_ruim)   # média INGÊNUA: ignora o peso (trata todos igual)
-# média PONDERADA: usa o peso no desenho — é a correta
-svymean(~saude_ruim, svydesign(ids = ~1, strata = ~regiao, weights = ~peso, data = am_w))
-
-set.seed(9)
-mc <- replicate(300, {                       # repete 300 vezes o sorteio desigual...
-  a <- sortear_desigual()                    # ...usando a mesma função de antes...
-  c(ingenua   = mean(a$saude_ruim),          # ...e guarda a média INGÊNUA (sem peso)...
-    ponderada = unname(coef(svymean(~saude_ruim,                        # ...e a PONDERADA
-                  svydesign(ids = ~1, strata = ~regiao, weights = ~peso, data = a)))))
-})
-round(rowMeans(mc), 4)   # a média das 300 estimativas (ingênua vs ponderada)
 
 
 ######################################################################
@@ -180,12 +163,12 @@ round(rowMeans(cob) * 100, 1)   # % das vezes em que cada IC cobriu a verdade (d
 
 
 ######################################################################
-## Declarando o desenho — sem PNSIBGE
+## Declarando o desenho amostral
 ######################################################################
 
 # (bloco ILUSTRATIVO - nao rode: requer o microdado bruto do IBGE)
 # library(readr)
-# # posições do input_PNS_2019.txt (exemplo abreviado):
+# # posições do input_PNS_2019.txt (exemplo abreviado — só três colunas):
 # pns19 <- read_fwf("PNS_2019.txt",
 #   fwf_positions(start = c(3, 10, 1426), end = c(9, 18, 1439),
 #                 col_names = c("V0024", "UPA_PNS", "V00291")))
@@ -228,8 +211,10 @@ des_ps <- postStratify(
   svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel, data = pns19, nest = TRUE),
   strata = ~V00293, population = totais)
 
-svymean(~saude_boa, des)      # peso calibrado direto (nosso caminho)
-svymean(~saude_boa, des_ps)   # pós-estratificação "na mão" (= PNSIBGE)
+svymean(~saude_boa, des)      # atalho: peso calibrado (V00291) direto
+svymean(~saude_boa, des_ps)   # via oficial: pós-estratificada — reproduz o SE do IBGE
+
+des <- des_ps                 # adotamos a via oficial daqui em diante
 
 
 ######################################################################
