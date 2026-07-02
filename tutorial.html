@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt" xml:lang="pt"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Caio César Soares Gonçalves">
+
+<title>Tutorial — Explorando dados da PNS com o pacote survey – PNS &amp; survey</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-31bdb3c579a5551c2c85c977cd207331.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+<meta property="og:title" content="Tutorial — Explorando dados da PNS com o pacote survey – PNS &amp; survey">
+<meta property="og:description" content="Análise de amostra complexa em R · PNS 2013 e 2019">
+<meta property="og:image" content="https://demopop.github.io/pns-survey/data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==">
+<meta property="og:site_name" content="PNS &amp; survey">
+<meta name="twitter:title" content="Tutorial — Explorando dados da PNS com o pacote survey – PNS &amp; survey">
+<meta name="twitter:description" content="Análise de amostra complexa em R · PNS 2013 e 2019">
+<meta name="twitter:image" content="https://demopop.github.io/pns-survey/data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">PNS &amp; survey</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Procurar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Alternar de navegação" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Início</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./tutorial.html" aria-current="page"> 
+<span class="menu-text">Tutorial</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./slides.html"> 
+<span class="menu-text">Slides</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/DemoPOP/pns-survey"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Alternar modo de leitor">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Nesta página</h2>
+   
+  <ul>
+  <li><a href="#objetivos" id="toc-objetivos" class="nav-link active" data-scroll-target="#objetivos">Objetivos</a></li>
+  <li><a href="#de-onde-vêm-os-números-censo-amostra-e-as-novas-fontes-do-dado" id="toc-de-onde-vêm-os-números-censo-amostra-e-as-novas-fontes-do-dado" class="nav-link" data-scroll-target="#de-onde-vêm-os-números-censo-amostra-e-as-novas-fontes-do-dado">De onde vêm os números — censo, amostra e as novas fontes do dado</a></li>
+  <li><a href="#por-que-o-desenho-amostral-importa" id="toc-por-que-o-desenho-amostral-importa" class="nav-link" data-scroll-target="#por-que-o-desenho-amostral-importa">Por que o desenho amostral importa</a></li>
+  <li><a href="#parte-1-a-crescente-do-plano-amostral" id="toc-parte-1-a-crescente-do-plano-amostral" class="nav-link" data-scroll-target="#parte-1-a-crescente-do-plano-amostral">Parte 1 · A crescente do plano amostral</a>
+  <ul class="collapse">
+  <li><a href="#tipos-de-amostragem-probabilística" id="toc-tipos-de-amostragem-probabilística" class="nav-link" data-scroll-target="#tipos-de-amostragem-probabilística">Tipos de amostragem probabilística</a></li>
+  <li><a href="#a-população-e-a-verdade" id="toc-a-população-e-a-verdade" class="nav-link" data-scroll-target="#a-população-e-a-verdade">A população (e a verdade)</a></li>
+  <li><a href="#amostra-aleatória-simples-aas" id="toc-amostra-aleatória-simples-aas" class="nav-link" data-scroll-target="#amostra-aleatória-simples-aas">Amostra aleatória simples (AAS)</a></li>
+  <li><a href="#estratificação" id="toc-estratificação" class="nav-link" data-scroll-target="#estratificação">Estratificação</a></li>
+  <li><a href="#conglomeração-amostragem-em-dois-estágios" id="toc-conglomeração-amostragem-em-dois-estágios" class="nav-link" data-scroll-target="#conglomeração-amostragem-em-dois-estágios">Conglomeração (amostragem em dois estágios)</a></li>
+  <li><a href="#pesos-desiguais" id="toc-pesos-desiguais" class="nav-link" data-scroll-target="#pesos-desiguais">Pesos desiguais</a></li>
+  <li><a href="#quanto-o-desenho-importa-monte-carlo" id="toc-quanto-o-desenho-importa-monte-carlo" class="nav-link" data-scroll-target="#quanto-o-desenho-importa-monte-carlo">Quanto o desenho importa? (Monte Carlo)</a></li>
+  </ul></li>
+  <li><a href="#parte-2-o-plano-amostral-da-pns" id="toc-parte-2-o-plano-amostral-da-pns" class="nav-link" data-scroll-target="#parte-2-o-plano-amostral-da-pns">Parte 2 · O plano amostral da PNS</a>
+  <ul class="collapse">
+  <li><a href="#o-que-é-a-pns" id="toc-o-que-é-a-pns" class="nav-link" data-scroll-target="#o-que-é-a-pns">O que é a PNS</a></li>
+  <li><a href="#unidade-de-análise-e-os-três-microdados" id="toc-unidade-de-análise-e-os-três-microdados" class="nav-link" data-scroll-target="#unidade-de-análise-e-os-três-microdados">Unidade de análise e os três microdados</a></li>
+  <li><a href="#o-desenho" id="toc-o-desenho" class="nav-link" data-scroll-target="#o-desenho">O desenho</a></li>
+  <li><a href="#declarando-o-desenho-sem-pnsibge" id="toc-declarando-o-desenho-sem-pnsibge" class="nav-link" data-scroll-target="#declarando-o-desenho-sem-pnsibge">Declarando o desenho — sem PNSIBGE</a></li>
+  <li><a href="#calibração-por-que-65-vira-66" id="toc-calibração-por-que-65-vira-66" class="nav-link" data-scroll-target="#calibração-por-que-65-vira-66">Calibração — por que 65% vira 66%</a></li>
+  <li><a href="#pós-estratificação-a-calibração-mais-simples" id="toc-pós-estratificação-a-calibração-mais-simples" class="nav-link" data-scroll-target="#pós-estratificação-a-calibração-mais-simples">Pós-estratificação — a calibração mais simples</a></li>
+  </ul></li>
+  <li><a href="#parte-3-estimativas-descritivas" id="toc-parte-3-estimativas-descritivas" class="nav-link" data-scroll-target="#parte-3-estimativas-descritivas">Parte 3 · Estimativas descritivas</a>
+  <ul class="collapse">
+  <li><a href="#prevalência-e-a-validação-contra-o-publicado" id="toc-prevalência-e-a-validação-contra-o-publicado" class="nav-link" data-scroll-target="#prevalência-e-a-validação-contra-o-publicado">Prevalência — e a validação contra o publicado</a></li>
+  <li><a href="#estimativas-por-domínio-e-a-pegadinha-do-subset" id="toc-estimativas-por-domínio-e-a-pegadinha-do-subset" class="nav-link" data-scroll-target="#estimativas-por-domínio-e-a-pegadinha-do-subset">Estimativas por domínio — e a pegadinha do <code>subset</code></a></li>
+  <li><a href="#cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado" id="toc-cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado" class="nav-link" data-scroll-target="#cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado">Cruzamentos que não estão nas tabelas (a vantagem do microdado)</a></li>
+  <li><a href="#o-coeficiente-de-variação-e-seus-limites" id="toc-o-coeficiente-de-variação-e-seus-limites" class="nav-link" data-scroll-target="#o-coeficiente-de-variação-e-seus-limites">O coeficiente de variação — e seus limites</a></li>
+  <li><a href="#o-efeito-do-desenho-na-pns-real" id="toc-o-efeito-do-desenho-na-pns-real" class="nav-link" data-scroll-target="#o-efeito-do-desenho-na-pns-real">O efeito do desenho na PNS real</a></li>
+  </ul></li>
+  <li><a href="#parte-4-vitrines-temas-subexplorados" id="toc-parte-4-vitrines-temas-subexplorados" class="nav-link" data-scroll-target="#parte-4-vitrines-temas-subexplorados">Parte 4 · Vitrines: temas subexplorados</a>
+  <ul class="collapse">
+  <li><a href="#ideação-suicida-phq-9-item-n018" id="toc-ideação-suicida-phq-9-item-n018" class="nav-link" data-scroll-target="#ideação-suicida-phq-9-item-n018">Ideação suicida (PHQ-9, item N018)</a></li>
+  <li><a href="#depressão-a-escala-phq-9-o-diagnóstico" id="toc-depressão-a-escala-phq-9-o-diagnóstico" class="nav-link" data-scroll-target="#depressão-a-escala-phq-9-o-diagnóstico">Depressão: a escala (PHQ-9) × o diagnóstico</a></li>
+  <li><a href="#violência-por-parceiro-módulo-v" id="toc-violência-por-parceiro-módulo-v" class="nav-link" data-scroll-target="#violência-por-parceiro-módulo-v">Violência por parceiro (módulo V)</a></li>
+  <li><a href="#orientação-sexual-y008-novo-em-2019" id="toc-orientação-sexual-y008-novo-em-2019" class="nav-link" data-scroll-target="#orientação-sexual-y008-novo-em-2019">Orientação sexual (Y008, novo em 2019)</a></li>
+  </ul></li>
+  <li><a href="#parte-5-gráficos-com-o-plano" id="toc-parte-5-gráficos-com-o-plano" class="nav-link" data-scroll-target="#parte-5-gráficos-com-o-plano">Parte 5 · Gráficos com o plano</a>
+  <ul class="collapse">
+  <li><a href="#densidade-ponderada" id="toc-densidade-ponderada" class="nav-link" data-scroll-target="#densidade-ponderada">Densidade ponderada</a></li>
+  <li><a href="#estimativas-com-intervalo-de-confiança" id="toc-estimativas-com-intervalo-de-confiança" class="nav-link" data-scroll-target="#estimativas-com-intervalo-de-confiança">Estimativas com intervalo de confiança</a></li>
+  </ul></li>
+  <li><a href="#parte-6-regressão-com-o-plano" id="toc-parte-6-regressão-com-o-plano" class="nav-link" data-scroll-target="#parte-6-regressão-com-o-plano">Parte 6 · Regressão com o plano</a>
+  <ul class="collapse">
+  <li><a href="#regressão-logística-svyglm" id="toc-regressão-logística-svyglm" class="nav-link" data-scroll-target="#regressão-logística-svyglm">Regressão logística (svyglm)</a></li>
+  <li><a href="#por-que-não-glm-comum" id="toc-por-que-não-glm-comum" class="nav-link" data-scroll-target="#por-que-não-glm-comum">Por que não <code>glm</code> comum?</a></li>
+  <li><a href="#modelo-ordinal-da-autoavaliação-svyolr" id="toc-modelo-ordinal-da-autoavaliação-svyolr" class="nav-link" data-scroll-target="#modelo-ordinal-da-autoavaliação-svyolr">Modelo ordinal da autoavaliação (svyolr)</a></li>
+  </ul></li>
+  <li><a href="#parte-7-comparar-2013-2019" id="toc-parte-7-comparar-2013-2019" class="nav-link" data-scroll-target="#parte-7-comparar-2013-2019">Parte 7 · Comparar 2013 × 2019</a>
+  <ul class="collapse">
+  <li><a href="#os-dois-desenhos-e-a-comparabilidade" id="toc-os-dois-desenhos-e-a-comparabilidade" class="nav-link" data-scroll-target="#os-dois-desenhos-e-a-comparabilidade">Os dois desenhos e a comparabilidade</a></li>
+  <li><a href="#testando-a-diferença-do-jeito-certo" id="toc-testando-a-diferença-do-jeito-certo" class="nav-link" data-scroll-target="#testando-a-diferença-do-jeito-certo">Testando a diferença — do jeito certo</a></li>
+  </ul></li>
+  <li><a href="#encerramento-boas-práticas-pegadinhas-e-comunicação" id="toc-encerramento-boas-práticas-pegadinhas-e-comunicação" class="nav-link" data-scroll-target="#encerramento-boas-práticas-pegadinhas-e-comunicação">Encerramento — boas práticas, pegadinhas e comunicação</a>
+  <ul class="collapse">
+  <li><a href="#as-pegadinhas-que-vimos-e-como-evitá-las" id="toc-as-pegadinhas-que-vimos-e-como-evitá-las" class="nav-link" data-scroll-target="#as-pegadinhas-que-vimos-e-como-evitá-las">As pegadinhas que vimos (e como evitá-las)</a></li>
+  <li><a href="#como-reportar-uma-estimativa-de-amostra-complexa" id="toc-como-reportar-uma-estimativa-de-amostra-complexa" class="nav-link" data-scroll-target="#como-reportar-uma-estimativa-de-amostra-complexa">Como reportar uma estimativa de amostra complexa</a></li>
+  <li><a href="#como-ler-qualquer-pesquisa-amostral-em-4-perguntas" id="toc-como-ler-qualquer-pesquisa-amostral-em-4-perguntas" class="nav-link" data-scroll-target="#como-ler-qualquer-pesquisa-amostral-em-4-perguntas">Como ler qualquer pesquisa amostral, em 4 perguntas</a></li>
+  <li><a href="#declaração-de-uso-de-inteligência-artificial" id="toc-declaração-de-uso-de-inteligência-artificial" class="nav-link" data-scroll-target="#declaração-de-uso-de-inteligência-artificial">Declaração de uso de inteligência artificial</a></li>
+  <li><a href="#referências" id="toc-referências" class="nav-link" data-scroll-target="#referências">Referências</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Tutorial — Explorando dados da PNS com o pacote survey</h1>
+<p class="subtitle lead">Análise de amostra complexa em R · PNS 2013 e 2019</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Autor</div>
+  <div class="quarto-title-meta-heading">Afiliação</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Caio César Soares Gonçalves <a href="https://orcid.org/0000-0002-3366-7560" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Departamento de Demografia / CEDEPLAR-UFMG
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Data de Publicação</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">3 de julho de 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="objetivos" class="level2">
+<h2 class="anchored" data-anchor-id="objetivos">Objetivos</h2>
+<p>Ao final, você deverá ser capaz de:</p>
+<ul>
+<li>reconhecer por que <strong>microdados de amostra complexa</strong> não podem ser tratados como uma amostra aleatória simples;</li>
+<li><strong>construir e declarar</strong> um plano amostral em R com o pacote <code>survey</code>, do mais simples (AAS) ao desenho real da PNS;</li>
+<li>produzir <strong>estimativas baseadas no desenho</strong> — proporções, médias, totais — com <strong>intervalo de confiança</strong> e <strong>coeficiente de variação</strong>, e por <strong>domínios</strong>;</li>
+<li>medir o <strong>efeito do desenho</strong> (deff), ajustar <strong>regressões</strong> que respeitam o plano e <strong>comparar</strong> as PNS de 2013 e 2019.</li>
+</ul>
+<p>O pacote central é o <strong><code>survey</code></strong> (Lumley); ao longo do caminho catalogamos as decisões de quem analisa uma pesquisa amostral.</p>
+<hr>
+</section>
+<section id="de-onde-vêm-os-números-censo-amostra-e-as-novas-fontes-do-dado" class="level1">
+<h1>De onde vêm os números — censo, amostra e as novas fontes do dado</h1>
+<p>Antes de qualquer análise, vale a pergunta: <strong>de onde vêm os números?</strong> Há, classicamente, duas formas de conhecer uma população. A primeira é o <strong>censo</strong> — observar <strong>todos</strong>, a população inteira, sem exceção. A segunda é a <strong>amostra</strong> — observar apenas uma <strong>parte</strong>, cuidadosamente escolhida, e a partir dela conhecer o todo.</p>
+<p>Que se possa <strong>conhecer o todo a partir de uma parte</strong> não foi sempre óbvio. Foi uma <strong>quebra de paradigma</strong>: por muito tempo, só o censo parecia confiável. A amostragem surge como possibilidade legítima de estudo na virada do século XIX para o XX (o “método representativo” de Kiaer, 1895) e ganha base científica com a teoria da <strong>amostragem probabilística</strong> (Neyman, 1934) — a ideia de que, com <strong>probabilidades de seleção conhecidas</strong>, uma parte permite inferir o todo <em>com incerteza mensurável</em>.</p>
+<p>No Brasil, as primeiras pesquisas amostrais nasceram no âmbito da produção de <strong>estatísticas econômicas e agrícolas</strong>. Hoje a situação se inverteu: as pesquisas amostrais estão <strong>plenamente institucionalizadas</strong>, parte corrente do processo de produção de estatísticas no mundo inteiro. A PNS é uma delas.</p>
+<p>A fronteira atual do debate é outra: o uso de <strong>registros administrativos</strong> e de <strong>Big Data</strong> como fontes de estatísticas. Os <strong>registros administrativos</strong> (cadastros, sistemas de gestão) têm história mais longa e vêm sendo aprimorados, mas carregam uma marca de origem — foram construídos para <strong>controle e gestão, não com fins estatísticos</strong>; adaptá-los exige cuidado. Já o <strong>Big Data</strong> — termo que se popularizou, mas que diz <strong>muito mais do que “dados grandes”</strong> — designa, em essência, dados que surgem como <strong>subproduto de outras atividades</strong>, e não foram desenhados para fins estatísticos. A estatística oficial costuma organizá-lo pela <strong>classificação da UNECE</strong> (2013), em três famílias:</p>
+<ul>
+<li><strong>originados por humanos</strong> (redes sociais) — posts, buscas, fotos, vídeos: pouco estruturados;</li>
+<li><strong>mediados por processos</strong> (sistemas de negócio) — transações, cadastros e registros de eventos: muito estruturados (é aqui que tangenciam os registros administrativos);</li>
+<li><strong>gerados por máquinas</strong> (Internet das Coisas) — <strong>sensores</strong>, <strong>telefones móveis</strong>, GPS, <em>logs</em>: registros automáticos do mundo físico.</li>
+</ul>
+<p>A distinção de fundo, que atravessa todos esses casos, é entre <strong>dados desenhados</strong> — coletados deliberadamente segundo um plano, como na amostra — e <strong>dados que apenas encontramos</strong>, subprodutos de outra atividade. O ponto, para nós, não é catalogar fontes, e sim reconhecer que <strong>cada tipo de dado exige procedimentos próprios</strong>. Num <em>pipeline</em> de análise, o <strong>primeiro passo é saber com que tipo de dado se está trabalhando</strong> — censo, amostra, registro administrativo ou Big Data —, porque cada um pede cuidados específicos: o que é correto para um pode ser um erro grosseiro em outro.</p>
+<p>Este workshop é uma <strong>demonstração com dados amostrais</strong>. Não vamos esgotar o assunto — vamos trazer os <strong>principais pontos de atenção</strong> ao analisar uma pesquisa amostral, usando a PNS como caso. E o ponto de partida é entender por que o <strong>desenho</strong> dessa amostra <strong>redefine toda a análise</strong>.</p>
+<hr>
+</section>
+<section id="por-que-o-desenho-amostral-importa" class="level1">
+<h1>Por que o desenho amostral importa</h1>
+<p>A PNS <strong>não</strong> é uma amostra aleatória simples: ela é <strong>estratificada</strong>, sorteada por <strong>conglomerados</strong> (setores/UPAs) e cada pessoa entra com um <strong>peso</strong> diferente. O atalho tentador é tratá-la como se fosse uma AAS — mas, numa AAS, <strong>todos os pesos são iguais</strong>, e tomar médias simples (sem peso) equivale a tratar a amostra <strong>como se fosse um censo</strong>: como se cada respondente valesse só por si e a amostra já fosse a população inteira. Não é o caso. Ignorar o desenho tem, então, duas consequências de naturezas distintas:</p>
+<ul>
+<li>os <strong>pesos</strong> corrigem <em>quem</em> está na amostra — ignorá-los <strong>enviesa a estimativa</strong> (o <em>ponto</em>);</li>
+<li>os <strong>estratos e conglomerados</strong> mudam a <em>quantidade de informação</em> da amostra — ignorá-los <strong>erra o erro-padrão</strong> (e, portanto, o intervalo de confiança e os testes).</li>
+</ul>
+<p>Em vez de afirmar isso, vamos <strong>demonstrá-lo</strong>. A estratégia da Parte 1 é trabalhar com uma <strong>população sintética</strong> — pequena, mas com a mesma hierarquia da PNS (pessoas em domicílios, em municípios, em regiões). Como a geramos por inteiro, <strong>conhecemos a verdade</strong> e podemos sortear amostras dela e conferir, a cada passo, se a estimativa acerta e se o erro-padrão é honesto.</p>
+<hr>
+</section>
+<section id="parte-1-a-crescente-do-plano-amostral" class="level1">
+<h1>Parte 1 · A crescente do plano amostral</h1>
+<p>Vamos montar o plano da PNS <strong>por partes</strong>: amostra aleatória simples → estratificação → conglomeração → pesos desiguais. A cada passo, uma decisão nova e seu efeito.</p>
+<section id="tipos-de-amostragem-probabilística" class="level2">
+<h2 class="anchored" data-anchor-id="tipos-de-amostragem-probabilística">Tipos de amostragem probabilística</h2>
+<p>Antes de montar, vale nomear as peças. Toda <strong>amostragem probabilística</strong> compartilha um princípio: cada unidade da população tem uma <strong>probabilidade de seleção conhecida e não nula</strong>, e o <strong>peso</strong> de cada unidade é o inverso dela (<span class="math inline">\(w_i = 1/\pi_i\)</span>) — é o que permite ir da amostra à população. Os tipos diferem em <em>como</em> se atribuem essas probabilidades:</p>
+<ul>
+<li><strong>Aleatória simples (AAS)</strong> — todas as unidades com a mesma probabilidade, sorteio direto; a referência contra a qual as demais se comparam (<a href="https://amostragemcomr.github.io/livro/aas.html">Silva, cap. 4</a>).</li>
+<li><strong>Estratificada</strong> — divide-se a população em <strong>estratos</strong> e sorteia-se dentro de cada um; ganha precisão quando os estratos diferem no que se mede (<a href="https://amostragemcomr.github.io/livro/estrat.html">cap. 11</a>).</li>
+<li><strong>Por conglomerados</strong> — sorteiam-se <strong>grupos</strong> inteiros e, dentro deles, as unidades — em <strong>um</strong> ou <strong>dois estágios</strong>; reduz o custo de campo ao preço de mais variância (<a href="https://amostragemcomr.github.io/livro/cong.html">cap. 12</a>).</li>
+<li><strong>Probabilidade proporcional ao tamanho (PPT / PPS)</strong> — unidades maiores (p.ex. setores com mais domicílios) têm probabilidade de seleção maior; é o padrão no <strong>primeiro estágio</strong> das pesquisas domiciliares — e da PNS (<a href="https://amostragemcomr.github.io/livro/ppt.html">cap. 10</a>).</li>
+</ul>
+<p>Há outros tipos que <strong>não trataremos aqui</strong> — como a <strong>amostragem sistemática</strong> (seleção a intervalos fixos numa lista ordenada; <a href="https://amostragemcomr.github.io/livro/AS.html">cap. 8</a>) e variantes de PPT (Poisson, Pareto). O tratamento completo está no livro <strong><em>Amostragem com R</em>, de Pedro L. N. Silva</strong> (<a href="https://amostragemcomr.github.io/livro/index.html">amostragemcomr.github.io/livro</a>), em que esta parte se apoia.</p>
+<p>O ponto: a <strong>PNS combina</strong> estratificação + conglomerados em <strong>dois estágios</strong> + <strong>PPT</strong> no primeiro + pesos + <strong>calibração</strong>. A crescente a seguir monta essas peças, uma a uma.</p>
+</section>
+<section id="a-população-e-a-verdade" class="level2">
+<h2 class="anchored" data-anchor-id="a-população-e-a-verdade">A população (e a verdade)</h2>
+<p>Cada linha é uma <strong>pessoa</strong>, com sua <strong>região</strong>, <strong>município</strong> e <strong>domicílio</strong> — a mesma hierarquia da PNS. Duas variáveis nos acompanharão por todo o workshop:</p>
+<ul>
+<li><strong><code>saude_ruim</code></strong> — espelha a <strong>autoavaliação de saúde</strong> da PNS (a pergunta <em>“em geral, como o(a) Sr(a) avalia a sua saúde?”</em>, variável <code>N001</code>, com respostas de <em>Muito boa</em> a <em>Muito ruim</em>). Aqui ela é <strong>binária</strong>: <code>saude_ruim = 1</code> reúne <strong>Regular + Ruim + Muito ruim</strong> — o complemento de “boa/muito boa”. É o nosso <strong>desfecho-âncora</strong>.</li>
+<li><strong><code>rdpc</code></strong> — a <strong>renda domiciliar per capita</strong>: o rendimento total do domicílio dividido pelo número de moradores (na PNS, a variável <code>VDF003</code>).</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survey)   <span class="co"># análise de amostras complexas (Lumley)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)    <span class="co"># manipulação de dados</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/populacao_sintetica.rds"</span>)  <span class="co"># carrega a população sintética inteira</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pop)                                  <span class="co"># N = tamanho da população (nº de linhas)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(pop)                                    <span class="co"># espia as colunas: região, município, sexo, saúde...</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 5,596
+Columns: 9
+$ regiao     &lt;chr&gt; "Norte", "Norte", "Norte", "Norte", "Norte", "Norte", "Nort…
+$ municipio  &lt;chr&gt; "NO01", "NO01", "NO01", "NO01", "NO01", "NO01", "NO01", "NO…
+$ domicilio  &lt;chr&gt; "NO01-D0001", "NO01-D0001", "NO01-D0002", "NO01-D0003", "NO…
+$ pessoa     &lt;int&gt; 1, 2, 1, 1, 2, 3, 1, 2, 3, 4, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1,…
+$ sexo       &lt;chr&gt; "Mulher", "Homem", "Homem", "Homem", "Mulher", "Homem", "Mu…
+$ idade      &lt;int&gt; 47, 38, 29, 51, 62, 75, 55, 45, 19, 77, 33, 37, 27, 85, 37,…
+$ rdpc       &lt;dbl&gt; 702, 702, 901, 108, 108, 108, 230, 230, 230, 230, 348, 348,…
+$ saude_ruim &lt;int&gt; 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,…
+$ id         &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, …</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Como temos a POPULAÇÃO inteira, sabemos a VERDADE que queremos estimar:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">mean</span>(pop<span class="sc">$</span>saude_ruim)                            <span class="co"># proporção verdadeira de "saúde ruim/regular"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>P</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2914582</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">tapply</span>(pop<span class="sc">$</span>saude_ruim, pop<span class="sc">$</span>regiao, mean), <span class="dv">3</span>)   <span class="co"># tapply: a mesma média, calculada por região</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Centro-Oeste     Nordeste        Norte      Sudeste          Sul 
+       0.230        0.392        0.341        0.263        0.187 </code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>A população tem 5596 pessoas distribuídas em domicílios, municípios e regiões — a mesma hierarquia da PNS. A proporção verdadeira de “saúde ruim/regular” é <strong>0.291</strong>, com um gradiente conhecido: maior no Norte/Nordeste, menor no Sul. Tudo o que vier a seguir é uma <strong>tentativa de recuperar esses números</strong> a partir de uma amostra — e nós poderemos checar.</p>
+</div>
+</section>
+<section id="amostra-aleatória-simples-aas" class="level2">
+<h2 class="anchored" data-anchor-id="amostra-aleatória-simples-aas">Amostra aleatória simples (AAS)</h2>
+<p>O ponto de partida: sortear <code>n = 300</code> pessoas ao acaso, todas com a mesma chance. Cada pessoa selecionada “representa” <code>N/n</code> pessoas da população — é o seu <strong>peso</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>🤔 Decida antes: sorteando 300 das 5596 pessoas, quão perto da verdade (0.291) a estimativa deve cair?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Deve cair <strong>perto</strong> de 0.291, mas quase nunca exatamente nela — é uma amostra, não o censo. O <strong>intervalo de confiança</strong> calculado abaixo quantifica esse “perto”.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)               <span class="co"># fixa o gerador aleatório (resultados reproduzíveis)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n  <span class="ot">&lt;-</span> <span class="dv">300</span>                 <span class="co"># tamanho da amostra</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>am <span class="ot">&lt;-</span> pop[<span class="fu">sample</span>(N, n), ] <span class="co"># sorteia n linhas (pessoas) ao acaso da população 'pop'</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>am<span class="sc">$</span>peso <span class="ot">&lt;-</span> N <span class="sc">/</span> n          <span class="co"># peso de cada pessoa = N/n: ela "representa" N/n habitantes</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>am<span class="sc">$</span>fpcN <span class="ot">&lt;-</span> N              <span class="co"># guarda o tamanho da população (para a correção de população finita)</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># svydesign() descreve o PLANO AMOSTRAL ao R — é a base de toda estimativa:</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   ids     = ~1     -&gt; NÃO há conglomerados (sorteio direto de pessoas)</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   weights = ~peso  -&gt; a coluna com os pesos amostrais</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   fpc     = ~fpcN  -&gt; tamanho da população (correção de população finita)</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   data    = am     -&gt; a tabela com a amostra</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>des_aas <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">fpc =</span> <span class="sc">~</span>fpcN, <span class="at">data =</span> am)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># svymean(): estima a MÉDIA/proporção respeitando o desenho (~ indica a variável):</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_aas)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              mean     SE
+saude_ruim 0.28333 0.0254</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># confint(): intervalo de confiança de 95% da estimativa acima</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_aas))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               2.5 %    97.5 %
+saude_ruim 0.2336449 0.3330217</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>A estimativa de <code>~saude_ruim</code> é uma <strong>proporção</strong> — e aqui vale a primeira sutileza: como a variável é <strong>binária</strong> (0/1), a sua <strong>média</strong> é exatamente a <strong>fração de 1s</strong>, ou seja, a proporção de pessoas com saúde ruim/regular. (Toda média de uma variável 0/1 é uma proporção; por isso usamos <code>svymean</code> para estimá-la.) A estimativa cai perto da verdade, e o intervalo de confiança a cobre; o <strong>erro-padrão</strong> (≈ 0,025) traduz a incerteza de ter visto só 300 das 5596 pessoas — é o <strong>erro amostral</strong>.</p>
+<p>Dois argumentos do <code>svydesign</code> merecem nota. <code>ids = ~1</code> diz que <strong>não há conglomerados</strong> (sorteio direto de pessoas). Já o <strong><code>fpc</code></strong> (<em>finite population correction</em>, correção de população finita) entra porque sorteamos <strong>sem reposição de uma população finita</strong>: quando a amostra é uma fração não desprezível da população, a incerteza é <strong>menor</strong> do que a fórmula clássica supõe (no limite, uma amostra do tamanho da população teria erro zero — já é o censo). O <code>fpc</code> informa o tamanho <code>N</code> e aplica essa correção, encolhendo o erro-padrão pelo fator <span class="math inline">\(\sqrt{1 - n/N}\)</span>. Aqui o efeito é pequeno (300 de 5596); na PNS, em que a fração amostral é <strong>ínfima</strong>, ele é desprezível — e por isso será <strong>omitido</strong> na Parte 2.</p>
+</div>
+<p><strong>Vantagens × desvantagens.</strong> A AAS é <strong>simples</strong> e dá <strong>pesos iguais</strong> — é a referência contra a qual tudo se compara. Em troca, exige um <strong>cadastro de todas as unidades</strong> (inviável para pessoas), é <strong>cara em campo</strong> (entrevistados espalhados) e <strong>menos eficiente</strong> do que aproveitar a estrutura da população.</p>
+</section>
+<section id="estratificação" class="level2">
+<h2 class="anchored" data-anchor-id="estratificação">Estratificação</h2>
+<p>E se, antes de sortear, dividíssemos a população em <strong>estratos</strong> (aqui, as regiões) e sorteássemos dentro de cada um, em proporções fixas? Essa é a <strong>amostragem estratificada</strong>. A intuição vem de uma decomposição: a variabilidade total de um indicador se separa em duas partes — a que existe <strong>entre</strong> os estratos e a que existe <strong>dentro</strong> deles. Ao fixar quantos sorteamos em cada estrato (alocação <strong>proporcional</strong>: <span class="math inline">\(n_h \propto N_h\)</span>), a parte <strong>entre estratos some do erro amostral</strong> — nenhuma região fica sub ou sobre-representada por azar. Sobra apenas a variabilidade <em>de dentro</em>.</p>
+<p>Daí a regra: <strong>estratificar ajuda na medida em que os estratos diferem no que se mede</strong>, e (sob alocação proporcional) <strong>nunca piora</strong> a precisão.</p>
+<p>Vale abrir a caixa da <strong>alocação</strong> — como repartir o total da amostra entre os estratos. As principais opções:</p>
+<ul>
+<li><strong>proporcional</strong> — cada estrato recebe amostra proporcional ao seu tamanho (<span class="math inline">\(n_h \propto N_h\)</span>); é a que usamos aqui, e mantém os pesos quase iguais;</li>
+<li><strong>uniforme</strong> — o mesmo <span class="math inline">\(n_h\)</span> em todos; boa quando se quer precisão <strong>em cada</strong> estrato, inclusive nos pequenos (mas gera pesos desiguais);</li>
+<li><strong>ótima (Neyman)</strong> — mais amostra onde há mais variabilidade (<span class="math inline">\(n_h \propto N_h S_h\)</span>); minimiza a variância total (<a href="https://amostragemcomr.github.io/livro/estrat.html">Silva, cap. 11</a>).</li>
+</ul>
+<p>E <strong>na PNS</strong>? Os estratos são <strong>geográficos</strong> (capital, região metropolitana, restante da UF; urbano/rural), e a alocação <strong>não é proporcional</strong>: o desenho precisa garantir <strong>precisão em cada domínio</strong> (capitais, RMs, UFs), então a amostra é dimensionada para atingir um <strong>coeficiente de variação-alvo</strong> em indicadores-chave de cada um. Isso torna a alocação <strong>desproporcional</strong> — domínios menos populosos ficam <strong>sobre-amostrados</strong> em relação à população —, e é justamente uma das origens dos <strong>pesos desiguais</strong>. No segundo estágio, sorteia-se um <strong>número fixo de domicílios por UPA</strong> (10 ou 14, conforme o domínio).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>🤔 Decida antes: estratificar por região vai melhorar a precisão? E vai melhorar <strong>igual</strong> para a saúde e para a renda?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Melhora — mas <strong>desigualmente</strong>. O ganho é <strong>grande na renda</strong> (que varia muito entre regiões) e <strong>pequeno na saúde</strong> (que varia pouco entre regiões). A regra: estratificar ajuda na medida em que o <strong>desfecho difere entre os estratos</strong>.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>taxa <span class="ot">&lt;-</span> <span class="dv">300</span> <span class="sc">/</span> N                       <span class="co"># a MESMA fração sorteada em cada estrato (alocação proporcional)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># sorteia essa fração de cada região:</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>am_e <span class="ot">&lt;-</span> pop <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(regiao) <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">prop =</span> taxa) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># para o peso, juntamos Nh (tamanho do estrato na população) e usamos nh (sorteados):</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>Nh_df <span class="ot">&lt;-</span> <span class="fu">count</span>(pop, regiao, <span class="at">name =</span> <span class="st">"Nh"</span>)     <span class="co"># nº de pessoas em cada região (estrato)</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>am_e  <span class="ot">&lt;-</span> am_e <span class="sc">|&gt;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(Nh_df, <span class="at">by =</span> <span class="st">"regiao"</span>) <span class="sc">|&gt;</span>         <span class="co"># cola o Nh em cada pessoa</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(regiao) <span class="sc">|&gt;</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">peso =</span> Nh <span class="sc">/</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span>                 <span class="co"># peso = Nh / nh   (n() = nº sorteado no estrato)</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># o argumento NOVO aqui é 'strata':</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co">#   strata = ~regiao -&gt; os estratos; fpc = ~Nh -&gt; tamanho do estrato na população</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>des_est <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">strata =</span> <span class="sc">~</span>regiao, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">fpc =</span> <span class="sc">~</span>Nh, <span class="at">data =</span> am_e)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_est)   <span class="co"># estima a proporção de saúde ruim/regular</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              mean     SE
+saude_ruim 0.27146 0.0247</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>rdpc,       des_est)   <span class="co"># e a média da renda domiciliar per capita</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       mean     SE
+rdpc 436.62 18.089</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>Compare os erros-padrão com a AAS: para a <strong>saúde</strong> o ganho é pequeno (≈ 0,0247 vs 0,0254), mas para a <strong>renda</strong> é grande (≈ 18 vs 21). A razão é instrutiva — <strong>estratificar ajuda na medida em que o desfecho difere entre os estratos</strong>. A renda varia muito entre regiões, então separar por região remove bastante variância; a saúde varia menos entre regiões, então o ganho é modesto. Estratificar nunca piora; o quanto melhora depende do indicador.</p>
+</div>
+<p><strong>Vantagens × desvantagens.</strong> Estratificar <strong>aumenta a precisão</strong> (ou, no pior caso, não piora) e garante a representação de cada estrato. Em troca, exige <strong>conhecer o estrato de antemão</strong> (uma variável na base) e, se a alocação for desproporcional, <strong>gera pesos desiguais</strong>.</p>
+</section>
+<section id="conglomeração-amostragem-em-dois-estágios" class="level2">
+<h2 class="anchored" data-anchor-id="conglomeração-amostragem-em-dois-estágios">Conglomeração (amostragem em dois estágios)</h2>
+<p>Há um problema prático antes da estatística: <strong>não existe uma lista de todas as pessoas do país</strong> para sortear ao acaso. Existe, sim, uma lista de <strong>áreas</strong> (os setores censitários). Por isso toda pesquisa domiciliar — e a PNS — faz <strong>amostragem por conglomerados</strong>: sorteia <strong>áreas</strong> (as UPAs) e, dentro delas, domicílios e moradores. É também muito mais <strong>barato</strong> — o entrevistador trabalha concentrado num setor, em vez de cruzar a cidade entre uma casa e outra.</p>
+<p>O preço é estatístico. Pessoas do mesmo setor <strong>se parecem</strong> — mesma vizinhança, mesmo acesso a serviços, renda semelhante. Essa semelhança é a <strong>correlação intraclasse</strong> (<span class="math inline">\(\rho\)</span>): quanto maior, menos <em>informação nova</em> cada pessoa adicional do mesmo conglomerado acrescenta. O efeito sobre a variância resume-se no <strong>efeito de plano amostral</strong>,</p>
+<p><span class="math display">\[\text{deff} \approx 1 + (\bar{m} - 1)\,\rho,\]</span></p>
+<p>onde <span class="math inline">\(\bar{m}\)</span> é o número médio de pessoas por conglomerado na amostra. A consequência orienta o desenho de qualquer pesquisa: <strong>muitos conglomerados pequenos</strong> rendem mais precisão que <strong>poucos conglomerados grandes</strong> (<a href="https://amostragemcomr.github.io/livro/cong.html">Silva, cap. 12</a>). A PNS é de <strong>dois estágios</strong> (UPA → domicílios); em <strong>um estágio</strong>, sortearíamos a UPA e entrevistaríamos <em>todos</em> os seus domicílios.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>🤔 Decida antes: sorteando 15 municípios e 25 pessoas em cada (n = 375), o erro-padrão vai subir ou descer em relação à AAS?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Vai <strong>subir</strong>. Pessoas do mesmo município se parecem (correlação intraclasse), então cada nova entrevista no mesmo lugar traz <strong>menos informação nova</strong> — a variância infla (<code>deff</code> &gt; 1).</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>muns <span class="ot">&lt;-</span> <span class="fu">unique</span>(pop<span class="sc">$</span>municipio); M <span class="ot">&lt;-</span> <span class="fu">length</span>(muns)   <span class="co"># M = total de municípios na população</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="dv">15</span>; ni <span class="ot">&lt;-</span> <span class="dv">25</span>                                 <span class="co"># mm = municípios sorteados; ni = pessoas por município</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>sel  <span class="ot">&lt;-</span> <span class="fu">sample</span>(muns, mm)                            <span class="co"># 1º estágio: sorteia mm municípios (as "UPAs")</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>am_c <span class="ot">&lt;-</span> pop <span class="sc">|&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(municipio <span class="sc">%in%</span> sel) <span class="sc">|&gt;</span>                     <span class="co"># mantém só os municípios sorteados</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(municipio) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> ni) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>()   <span class="co"># 2º estágio: ni pessoas em cada</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># peso dos dois estágios = (M/mm) · (Ni/ni):</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>Ni_df <span class="ot">&lt;-</span> <span class="fu">count</span>(pop, municipio, <span class="at">name =</span> <span class="st">"Ni"</span>)         <span class="co"># nº de pessoas em cada município</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>am_c  <span class="ot">&lt;-</span> am_c <span class="sc">|&gt;</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(Ni_df, <span class="at">by =</span> <span class="st">"municipio"</span>) <span class="sc">|&gt;</span>             <span class="co"># cola o Ni</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">peso =</span> (M<span class="sc">/</span>mm) <span class="sc">*</span> (Ni<span class="sc">/</span>ni))</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co"># o argumento NOVO aqui é 'ids' (os conglomerados):</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   ids = ~municipio -&gt; diz ao survey que o sorteio foi por conglomerados (municípios)</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>des_cl <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>municipio, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> am_c)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_cl, <span class="at">deff =</span> <span class="cn">TRUE</span>)          <span class="co"># deff = TRUE -&gt; também reporta o efeito de plano amostral</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               mean       SE   DEff
+saude_ruim 0.297868 0.033784 2.1865</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>A estimativa continua perto da verdade, mas o <strong>erro-padrão sobe</strong> (≈ 0,034 contra 0,025 da AAS) e o <strong><code>deff</code> ≈ 2,2</strong>: o desenho conglomerado tem mais que o dobro da variância de uma AAS de mesmo tamanho — os 375 entrevistados “valem”, em informação, como ~170 sob AAS. <code>ids = ~municipio</code> é o que diz ao <code>survey</code> que o sorteio foi por conglomerados. Esse é o preço da economia de campo — e ignorá-lo é o erro mais comum na análise de pesquisas.</p>
+</div>
+<p><strong>Vantagens × desvantagens.</strong> Conglomerar é <strong>barato e operacionalmente viável</strong> — basta um cadastro de <strong>áreas</strong>, não de pessoas, e o entrevistador trabalha concentrado. O preço é <strong>menos precisão</strong>: a correlação intraclasse infla a variância (<code>deff</code> &gt; 1).</p>
+</section>
+<section id="pesos-desiguais" class="level2">
+<h2 class="anchored" data-anchor-id="pesos-desiguais">Pesos desiguais</h2>
+<p>Até aqui os pesos eram quase uniformes. Na prática, as <strong>probabilidades de seleção são desiguais</strong> por vários motivos: (i) <strong>sobre-amostragem deliberada</strong> de um grupo pequeno, para ter precisão nele; (ii) a <strong>PPT</strong> do primeiro estágio (setores maiores têm mais chance); (iii) ajustes de <strong>não-resposta</strong> e de <strong>calibração</strong>. Em todos, o <strong>peso</strong> <span class="math inline">\(w_i = 1/\pi_i\)</span> é o que reconcilia amostra e população: cada unidade representa <span class="math inline">\(w_i\)</span> pessoas, e o estimador (de <strong>Horvitz–Thompson</strong>) soma os valores ponderados por esse peso. Ignorar o peso é estimar <em>a amostra</em>, não a <em>população</em> — e, se a amostra super-representa um grupo atípico, a estimativa <strong>enviesa</strong>.</p>
+<p>Mas pesos desiguais têm um <strong>custo</strong> próprio: também inflam a variância. O “efeito dos pesos” é, aproximadamente,</p>
+<p><span class="math display">\[\text{deff}_w \approx 1 + \text{CV}^2(w),\]</span></p>
+<p>onde <span class="math inline">\(\text{CV}(w)\)</span> é o coeficiente de variação dos pesos. Por isso sobre-amostrar um domínio <strong>dá precisão nele, mas a tira do todo</strong> — um trade-off que todo desenho negocia.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>🤔 Decida antes: vamos sobre-amostrar o Nordeste (onde a saúde é pior). A média <strong>sem peso</strong> vai ficar acima ou abaixo da verdade?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Acima.</strong> O Nordeste, de saúde pior, entra com <strong>mais gente</strong> do que sua fração na população — sem o peso para compensar essa sobra, a média é puxada para cima. O peso corrige exatamente isso.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uma função que sorteia UMA amostra SOBRE-AMOSTRANDO o Nordeste (120) frente às outras regiões:</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sortear_desigual <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Norte"</span>)        <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">40</span>),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Nordeste"</span>)     <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">120</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Centro-Oeste"</span>) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">40</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Sudeste"</span>)      <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">50</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Sul"</span>)          <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">50</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(Nh_df, <span class="at">by =</span> <span class="st">"regiao"</span>) <span class="sc">|&gt;</span>                       <span class="co"># cola o tamanho do estrato (Nh)</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(regiao) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">peso =</span> Nh <span class="sc">/</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>() <span class="co"># peso = Nh / nh</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>am_w <span class="ot">&lt;-</span> <span class="fu">sortear_desigual</span>()</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(am_w<span class="sc">$</span>saude_ruim)   <span class="co"># média INGÊNUA: ignora o peso (trata todos igual)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># média PONDERADA: usa o peso no desenho — é a correta</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">strata =</span> <span class="sc">~</span>regiao, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> am_w))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              mean     SE
+saude_ruim 0.27961 0.0264</code></pre>
+</div>
+</div>
+<p>A diferença num único sorteio se confunde com o erro amostral. Para mostrar que é <strong>viés sistemático</strong>, repetimos o sorteio 300 vezes e tiramos a média das estimativas:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">9</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>mc <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">300</span>, {                       <span class="co"># repete 300 vezes o sorteio desigual...</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">sortear_desigual</span>()                    <span class="co"># ...usando a mesma função de antes...</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">ingenua   =</span> <span class="fu">mean</span>(a<span class="sc">$</span>saude_ruim),          <span class="co"># ...e guarda a média INGÊNUA (sem peso)...</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">ponderada =</span> <span class="fu">unname</span>(<span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim,                        <span class="co"># ...e a PONDERADA</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">strata =</span> <span class="sc">~</span>regiao, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> a)))))</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">rowMeans</span>(mc), <span class="dv">4</span>)   <span class="co"># a média das 300 estimativas (ingênua vs ponderada)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ingenua ponderada 
+   0.3123    0.2957 </code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>A média <strong>ingênua</strong> fica sistematicamente <strong>acima</strong> da verdade (≈ 0,312 vs 0.291): como o Nordeste — de saúde pior — entra com peso a mais na amostra, ignorar o peso “puxa” a estimativa para cima. A média <strong>ponderada</strong> volta à verdade (≈ 0,296). É a lição central sobre pesos: eles corrigem <em>o ponto</em>, não a precisão.</p>
+</div>
+<p><strong>Vantagens × desvantagens.</strong> Pesos desiguais permitem <strong>sobre-amostrar grupos de interesse</strong> (mais precisão neles) e acomodam a PPS e a calibração, corrigindo o <strong>ponto</strong> (não-resposta, cobertura). Em troca, <strong>inflam a variância</strong> (<span class="math inline">\(\text{deff}_w \approx 1 + \text{CV}^2(w)\)</span>) e <strong>precisam ser usados</strong> — ignorá-los enviesa a estimativa.</p>
+</section>
+<section id="quanto-o-desenho-importa-monte-carlo" class="level2">
+<h2 class="anchored" data-anchor-id="quanto-o-desenho-importa-monte-carlo">Quanto o desenho importa? (Monte Carlo)</h2>
+<p>Juntando tudo: se você tem um desenho conglomerado mas o analisa <strong>como se fosse AAS</strong>, o erro-padrão sai pequeno demais e o intervalo de confiança <strong>mente</strong>. Vamos medir isso. Sorteamos 500 amostras conglomeradas; em cada uma calculamos o IC de 95% do jeito <strong>certo</strong> (declarando o conglomerado) e do jeito <strong>ingênuo</strong> (como AAS), e contamos quantas vezes o IC <strong>cobre a verdade</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uma função que sorteia UMA amostra conglomerada (15 municípios, 25 pessoas em cada):</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>sortear_cluster <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  sm <span class="ot">&lt;-</span> <span class="fu">sample</span>(muns, mm)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  pop <span class="sc">|&gt;</span> <span class="fu">filter</span>(municipio <span class="sc">%in%</span> sm) <span class="sc">|&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(municipio) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> ni) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(Ni_df, <span class="at">by =</span> <span class="st">"municipio"</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">peso =</span> (M<span class="sc">/</span>mm) <span class="sc">*</span> (Ni<span class="sc">/</span>ni))</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>); B <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>cob <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {                              <span class="co"># B amostras conglomeradas; em cada uma...</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  a       <span class="ot">&lt;-</span> <span class="fu">sortear_cluster</span>()</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  des     <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>municipio, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> a)   <span class="co"># desenho CERTO (com cluster)</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  des_ing <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>,         <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> a)   <span class="co"># desenho INGÊNUO (sem cluster)</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  est     <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des))                          <span class="co"># a estimativa</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">desenho =</span> <span class="fu">abs</span>(est <span class="sc">-</span> P)<span class="sc">/</span><span class="fu">SE</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des))     <span class="sc">&lt;</span> <span class="fl">1.96</span>,  <span class="co"># o IC do desenho cobre a verdade P?</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ingenuo =</span> <span class="fu">abs</span>(est <span class="sc">-</span> P)<span class="sc">/</span><span class="fu">SE</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_ing)) <span class="sc">&lt;</span> <span class="fl">1.96</span>)  <span class="co"># e o IC ingênuo?</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">rowMeans</span>(cob) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)   <span class="co"># % das vezes em que cada IC cobriu a verdade (desenho vs ingênuo)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>desenho ingenuo 
+   98.0    81.8 </code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>O IC do <strong>desenho</strong> cobre a verdade perto dos <strong>95%</strong> prometidos (aqui, ≈ 98%). O IC <strong>ingênuo</strong> cobre bem menos — cerca de <strong>82%</strong>: é estreito demais e <strong>mente em cerca de 1 a cada 5 amostras</strong>. Esta é a resposta empírica a “por que o desenho importa” — não é um detalhe técnico, é <strong>se você pode confiar no seu intervalo de confiança</strong>.</p>
+</div>
+<blockquote class="blockquote">
+<p><strong>A virada.</strong> Cada peça, isolada, mostrou seu efeito — o <strong>estrato</strong> reduz o erro-padrão, o <strong>conglomerado</strong> o infla (deff), o <strong>peso</strong> corrige o viés. A PNS combina <strong>todas</strong> num só desenho: estratos + conglomerados em dois estágios + pesos. Na <strong>Parte 2</strong>, declaramos exatamente isso de uma vez — a única mudança é trocar a população sintética pelos <strong>microdados reais do IBGE</strong>.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="parte-2-o-plano-amostral-da-pns" class="level1">
+<h1>Parte 2 · O plano amostral da PNS</h1>
+<section id="o-que-é-a-pns" class="level2">
+<h2 class="anchored" data-anchor-id="o-que-é-a-pns">O que é a PNS</h2>
+<p>A <strong>Pesquisa Nacional de Saúde (PNS)</strong> é o maior inquérito domiciliar de saúde do Brasil, realizado pelo <strong>Ministério da Saúde em parceria com o IBGE</strong> em <strong>2013</strong> e <strong>2019</strong>. A ideia nasceu em 2003, no Comitê Temático de Informações Baseadas em População, e a pesquisa incorporou os módulos do <strong>Suplemento Saúde da PNAD (2008)</strong>, dando continuidade a uma série de indicadores de saúde. O campo de 2013 ocorreu de agosto a dezembro; o de 2019, de agosto de 2019 a março de 2020.</p>
+<p>Seu <strong>objetivo</strong> é caracterizar a situação de saúde e os estilos de vida da população, e a atenção à saúde (acesso, uso, prevenção, continuidade e financiamento), em três eixos: o <strong>desempenho do sistema de saúde</strong>, as <strong>condições de saúde e estilos de vida</strong> e a <strong>vigilância de doenças e fatores de risco</strong>.</p>
+</section>
+<section id="unidade-de-análise-e-os-três-microdados" class="level2">
+<h2 class="anchored" data-anchor-id="unidade-de-análise-e-os-três-microdados">Unidade de análise e os três microdados</h2>
+<p>A PNS observa <strong>dois níveis</strong>: o <strong>domicílio</strong> e um <strong>morador selecionado</strong>. Em cada domicílio sorteado, todos os moradores respondem ao <strong>questionário básico</strong> (características do domicílio e dos moradores, acesso a serviços); e <strong>um único morador</strong> — sorteado com <strong>igual probabilidade</strong> entre os elegíveis (<strong>18+ em 2013; 15+ em 2019</strong>) — responde ao <strong>questionário do morador selecionado</strong>, com os módulos individuais (percepção de saúde, doenças crônicas, saúde mental, estilos de vida, violência…). Daí os <strong>três arquivos de microdados</strong>, com <strong>pesos diferentes</strong>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Microdado</th>
+<th>Quem responde</th>
+<th>Peso (calibrado)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Básico</strong></td>
+<td>todos os moradores</td>
+<td><code>V00281</code></td>
+</tr>
+<tr class="even">
+<td><strong>Morador selecionado</strong></td>
+<td>1 por domicílio</td>
+<td><code>V00291</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Antropometria</strong></td>
+<td>subamostra</td>
+<td><code>V00301</code></td>
+</tr>
+</tbody>
+</table>
+<p>A distinção é <strong>operacional</strong>: a âncora e as vitrines deste workshop vêm do <strong>morador selecionado</strong> (peso <code>V00291</code>, recorte dos selecionados); já um indicador do domicílio usaria o <strong>banco todo</strong> e o peso <code>V00281</code>.</p>
+</section>
+<section id="o-desenho" class="level2">
+<h2 class="anchored" data-anchor-id="o-desenho">O desenho</h2>
+<p>A PNS é uma amostra <strong>estratificada, por conglomerados, em dois estágios</strong>:</p>
+<ol type="1">
+<li><strong>Estratos</strong> — definidos geograficamente (capital, região metropolitana, restante da UF; situação urbana/rural).</li>
+<li><strong>1º estágio</strong> — sorteio das <strong>UPAs</strong> (unidades primárias — setores censitários ou agregados) com <strong>probabilidade proporcional ao tamanho (PPT)</strong>: setores com mais domicílios têm mais chance.</li>
+<li><strong>2º estágio</strong> — um número fixo de <strong>domicílios</strong> por UPA, com <strong>igual probabilidade</strong>.</li>
+<li>Dentro do domicílio, <strong>um morador</strong> sorteado com igual probabilidade para o questionário individual.</li>
+</ol>
+<p>No <code>survey</code>, isso é exatamente <code>ids = ~UPA_PNS</code> (conglomerado), <code>strata = ~V0024</code> (estrato), <code>weights = ~V00291</code> (peso) e <code>nest = TRUE</code> (UPAs aninhadas nos estratos). O próprio IBGE quantifica a perda de eficiência do desenho por conglomerados pelo <strong>efeito de plano amostral (EPA = deff)</strong>, ampliando o tamanho da amostra para compensar.</p>
+</section>
+<section id="declarando-o-desenho-sem-pnsibge" class="level2">
+<h2 class="anchored" data-anchor-id="declarando-o-desenho-sem-pnsibge">Declarando o desenho — sem PNSIBGE</h2>
+<p>Os participantes recebem o subconjunto já preparado (<code>data/pns2019.rds</code>). Para quem parte do microdado bruto do IBGE, o caminho <strong>manual</strong> (sem o pacote <code>PNSIBGE</code>) é ler o <code>.txt</code> de largura fixa pelas posições do dicionário:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># posições do input_PNS_2019.txt (exemplo abreviado):</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>pns19 <span class="ot">&lt;-</span> <span class="fu">read_fwf</span>(<span class="st">"PNS_2019.txt"</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fwf_positions</span>(<span class="at">start =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">1426</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">9</span>, <span class="dv">18</span>, <span class="dv">1439</span>),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"V0024"</span>, <span class="st">"UPA_PNS"</span>, <span class="st">"V00291"</span>)))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Aqui carregamos direto o subconjunto pronto e declaramos o plano:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>pns19 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/pns2019.rds"</span>)   <span class="co"># subconjunto da PNS 2019 já preparado</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># desenho da PNS — combina tudo o que vimos na Parte 1, agora com dados reais:</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   ids     = ~UPA_PNS      -&gt; conglomerados (as UPAs)</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   strata  = ~V0024        -&gt; estratos geográficos</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   weights = ~peso_sel_cal -&gt; peso do morador selecionado, calibrado (V00291)</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   nest    = TRUE          -&gt; UPAs numeradas DENTRO de cada estrato</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel_cal,</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>des                                    <span class="co"># imprime um resumo do plano amostral</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stratified 1 - level Cluster Sampling design (with replacement)
+With (8027) clusters.
+svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel_cal, 
+    data = pns19, nest = TRUE)</code></pre>
+</div>
+</div>
+<p>O pacote <code>PNSIBGE</code> (<code>get_pns()</code>/<code>pns_design()</code>) faz isso automaticamente — e quase do mesmo jeito, com uma diferença que vale conhecer. Ele declara o desenho com o peso <strong>sem</strong> calibração (<code>V0029</code>) e aplica <strong>pós-estratificação</strong> (<code>postStratify</code>) às projeções de população; nós usamos o peso <strong>já calibrado</strong> (<code>V00291</code>) direto. As <strong>estimativas pontuais são idênticas</strong> (ambas reproduzem o oficial); os <strong>erros-padrão</strong> do <code>PNSIBGE</code> ficam <em>ligeiramente</em> menores (≈ 1–4%), porque a pós-estratificação trata os totais populacionais como conhecidos e reduz um pouco a variância — o caminho com o peso calibrado é uma aproximação simples e levemente conservadora.</p>
+<p>Note ainda que, ao contrário da Parte 1, <strong>não</strong> usamos <code>fpc</code> aqui: na PNS a fração amostral é ínfima (poucas UPAs num universo enorme), então a correção de população finita é desprezível e se omite — a variância é calculada como em amostragem com reposição.</p>
+</section>
+<section id="calibração-por-que-65-vira-66" class="level2">
+<h2 class="anchored" data-anchor-id="calibração-por-que-65-vira-66">Calibração — por que 65% vira 66%</h2>
+<p>Os pesos do desenho (<code>V0029</code>) já expandem a amostra para a população. Mas, por amostragem, <strong>não-resposta</strong> e cobertura, a estrutura demográfica da amostra não bate <em>exatamente</em> com a conhecida. A <strong>calibração</strong> corrige isso: ajusta os pesos o <strong>mínimo necessário</strong> para que os <strong>totais estimados de variáveis auxiliares</strong> — na PNS, a <strong>população por sexo e classes de idade</strong> — <strong>coincidam com as projeções oficiais</strong> do IBGE (COPIS), na <strong>data de referência</strong> da pesquisa.</p>
+<p>Formalmente (<a href="https://amostragemcomr.github.io/livro/calib.html">Silva, cap. 13</a>), buscam-se pesos calibrados <span class="math inline">\(w_i\)</span> tão próximos quanto possível dos pesos de desenho <span class="math inline">\(d_i = 1/\pi_i\)</span> — minimizando uma distância <span class="math inline">\(\sum_{i}(w_i-d_i)^2/(q_i d_i)\)</span> — sujeitos à restrição</p>
+<p><span class="math display">\[\sum_{i \in s} w_i\,\mathbf{x}_i = \mathbf{T}_x,\]</span></p>
+<p>onde <span class="math inline">\(\mathbf{x}_i\)</span> marca o <strong>sexo e a classe de idade</strong> da pessoa <span class="math inline">\(i\)</span> e <span class="math inline">\(\mathbf{T}_x\)</span> é o total populacional conhecido (a projeção). A <strong>pós-estratificação</strong> é o caso particular em que <span class="math inline">\(\mathbf{x}\)</span> são apenas indicadores de grupos: o peso de cada grupo <span class="math inline">\(h\)</span> é multiplicado por <span class="math inline">\(N_h/\hat{N}_h\)</span> (total real ÷ total estimado). É, no fundo, um ajuste <strong>demográfico</strong> — força a amostra a ter a mesma composição por sexo e idade da população projetada.</p>
+<p>Por que importa? (i) <strong>reduz a variância</strong>, porque sexo e idade predizem a saúde; (ii) <strong>atenua o viés de não-resposta</strong> — se quem deixa de responder difere por idade/sexo, calibrar puxa as estimativas na direção certa. Na PNS 2019, é o que separa <code>V0029</code> (sem calibração) de <code>V00291</code> (com):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>des_sc <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>)                 <span class="co"># mesmo desenho, peso SEM calibração</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">sem calibração</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des_sc))[<span class="dv">2</span>],    <span class="co"># coef()[2] = a proporção "saúde boa" (TRUE)</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">com calibração</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des))[<span class="dv">2</span>]), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>sem calibração.saude_boaTRUE com calibração.saude_boaTRUE 
+                        65.1                         66.1 </code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>A autoavaliação “boa/muito boa” passa de <strong>65,1%</strong> (sem calibração) para <strong>66,1%</strong> (com) — e é o valor calibrado que reproduz <strong>exatamente</strong> o publicado pelo IBGE. Esse ~1 ponto é a calibração realinhando a composição por sexo e idade da amostra à projeção populacional. Em demografia isso é central: o número final é, por construção, <strong>coerente com a estrutura etária oficial</strong>.</p>
+</div>
+</section>
+<section id="pós-estratificação-a-calibração-mais-simples" class="level2">
+<h2 class="anchored" data-anchor-id="pós-estratificação-a-calibração-mais-simples">Pós-estratificação — a calibração mais simples</h2>
+<p>E o que é, afinal, a <strong>pós-estratificação</strong>? <strong>É uma calibração</strong> — a sua forma mais simples. A ideia: divide-se a população em <strong>pós-estratos</strong> (grupos — na PNS, os domínios de <strong>sexo × classe de idade</strong>) e usam-se os <strong>totais populacionais</strong> de cada grupo — <em>quantas pessoas há em cada um</em>, segundo as <strong>projeções do IBGE</strong> — como alvo. Dentro de cada grupo <span class="math inline">\(h\)</span>, os pesos são multiplicados por <span class="math inline">\(N_h/\hat{N}_h\)</span> (o <strong>total real</strong> conhecido ÷ o <strong>total estimado</strong> pela amostra), de modo que a soma dos pesos no grupo passe a bater <strong>exatamente</strong> com o total conhecido. Note: o alvo são <strong>contagens</strong> — <em>totais</em> de população, não proporções nem taxas.</p>
+<p>No microdado da PNS, os domínios estão em <code>V00293</code> e os totais (as projeções) em <code>V00292</code>. Dá para fazer <strong>na mão</strong>, sem o <code>PNSIBGE</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># totais populacionais por domínio = a projeção do IBGE (V00292, por V00293)</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>totais <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">data.frame</span>(<span class="at">V00293 =</span> pns19<span class="sc">$</span>V00293, <span class="at">Freq =</span> pns19<span class="sc">$</span>proj_dom))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># postStratify(): ajusta os pesos do 'design' até baterem com os totais conhecidos:</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   1º arg     -&gt; o desenho (aqui com o peso SEM calibração)</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   strata     = ~V00293 -&gt; a variável que define os pós-estratos (domínios)</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   population = totais   -&gt; data.frame com os domínios e a coluna 'Freq' (os totais)</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>des_ps <span class="ot">&lt;-</span> <span class="fu">postStratify</span>(</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel, <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">strata =</span> <span class="sc">~</span>V00293, <span class="at">population =</span> totais)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des)      <span class="co"># peso calibrado direto (nosso caminho)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  mean     SE
+saude_boaFALSE 0.33888 0.0031
+saude_boaTRUE  0.66112 0.0031</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des_ps)   <span class="co"># pós-estratificação "na mão" (= PNSIBGE)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  mean    SE
+saude_boaFALSE 0.33888 0.003
+saude_boaTRUE  0.66112 0.003</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>As duas vias dão a <strong>mesma estimativa</strong> (0,66112), mas o <strong>erro-padrão</strong> difere: ≈ <strong>0,0031</strong> com o peso calibrado direto e ≈ <strong>0,0030</strong> pós-estratificando — e este último é <strong>exatamente</strong> o que o <code>PNSIBGE</code> (e o tutorial de Gabriel Assunção) retorna. A pós-estratificação é um pouco mais <strong>eficiente</strong> porque trata os totais populacionais como <strong>conhecidos</strong>, removendo a variância das contagens dos grupos. Usar o peso calibrado direto é a aproximação simples e conservadora; pós-estratificar é a versão <strong>oficial</strong> — e agora você sabe fazer as duas, sem depender do pacote.</p>
+</div>
+</section>
+</section>
+<section id="parte-3-estimativas-descritivas" class="level1">
+<h1>Parte 3 · Estimativas descritivas</h1>
+<p>Com o desenho declarado (<code>des</code>), toda estimativa já vem com o <strong>erro-padrão correto</strong>. A âncora é a <strong>autoavaliação de saúde</strong>. Para deixar as saídas limpas, convertemos o desfecho binário “saúde ruim/regular” para 0/1 dentro do próprio objeto de desenho:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># update(): cria/modifica uma variável DENTRO do objeto de desenho.</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Aqui convertemos o lógico saude_ruim em 0/1, para as saídas ficarem limpas:</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">saude_ruim =</span> <span class="fu">as.numeric</span>(saude_ruim))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="prevalência-e-a-validação-contra-o-publicado" class="level2">
+<h2 class="anchored" data-anchor-id="prevalência-e-a-validação-contra-o-publicado">Prevalência — e a validação contra o publicado</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>autoaval, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   <span class="co"># média de variável CATEGÓRICA = proporção de cada categoria</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       mean     SE
+autoavalMuito boa  0.152416 0.0026
+autoavalBoa        0.508708 0.0032
+autoavalRegular    0.281029 0.0027
+autoavalRuim       0.046283 0.0012
+autoavalMuito ruim 0.011565 0.0006</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>saude_ruim, des)             <span class="co"># svyciprop(): proporção de um indicador 0/1, já com IC 95%</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  2.5% 97.5%
+saude_ruim 0.339 0.333 0.345</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>A distribuição reproduz <strong>exatamente</strong> o publicado: “boa” 50,9% + “muito boa” 15,2% = <strong>66,1%</strong>; “regular” 28,1%; “ruim/muito ruim” 5,8%. A proporção de saúde <strong>ruim/regular</strong> é <strong>33,9%</strong> (IC 95% 33,3–34,5). Reproduzir a tabela oficial é o <strong>teste de sanidade</strong> do pipeline: se bate, o desenho e os pesos estão certos — e podemos confiar no que vem a seguir, que <em>não</em> está nas tabelas publicadas.</p>
+</div>
+</section>
+<section id="estimativas-por-domínio-e-a-pegadinha-do-subset" class="level2">
+<h2 class="anchored" data-anchor-id="estimativas-por-domínio-e-a-pegadinha-do-subset">Estimativas por domínio — e a pegadinha do <code>subset</code></h2>
+<p>A função <code>svyby()</code> repete a estimativa em subgrupos:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># svyby(): repete uma estimativa em subgrupos</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   ~saude_ruim            -&gt; o que estimar</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   ~sexo                  -&gt; variável que define os subgrupos</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   des                    -&gt; o desenho</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   svymean                -&gt; função aplicada em cada grupo</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   vartype = c("se","cv") -&gt; além da estimativa, reporta erro-padrão e CV</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>sexo, des, svymean, <span class="at">vartype =</span> <span class="fu">c</span>(<span class="st">"se"</span>, <span class="st">"cv"</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["sexo"],"name":[1],"type":["fct"],"align":["left"]},{"label":["saude_ruim"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["se"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["cv"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Homem","2":"0.2959017","3":"0.004213509","4":"0.01423956","_rn_":"Homem"},{"1":"Mulher","2":"0.3767386","3":"0.004116683","4":"0.01092716","_rn_":"Mulher"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Para estimar <strong>só num subgrupo</strong>, vale uma regra de ouro: <strong>subconjunte o objeto de desenho</strong>, nunca o <code>data.frame</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># subset(des, ...): cria um SUBDESENHO (a forma CERTA de estimar num subgrupo) —</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co"># preserva estratos e UPAs de toda a amostra para o cálculo correto da variância</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>))   <span class="co"># só mulheres</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              mean     SE
+saude_ruim 0.37674 0.0041</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>As mulheres avaliam pior a própria saúde (<strong>37,7%</strong> ruim/regular) que os homens (<strong>29,6%</strong>) — diferença grande e precisa. Sobre a pegadinha: <code>subset(des, ...)</code> preserva os <strong>estratos e UPAs</strong> de toda a amostra para o cálculo da variância; já filtrar o <code>data.frame</code> e remontar o desenho <strong>quebra</strong> essa estrutura (estratos podem virar <em>singletons</em>), produzindo erros-padrão errados — sobretudo em domínios pequenos. Estime sempre sobre o <strong>desenho</strong>.</p>
+</div>
+</section>
+<section id="cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado" class="level2">
+<h2 class="anchored" data-anchor-id="cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado">Cruzamentos que não estão nas tabelas (a vantagem do microdado)</h2>
+<p>Com os microdados, criamos recortes que a divulgação não traz — por exemplo, a saúde autoavaliada por <strong>cor/raça</strong>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>raca_cor, des, svymean, <span class="at">vartype =</span> <span class="st">"cv"</span>)  <span class="co"># proporção por cor/raça, com o CV de cada uma</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["raca_cor"],"name":[1],"type":["fct"],"align":["left"]},{"label":["saude_ruim"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["cv"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"Branca","2":"0.2898013","3":"0.01555074","_rn_":"Branca"},{"1":"Preta","2":"0.3705446","3":"0.02158885","_rn_":"Preta"},{"1":"Amarela","2":"0.2998052","3":"0.10122033","_rn_":"Amarela"},{"1":"Parda","2":"0.3792830","3":"0.01205011","_rn_":"Parda"},{"1":"Indígena","2":"0.3907223","3":"0.10485447","_rn_":"Indígena"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div class="leitura">
+<p>Surge um gradiente nítido: <strong>Branca 29,0%</strong> e Amarela 30,0% de um lado; <strong>Preta 37,1%, Parda 37,9% e Indígena 39,1%</strong> de outro — uma desigualdade racial na percepção de saúde que a tabela-padrão por sexo e idade não revela. É o que justifica abrir os microdados em vez de parar nas divulgações.</p>
+</div>
+</section>
+<section id="o-coeficiente-de-variação-e-seus-limites" class="level2">
+<h2 class="anchored" data-anchor-id="o-coeficiente-de-variação-e-seus-limites">O coeficiente de variação — e seus limites</h2>
+<p>Na coluna <code>cv</code> acima, o <strong>coeficiente de variação</strong> mede a precisão <em>relativa</em> (erro-padrão como % da estimativa). Para <strong>Branca</strong> e <strong>Parda</strong> o CV é ~1–1,5% (muito preciso); para <strong>Amarela</strong> e <strong>Indígena</strong> chega a <strong>~10%</strong>. A razão é o <strong>tamanho do grupo</strong>: poucos casos → erro-padrão grande em relação à estimativa.</p>
+<p>O CV é útil, mas tem <strong>três armadilhas</strong>:</p>
+<ul>
+<li>é <strong>instável para proporções próximas de 0 ou 1</strong> (o denominador encolhe), inflando artificialmente;</li>
+<li>em <strong>domínios pequenos</strong> fica alto mesmo quando a estimativa é informativa — por isso o IBGE adota <strong>regras de corte</strong> (sinaliza ou omite estimativas com CV acima de um limite);</li>
+<li>e, sobretudo, <strong>mede apenas a variância — não capta viés</strong>: uma estimativa de CV baixíssimo pode estar sistematicamente errada (subcobertura, não-resposta). <strong>Precisão não é acurácia.</strong></li>
+</ul>
+</section>
+<section id="o-efeito-do-desenho-na-pns-real" class="level2">
+<h2 class="anchored" data-anchor-id="o-efeito-do-desenho-na-pns-real">O efeito do desenho na PNS real</h2>
+<p>Por fim, quanto o desenho complexo custa em precisão? O <strong>deff</strong> compara a variância do desenho à de uma AAS de mesmo tamanho:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des, <span class="at">deff =</span> <span class="st">"replace"</span>)  <span class="co"># deff = "replace": variância do desenho ÷ a de uma AAS</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                mean        SE   DEff
+saude_ruim 0.3388762 0.0031009 3.7997</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>O <strong>deff ≈ 3,8</strong>: a combinação de conglomerados e pesos quase <strong>quadruplica</strong> a variância em relação a uma AAS de 88,5 mil pessoas — que, em informação, “valem” como ~23 mil sob AAS. É a tradução, em número, de tudo o que a Parte 1 antecipou. Ignorar o desenho daria um erro-padrão <span class="math inline">\(\sqrt{3{,}8}\approx 1{,}9\)</span> vez menor — e um IC quase <strong>pela metade</strong> do correto.</p>
+</div>
+</section>
+</section>
+<section id="parte-4-vitrines-temas-subexplorados" class="level1">
+<h1>Parte 4 · Vitrines: temas subexplorados</h1>
+<p>A força do microdado aparece nos temas que a divulgação trata pouco — e que a PNS, sozinha, permite estimar para o país inteiro. Quatro vitrines.</p>
+<section id="ideação-suicida-phq-9-item-n018" class="level2">
+<h2 class="anchored" data-anchor-id="ideação-suicida-phq-9-item-n018">Ideação suicida (PHQ-9, item N018)</h2>
+<p>O item 9 do PHQ-9 pergunta com que frequência, nas duas últimas semanas, a pessoa “pensou em se ferir ou achou que seria melhor estar morto” — um indicador de <strong>ideação suicida/autolesão</strong>, raríssimo em base populacional nacional.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>ideacao_suicida, des)                          <span class="co"># prevalência nacional (proporção + IC)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                         2.5%  97.5%
+ideacao_suicida 0.0462 0.0436 0.0490</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>ideacao_suicida, <span class="sc">~</span>sexo, des, svyciprop, <span class="at">vartype =</span> <span class="st">"ci"</span>)  <span class="co"># por sexo; vartype="ci" traz o IC</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["sexo"],"name":[1],"type":["fct"],"align":["left"]},{"label":["ideacao_suicida"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["ci_l"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["ci_u"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Homem","2":"0.02786486","3":"0.02515982","4":"0.03085153","_rn_":"Homem"},{"1":"Mulher","2":"0.06240721","3":"0.05832961","4":"0.06674966","_rn_":"Mulher"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div class="leitura">
+<p>Cerca de <strong>4,6%</strong> dos adultos relataram ideação suicida nas duas semanas anteriores — com um contraste forte por sexo: <strong>mulheres 6,2%</strong> contra <strong>homens 2,8%</strong>. São estimativas nacionais, baseadas no desenho, para um tema que a literatura brasileira quase só aborda por registros de mortalidade ou amostras locais.</p>
+</div>
+</section>
+<section id="depressão-a-escala-phq-9-o-diagnóstico" class="level2">
+<h2 class="anchored" data-anchor-id="depressão-a-escala-phq-9-o-diagnóstico">Depressão: a escala (PHQ-9) × o diagnóstico</h2>
+<p>A PNS mede depressão de <strong>duas formas</strong>: o <strong>diagnóstico médico autorreferido</strong> (<code>Q092</code>) e o <strong>rastreio pela escala PHQ-9</strong> (escore ≥ 10). As prevalências são parecidas — mas serão as <strong>mesmas pessoas</strong>?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prevalência de cada medida de depressão (coef() extrai só a estimativa):</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="at">rastreio_PHQ9 =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>depr_phq9, des)),</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">diagnostico   =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>depr_diag, des))), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>rastreio_PHQ9.depr_phq9   diagnostico.depr_diag 
+                   10.8                    10.2 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cria no desenho uma variável de 4 grupos (cruzamento rastreio × diagnóstico):</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">grupo =</span> <span class="fu">factor</span>(dplyr<span class="sc">::</span><span class="fu">case_when</span>(   <span class="co"># case_when: if/else encadeado</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  depr_phq9 <span class="sc">&amp;</span> depr_diag <span class="sc">~</span> <span class="st">"ambos"</span>,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  depr_phq9             <span class="sc">~</span> <span class="st">"só rastreio (PHQ-9)"</span>,</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  depr_diag             <span class="sc">~</span> <span class="st">"só diagnóstico"</span>,</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span>                  <span class="sc">~</span> <span class="st">"nenhum"</span>)))</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>grupo, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)                    <span class="co"># proporção da população em cada grupo</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                             mean     SE
+grupoambos               0.039905 0.0013
+gruponenhum              0.829259 0.0025
+gruposó diagnóstico      0.062455 0.0015
+gruposó rastreio (PHQ-9) 0.068382 0.0016</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>Rastreio <strong>10,8%</strong> e diagnóstico <strong>10,2%</strong> — quase iguais no agregado. Mas o cruzamento desfaz a ilusão: só <strong>4,0%</strong> têm os dois; <strong>6,8%</strong> têm rastreio positivo <strong>sem</strong> diagnóstico (depressão provavelmente <strong>não diagnosticada</strong>) e <strong>6,2%</strong>, diagnóstico <strong>sem</strong> rastreio atual (tratamento/remissão). As duas medidas captam <strong>populações em grande parte distintas</strong> — a joia de medir o “mesmo” conceito de dois jeitos.</p>
+</div>
+</section>
+<section id="violência-por-parceiro-módulo-v" class="level2">
+<h2 class="anchored" data-anchor-id="violência-por-parceiro-módulo-v">Violência por parceiro (módulo V)</h2>
+<p>O módulo de violência registra atos psicológicos, físicos e sexuais nos últimos 12 meses e o <strong>principal agressor</strong>. Derivamos os indicadores a partir dos itens (tratando ausência como “não”) e analisamos as <strong>mulheres</strong>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cria os indicadores de violência a partir dos itens do módulo V.</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (X=="1") %in% TRUE -&gt; TRUE se "Sim"; trata ausência (NA) como "não":</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des,</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">viol_fisica =</span> (V01401<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01402<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01403<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>                (V01404<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01405<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span>,                   <span class="co"># alguma agressão física</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">viol_qq     =</span> (V00201<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00202<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00203<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>                (V00204<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00205<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01401<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>                (V01402<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01403<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01404<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>                (V01405<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V02701<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V02702<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span>,  <span class="co"># qualquer violência</span></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">agr_companheiro =</span> (V006 <span class="sc">==</span> <span class="st">"01"</span>) <span class="sc">%in%</span> <span class="cn">TRUE</span>)                                     <span class="co"># agressor = cônjuge/companheiro</span></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a><span class="co"># prevalências entre as MULHERES (subconjunto do desenho):</span></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="at">qualquer =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>viol_qq,     <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>))),</span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">fisica   =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>viol_fisica, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>)))), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  qualquer.viol_qq fisica.viol_fisica 
+              19.4                4.2 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># entre as agredidas, a % cujo principal agressor foi o companheiro:</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>agr_companheiro, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span> <span class="sc">&amp;</span> viol_qq))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       2.5% 97.5%
+agr_companheiro 0.165 0.147 0.184</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>Entre as mulheres, <strong>19,4%</strong> sofreram alguma violência (psicológica, física ou sexual) nos 12 meses anteriores, e <strong>4,2%</strong>, violência <strong>física</strong>. Entre as agredidas, em <strong>16,5%</strong> (IC 95% 14,7–18,4) o <strong>principal agressor foi o cônjuge/companheiro</strong> — a face doméstica da violência, que só os microdados permitem isolar.</p>
+</div>
+</section>
+<section id="orientação-sexual-y008-novo-em-2019" class="level2">
+<h2 class="anchored" data-anchor-id="orientação-sexual-y008-novo-em-2019">Orientação sexual (Y008, novo em 2019)</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>orient_sexual, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   <span class="co"># proporção em cada categoria de orientação sexual</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                 mean     SE
+orient_sexualHeterossexual 0.96960541 0.0012
+orient_sexualHomossexual   0.00697390 0.0006
+orient_sexualBissexual     0.01180059 0.0007
+orient_sexualOutra         0.00057806 0.0001
+orient_sexualNão sabe      0.01104204 0.0007
+orient_sexualNão respondeu 0.00000000 0.0000</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>A PNS 2019 foi a <strong>primeira</strong> pesquisa domiciliar nacional a perguntar a orientação sexual autoidentificada: <strong>97,0% heterossexual</strong>, <strong>1,2% bissexual</strong>, <strong>0,7% homossexual</strong> (≈ 1,9% não-heterossexual). As categorias são <strong>pequenas</strong> — logo, CV alto e cuidado redobrado ao desagregar (além do sigilo que o tema exige).</p>
+</div>
+</section>
+</section>
+<section id="parte-5-gráficos-com-o-plano" class="level1">
+<h1>Parte 5 · Gráficos com o plano</h1>
+<p>Gráficos de pesquisa amostral também respeitam o desenho — na <strong>forma</strong> (densidades ponderadas) e na <strong>honestidade</strong> (mostrar a incerteza).</p>
+<section id="densidade-ponderada" class="level2">
+<h2 class="anchored" data-anchor-id="densidade-ponderada">Densidade ponderada</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a renda é MUITO assimétrica -&gt; usamos a escala LOG, que "abre" a distribuição.</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="co"># log exige valores positivos, então tiramos antes quem tem renda zero:</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>des_renda <span class="ot">&lt;-</span> <span class="fu">subset</span>(des, rdpc <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="co"># svyhist(): histograma PONDERADO (usa os pesos do desenho) de log10(renda).</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="co"># axes = FALSE para, em seguida, rotular o eixo x em REAIS (e não em "3, 4, 5"):</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svyhist</span>(<span class="sc">~</span><span class="fu">log10</span>(rdpc), des_renda, <span class="at">main =</span> <span class="st">""</span>, <span class="at">col =</span> <span class="st">"#d6e4f0"</span>, <span class="at">breaks =</span> <span class="dv">30</span>,</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Renda domiciliar per capita (R$ — escala log)"</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>)                                    <span class="co"># eixo y (densidade)</span></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>reais <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">300</span>, <span class="dv">1000</span>, <span class="dv">3000</span>, <span class="dv">10000</span>)    <span class="co"># marcas que QUEREMOS mostrar, em reais...</span></span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="fu">log10</span>(reais), <span class="at">labels =</span> reais) <span class="co"># ...posicionadas no lugar certo (log10) do eixo</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tutorial_files/figure-html/graf-hist-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="leitura">
+<p>Na escala original, a renda viraria um pico colado no zero. Em <strong>escala log</strong> a distribuição se “abre” e fica quase simétrica (uma <strong>lognormal</strong>), revelando a <strong>mediana perto de R$ 1.000</strong> e a longa <strong>cauda à direita</strong> (a desigualdade). O <code>svyhist</code> é <strong>ponderado</strong> — descreve a <strong>população</strong>, não a amostra; um <code>hist()</code> comum ignoraria os pesos e distorceria a forma.</p>
+</div>
+</section>
+<section id="estimativas-com-intervalo-de-confiança" class="level2">
+<h2 class="anchored" data-anchor-id="estimativas-com-intervalo-de-confiança">Estimativas com intervalo de confiança</h2>
+<p>O gráfico mais útil de uma pesquisa: a estimativa por domínio <strong>com a barra de incerteza</strong>. Os números vêm do <code>svyby()</code>; o desenho, do <code>ggplot2</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="co"># cria a faixa etária dentro do desenho:</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">faixa =</span> <span class="fu">cut</span>(idade, <span class="fu">c</span>(<span class="dv">17</span>, <span class="dv">29</span>, <span class="dv">44</span>, <span class="dv">59</span>, <span class="cn">Inf</span>),</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"18-29"</span>, <span class="st">"30-44"</span>, <span class="st">"45-59"</span>, <span class="st">"60+"</span>)))</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="co"># svyby com vartype="ci" devolve um data.frame com a estimativa e as colunas ci_l / ci_u:</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>est <span class="ot">&lt;-</span> <span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>faixa, des, svymean, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(est, <span class="fu">aes</span>(faixa, saude_ruim)) <span class="sc">+</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#2980b9"</span>, <span class="at">width =</span> .<span class="dv">65</span>) <span class="sc">+</span>                   <span class="co"># barras = estimativa</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> ci_l, <span class="at">ymax =</span> ci_u), <span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span>  <span class="co"># barras de erro = IC 95%</span></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Faixa etária"</span>, <span class="at">y =</span> <span class="st">"Saúde ruim/regular"</span>) <span class="sc">+</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tutorial_files/figure-html/graf-ic-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="leitura">
+<p>A percepção de saúde piora com a idade — de ~20% entre 18–29 a ~50% no 60+ — e as <strong>barras de erro</strong> (estreitas, porque cada faixa tem milhares de casos) mostram que o padrão é firme, não ruído. Plotar a estimativa sem o intervalo seria esconder metade da informação.</p>
+</div>
+</section>
+</section>
+<section id="parte-6-regressão-com-o-plano" class="level1">
+<h1>Parte 6 · Regressão com o plano</h1>
+<p>Modelos também precisam do desenho: os <strong>coeficientes</strong> mudam pouco com os pesos, mas os <strong>erros-padrão</strong> mudam muito com a conglomeração. Use <code>svyglm</code>, não <code>glm</code>.</p>
+<section id="regressão-logística-svyglm" class="level2">
+<h2 class="anchored" data-anchor-id="regressão-logística-svyglm">Regressão logística (svyglm)</h2>
+<p>Modelamos a chance de avaliar a própria saúde como ruim/regular:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># svyglm(): regressão respeitando o desenho.</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   saude_ruim ~ ...       -&gt; desfecho (0/1) e preditores</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   design = des           -&gt; o plano amostral</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   family = quasibinomial -&gt; regressão LOGÍSTICA</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">svyglm</span>(saude_ruim <span class="sc">~</span> sexo <span class="sc">+</span> faixa <span class="sc">+</span> regiao <span class="sc">+</span> raca_cor,</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">design =</span> des, <span class="at">family =</span> <span class="fu">quasibinomial</span>())</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod)), <span class="fu">exp</span>(<span class="fu">confint</span>(mod))), <span class="dv">2</span>)   <span class="co"># exp(coef)=razões de chance (OR); confint=IC</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     OR 2.5 % 97.5 %
+(Intercept)        0.19  0.17   0.21
+sexoMulher         1.43  1.36   1.50
+faixa30-44         1.45  1.33   1.59
+faixa45-59         3.05  2.77   3.36
+faixa60+           5.31  4.85   5.80
+regiaoNordeste     1.16  1.08   1.25
+regiaoSudeste      0.64  0.58   0.69
+regiaoSul          0.64  0.58   0.70
+regiaoCentro-Oeste 0.72  0.65   0.79
+raca_corPreta      1.47  1.34   1.61
+raca_corAmarela    1.01  0.75   1.36
+raca_corParda      1.49  1.40   1.59
+raca_corIndígena   1.61  1.18   2.19</code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>As <strong>razões de chance</strong> quantificam os padrões: mulheres têm <strong>1,43×</strong> a chance dos homens; ela cresce com a idade (60+: <strong>5,3×</strong> vs 18–29); é maior no Nordeste (1,16×) e menor no Sul/Sudeste (~0,64×); e há gradiente por cor/raça (Preta 1,47×, Parda 1,49×, Indígena 1,61× vs Branca). Tudo com IC que respeita o desenho.</p>
+</div>
+</section>
+<section id="por-que-não-glm-comum" class="level2">
+<h2 class="anchored" data-anchor-id="por-que-não-glm-comum">Por que não <code>glm</code> comum?</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>dat   <span class="ot">&lt;-</span> des<span class="sc">$</span>variables                                       <span class="co"># os dados de dentro do desenho</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="co"># glm() COMUM: ignora estrato/conglomerado (só usa os pesos, normalizados):</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>naive <span class="ot">&lt;-</span> <span class="fu">glm</span>(saude_ruim <span class="sc">~</span> sexo <span class="sc">+</span> faixa <span class="sc">+</span> regiao <span class="sc">+</span> raca_cor, <span class="at">data =</span> dat,</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="fu">quasibinomial</span>(), <span class="at">weights =</span> peso_sel_cal <span class="sc">/</span> <span class="fu">mean</span>(peso_sel_cal))</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="co"># compara o erro-padrão de um coeficiente: desenho (svyglm) × ingênuo (glm):</span></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">desenho =</span> <span class="fu">summary</span>(mod)<span class="sc">$</span>coef[<span class="st">"sexoMulher"</span>, <span class="st">"Std. Error"</span>],</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">ingenuo =</span> <span class="fu">summary</span>(naive)<span class="sc">$</span>coef[<span class="st">"sexoMulher"</span>, <span class="st">"Std. Error"</span>]), <span class="dv">4</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>desenho ingenuo 
+ 0.0262  0.0151 </code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>O erro-padrão <strong>ingênuo</strong> (0,0151) é ~<strong>42% menor</strong> que o do <strong>desenho</strong> (0,0262) — porque o <code>glm</code> comum ignora a conglomeração. Quem o usa reporta IC estreito demais e “significâncias” infladas; a razão entre os dois SE é, de novo, a raiz do deff.</p>
+</div>
+</section>
+<section id="modelo-ordinal-da-autoavaliação-svyolr" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-ordinal-da-autoavaliação-svyolr">Modelo ordinal da autoavaliação (svyolr)</h2>
+<p>A autoavaliação tem <strong>cinco categorias ordenadas</strong> — desperdício reduzi-la a binária. O modelo de <strong>odds proporcionais</strong> usa todas de uma vez:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># transforma a autoavaliação num fator ORDENADO (Muito boa &lt; ... &lt; Muito ruim):</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">autoaval_ord =</span> <span class="fu">ordered</span>(autoaval,</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Muito boa"</span>,<span class="st">"Boa"</span>,<span class="st">"Regular"</span>,<span class="st">"Ruim"</span>,<span class="st">"Muito ruim"</span>)))</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="co"># svyolr(): regressão ORDINAL (odds proporcionais) respeitando o desenho:</span></span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>mod_ord <span class="ot">&lt;-</span> <span class="fu">svyolr</span>(autoaval_ord <span class="sc">~</span> sexo <span class="sc">+</span> faixa <span class="sc">+</span> regiao, <span class="at">design =</span> des)</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">exp</span>(<span class="fu">coef</span>(mod_ord)), <span class="dv">2</span>)   <span class="co"># exp(coef) = razões de chance de estar numa categoria pior</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        sexoMulher         faixa30-44         faixa45-59           faixa60+ 
+              1.40               1.36               2.72               4.59 
+    regiaoNordeste      regiaoSudeste          regiaoSul regiaoCentro-Oeste 
+              1.09               0.53               0.50               0.62 
+     Muito boa|Boa        Boa|Regular       Regular|Ruim    Ruim|Muito ruim 
+              0.25               3.32              31.91             172.07 </code></pre>
+</div>
+</div>
+<div class="leitura">
+<p>A leitura é a mesma do logístico, mas sobre a escala inteira: mulheres têm <strong>1,40×</strong> a chance de estar numa categoria <strong>pior</strong> de saúde, e o efeito da idade é forte (60+: 4,6×). O <code>svyolr</code> é a ferramenta certa quando o desfecho é ordinal.</p>
+</div>
+</section>
+</section>
+<section id="parte-7-comparar-2013-2019" class="level1">
+<h1>Parte 7 · Comparar 2013 × 2019</h1>
+<p>A PNS tem duas edições — então podemos perguntar o que <strong>mudou</strong>. Mas comparar pesquisas amostrais exige cuidado: são <strong>amostras independentes</strong>, cada uma com seu desenho.</p>
+<section id="os-dois-desenhos-e-a-comparabilidade" class="level2">
+<h2 class="anchored" data-anchor-id="os-dois-desenhos-e-a-comparabilidade">Os dois desenhos e a comparabilidade</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>pns13 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/pns2013.rds"</span>)   <span class="co"># subconjunto da PNS 2013 (mesma estrutura de variáveis)</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="co"># mesmo desenho de 2019, agora para 2013:</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>des13 <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel_cal,</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> pns13, <span class="at">nest =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>As duas estão restritas ao <strong>morador selecionado de 18 anos ou mais</strong> (em 2019 o sorteio é 15+, mas recortamos a 18+ na curadoria, para a população-alvo ser a mesma). Usamos apenas indicadores <strong>harmonizáveis</strong> — autoavaliação, depressão (diagnóstico e PHQ-9) e ideação suicida. <strong>Orientação sexual</strong> e o <strong>módulo de violência</strong> mudaram entre as edições e <strong>não</strong> entram na série.</p>
+</section>
+<section id="testando-a-diferença-do-jeito-certo" class="level2">
+<h2 class="anchored" data-anchor-id="testando-a-diferença-do-jeito-certo">Testando a diferença — do jeito certo</h2>
+<p>Como as amostras são <strong>independentes</strong>, a variância da diferença é a <strong>soma</strong> das variâncias: <span class="math inline">\(\text{SE}(\hat p_{19}-\hat p_{13}) = \sqrt{\text{SE}_{19}^2 + \text{SE}_{13}^2}\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>compara <span class="ot">&lt;-</span> <span class="cf">function</span>(v) {                        <span class="co"># compara um indicador 'v' entre 2013 e 2019</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  e13 <span class="ot">&lt;-</span> <span class="fu">svyciprop</span>(<span class="fu">reformulate</span>(v), des13)        <span class="co"># estimativa em 2013 (reformulate monta ~v)</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  e19 <span class="ot">&lt;-</span> <span class="fu">svyciprop</span>(<span class="fu">reformulate</span>(v), des)          <span class="co"># estimativa em 2019</span></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>  dif <span class="ot">&lt;-</span> <span class="fu">coef</span>(e19) <span class="sc">-</span> <span class="fu">coef</span>(e13)                   <span class="co"># diferença 2019 − 2013</span></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>  se  <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">SE</span>(e13)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">SE</span>(e19)<span class="sc">^</span><span class="dv">2</span>)             <span class="co"># SE da diferença: amostras INDEPENDENTES -&gt; soma das variâncias</span></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="st">`</span><span class="at">2013 (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">coef</span>(e13)<span class="sc">*</span><span class="dv">100</span>, <span class="dv">1</span>), <span class="st">`</span><span class="at">2019 (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">coef</span>(e19)<span class="sc">*</span><span class="dv">100</span>, <span class="dv">1</span>),</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">diferença</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(dif<span class="sc">*</span><span class="dv">100</span>, <span class="dv">1</span>),</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">IC95% da diferença</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"[%.1f, %.1f]"</span>, (dif<span class="fl">-1.96</span><span class="sc">*</span>se)<span class="sc">*</span><span class="dv">100</span>, (dif<span class="fl">+1.96</span><span class="sc">*</span>se)<span class="sc">*</span><span class="dv">100</span>),</span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a><span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(</span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">`</span><span class="at">autoavaliação ruim</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"saude_ruim"</span>, <span class="st">`</span><span class="at">depressão (diagnóstico)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"depr_diag"</span>,</span>
+<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">ideação suicida</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"ideacao_suicida"</span>, <span class="st">`</span><span class="at">depressão (PHQ-9)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"depr_phq9"</span>), compara))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["2013 (%)"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["2019 (%)"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["diferença"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["IC95% da diferença"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"33.8","2":"33.9","3":"0.1","4":"[-0.9, 1.0]","_rn_":"autoavaliação ruim"},{"1":"7.6","2":"10.2","3":"2.6","4":"[2.1, 3.2]","_rn_":"depressão (diagnóstico)"},{"1":"3.7","2":"4.6","3":"0.9","4":"[0.5, 1.3]","_rn_":"ideação suicida"},{"1":"7.9","2":"10.8","3":"3.0","4":"[2.4, 3.5]","_rn_":"depressão (PHQ-9)"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div class="leitura">
+<p>A história é nítida — e é a tese do workshop. A <strong>autoavaliação de saúde não mudou</strong> (33,8 → 33,9; diferença +0,1, IC [−0,9, 1,0], que <strong>inclui o zero</strong>). Mas a <strong>saúde mental piorou</strong>: depressão diagnosticada <strong>+2,6</strong> pontos (7,6 → 10,2), rastreio PHQ-9 <strong>+3,0</strong> (7,9 → 10,8) e <strong>ideação suicida +0,9</strong> (3,7 → 4,6) — todas com IC bem afastado do zero. O número-síntese mais comunicado <strong>cala</strong> justamente a dimensão que mais se moveu — e só os microdados, com o desenho, permitem medir essa mudança com a incerteza correta.</p>
+</div>
+<hr>
+</section>
+</section>
+<section id="encerramento-boas-práticas-pegadinhas-e-comunicação" class="level1">
+<h1>Encerramento — boas práticas, pegadinhas e comunicação</h1>
+<section id="as-pegadinhas-que-vimos-e-como-evitá-las" class="level2">
+<h2 class="anchored" data-anchor-id="as-pegadinhas-que-vimos-e-como-evitá-las">As pegadinhas que vimos (e como evitá-las)</h2>
+<ul>
+<li><strong>Ignorar o desenho</strong> → IC estreito demais (Parte 1: a cobertura cai de 95% para ~82%). Sempre declare o <code>svydesign</code>.</li>
+<li><strong>Filtrar o <code>data.frame</code></strong> para um subgrupo → erro-padrão errado; use <code>subset(des, …)</code> (Parte 3).</li>
+<li><strong>Peso sem calibração</strong> → estimativa ~1 ponto fora do oficial; use o peso calibrado, <code>V00291</code> (Parte 2).</li>
+<li><strong><code>glm</code> comum</strong> sobre dados ponderados → SE subestimado em ~40%; use <code>svyglm</code>/<code>svyolr</code> (Parte 6).</li>
+<li><strong>Empilhar edições</strong> ingenuamente → variância da diferença errada; trate 2013 e 2019 como <strong>amostras independentes</strong> (Parte 7).</li>
+<li><strong>Confiar só no CV</strong> → ele mede variância, não viés, e é instável em domínios pequenos (Parte 3).</li>
+</ul>
+</section>
+<section id="como-reportar-uma-estimativa-de-amostra-complexa" class="level2">
+<h2 class="anchored" data-anchor-id="como-reportar-uma-estimativa-de-amostra-complexa">Como reportar uma estimativa de amostra complexa</h2>
+<p>Toda estimativa deveria vir com: <strong>ponto + IC 95% + CV</strong>, o <strong>n não ponderado</strong> do domínio e — quando relevante — o <strong>deff</strong>; mais a fonte, o ano e a <strong>população-alvo</strong> (aqui, morador selecionado de 18+).</p>
+</section>
+<section id="como-ler-qualquer-pesquisa-amostral-em-4-perguntas" class="level2">
+<h2 class="anchored" data-anchor-id="como-ler-qualquer-pesquisa-amostral-em-4-perguntas">Como ler qualquer pesquisa amostral, em 4 perguntas</h2>
+<ol type="1">
+<li><strong>Qual é o desenho?</strong> (estratos, conglomerados, pesos — e foram declarados na análise?)</li>
+<li><strong>Qual a população-alvo e a unidade?</strong> (atenção ao recorte etário ao comparar edições)</li>
+<li><strong>O peso é calibrado — a quê?</strong> (sexo, idade?)</li>
+<li><strong>A incerteza respeita o desenho?</strong> (IC/CV/deff baseados no plano, não em uma AAS imaginária)</li>
+</ol>
+</section>
+<section id="declaração-de-uso-de-inteligência-artificial" class="level2">
+<h2 class="anchored" data-anchor-id="declaração-de-uso-de-inteligência-artificial">Declaração de uso de inteligência artificial</h2>
+<p>Na preparação deste material, o autor utilizou o assistente <strong>Claude</strong> (Anthropic) como apoio — no desenvolvimento e comentário do código em R, na curadoria dos microdados, na redação e na verificação de consistência. Todas as decisões metodológicas, a interpretação dos resultados e a redação final são de responsabilidade do autor.</p>
+</section>
+<section id="referências" class="level2">
+<h2 class="anchored" data-anchor-id="referências">Referências</h2>
+<ul>
+<li><strong>Silva, P. L. N.</strong> <em>Amostragem com R.</em> Disponível em: <a href="https://amostragemcomr.github.io/livro/" class="uri">https://amostragemcomr.github.io/livro/</a></li>
+<li><strong>Lumley, T.</strong> (2010). <em>Complex Surveys: A Guide to Analysis Using R.</em> Hoboken: Wiley. (pacote <code>survey</code>; Lumley, 2004, <em>Journal of Statistical Software</em>, 9(8).)</li>
+<li><strong>IBGE.</strong> <em>Pesquisa Nacional de Saúde</em> (2013; 2019): microdados, dicionários e planos amostrais. Disponível em: <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/9160-pesquisa-nacional-de-saude.html" class="uri">https://www.ibge.gov.br/estatisticas/sociais/saude/9160-pesquisa-nacional-de-saude.html</a></li>
+<li><strong>Souza-Júnior, P. R. B. et al.</strong> (2015). <em>Desenho da amostra da Pesquisa Nacional de Saúde 2013.</em> Epidemiologia e Serviços de Saúde, 24(2).</li>
+<li><strong>Stopa, S. R. et al.</strong> (2020). <em>Pesquisa Nacional de Saúde 2019: histórico, métodos e perspectivas.</em> Epidemiologia e Serviços de Saúde, 29(5).</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/demopop\.github\.io\/pns-survey\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Caio César Soares Gonçalves · Departamento de Demografia / CEDEPLAR-UFMG · DEMOPOP 2026 · CC BY 4.0</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
