@@ -149,7 +149,7 @@ A cada passo do plano vamos sortear uma amostra e ver a estimativa **bater (ou n
 ## AAS — sortear ao acaso {.smaller}
 
 ::: {.callout-note}
-🤔 **Decida antes:** sorteando 300 das `r N` pessoas, quão perto de `r round(P,3)` a estimativa deve cair?
+**Decida antes:** sorteando 300 das `r N` pessoas, quão perto de `r round(P,3)` a estimativa deve cair?
 :::
 
 . . .
@@ -170,7 +170,7 @@ A estimativa cai perto da verdade; o **erro-padrão** (≈ 0,025) é o erro amos
 ## Estratificação {.smaller}
 
 ::: {.callout-note}
-🤔 **Decida antes:** estratificar por região melhora a precisão? E **igual** para saúde e renda?
+**Decida antes:** estratificar por região melhora a precisão? E **igual** para saúde e renda?
 :::
 
 . . .
@@ -190,7 +190,7 @@ Ganho **grande na renda** (varia muito entre regiões), **pequeno na saúde** (v
 ## Conglomeração (dois estágios) {.smaller}
 
 ::: {.callout-note}
-🤔 **Decida antes:** sorteando 15 municípios × 25 pessoas (n = 375), o erro-padrão **sobe ou desce**?
+**Decida antes:** sorteando 15 municípios × 25 pessoas (n = 375), o erro-padrão **sobe ou desce**?
 :::
 
 . . .
@@ -211,7 +211,7 @@ svymean(~saude_ruim, des_cl, deff = TRUE)      # deff = efeito do plano amostral
 ## Pesos desiguais {.smaller}
 
 ::: {.callout-note}
-🤔 **Decida antes:** vamos **sobre-amostrar o Nordeste** (saúde pior). A média **sem peso** fica acima ou abaixo da verdade?
+**Decida antes:** vamos **sobre-amostrar o Nordeste** (saúde pior). A média **sem peso** fica acima ou abaixo da verdade?
 :::
 
 . . .
@@ -270,7 +270,7 @@ A **Pesquisa Nacional de Saúde** (IBGE/Ministério da Saúde, 2013 e 2019) inve
 
 . . .
 
-Três tipos de microdado, com **pesos e recortes diferentes**:
+Um **único arquivo** de microdados; três questionários, cada um com seu **bloco de peso**:
 
 - **domicílio** (todos os moradores) — peso `V0028`;
 - **morador selecionado** (módulos individuais) — peso `V0029` / `V00291`;
@@ -293,7 +293,7 @@ No `survey`, isso vira quatro argumentos:
 | peso (calibrado) | `V00291` | `weights =` |
 | UPA dentro do estrato | — | `nest = TRUE` |
 
-## Declarando o plano — sem PNSIBGE {.smaller}
+## Declarando o plano amostral {.smaller}
 
 ```{r}
 des <- svydesign(ids     = ~UPA_PNS,       # conglomerados (UPAs)
@@ -304,7 +304,7 @@ des <- svydesign(ids     = ~UPA_PNS,       # conglomerados (UPAs)
 des
 ```
 
-Os alunos **declaram o desenho na mão** — sem caixa-preta. (O pacote `PNSIBGE` faz isto por baixo dos panos.)
+Declaramos o desenho **na mão**, deixando cada peça explícita — sem caixa-preta.
 
 ## Calibração dos pesos {.smaller}
 
@@ -318,16 +318,22 @@ c(sem_calib = coef(svymean(~saude_boa, des_sc, na.rm=TRUE))[[1]],
 
 Sem calibração: 65,1%. Calibrado (oficial, `V00291`): **66,1%** — o publicado pelo IBGE.
 
-## Pós-estratificação {.smaller}
+## Pós-estratificação — o SE oficial {.smaller}
 
-A **pós-estratificação** é a **calibração mais simples**: força a amostra a bater **contagens populacionais** por domínio (em vez de médias).
+A **pós-estratificação** força a amostra a bater as **contagens** de população por domínio (`V00293`), segundo as projeções (`V00292`). É como se obtém o **erro-padrão exato do IBGE**:
+
+```{r}
+totais <- unique(data.frame(V00293 = pns19$V00293, Freq = pns19$proj_dom))
+des_ps <- postStratify(svydesign(ids=~UPA_PNS, strata=~V0024, weights=~peso_sel,
+                                 data=pns19, nest=TRUE), ~V00293, population=totais)
+c(atalho  = SE(svymean(~saude_boa, des)),      # peso V00291 direto
+  oficial = SE(svymean(~saude_boa, des_ps)))   # pós-estratificado
+des <- des_ps                                  # adotamos a via oficial daqui em diante
+```
 
 . . .
 
-- domínios em `V00293`; projeções (totais) em `V00292`.
-- O `PNSIBGE` faz `weights=~V0029` **+ `postStratify`** → mesmas estimativas pontuais, com **erro-padrão ~1–4% menor** (trata os totais como conhecidos).
-
-Pós-estratificar = calibrar a **totais/contagens**. É um caso particular de calibração.
+**Mesmo ponto, SE menor:** com o peso calibrado pronto, o `svydesign` não sabe que os totais são conhecidos (SE conservador); o `postStratify` sabe e desconta a variância das contagens.
 
 # Parte 3 · Estimativas descritivas
 
