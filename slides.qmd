@@ -1,0 +1,549 @@
+---
+title: "Explorando dados da PNS com o pacote survey"
+subtitle: "Workshop DEMOPOP · análise de amostra complexa em R"
+author: "Caio César Soares Gonçalves — Demografia / CEDEPLAR-UFMG"
+date: "2026-07-03"
+format:
+  revealjs:
+    theme: simple
+    css: slides-styles.css
+    slide-number: true
+    code-overflow: wrap
+    code-line-numbers: false
+    fig-align: center
+    width: 1280
+    height: 720
+    df-print: kable
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| include: false
+suppressMessages({library(survey); library(dplyr); library(ggplot2)})
+options(survey.lonely.psu = "adjust", width = 90)
+
+# --- Parte 1: população sintética + a "verdade" conhecida ---
+pop  <- readRDS("data/populacao_sintetica.rds")
+N <- nrow(pop); P <- mean(pop$saude_ruim)
+Nh_df <- count(pop, regiao, name = "Nh")
+Ni_df <- count(pop, municipio, name = "Ni")
+muns  <- unique(pop$municipio); M <- length(muns); mm <- 15; ni <- 25
+
+# funções de sorteio reusadas no Monte Carlo
+sortear_desigual <- function() {
+  bind_rows(
+    filter(pop, regiao == "Norte")        |> slice_sample(n = 40),
+    filter(pop, regiao == "Nordeste")     |> slice_sample(n = 120),
+    filter(pop, regiao == "Centro-Oeste") |> slice_sample(n = 40),
+    filter(pop, regiao == "Sudeste")      |> slice_sample(n = 50),
+    filter(pop, regiao == "Sul")          |> slice_sample(n = 50)
+  ) |> left_join(Nh_df, by = "regiao") |>
+    group_by(regiao) |> mutate(peso = Nh / n()) |> ungroup()
+}
+sortear_cluster <- function() {
+  s <- sample(muns, mm)
+  pop |> filter(municipio %in% s) |>
+    group_by(municipio) |> slice_sample(n = ni) |> ungroup() |>
+    left_join(Ni_df, by = "municipio") |> mutate(peso = (M/mm) * (Ni/ni))
+}
+
+# --- Partes 2–7: microdados curados da PNS ---
+pns19 <- readRDS("data/pns2019.rds")
+pns13 <- readRDS("data/pns2013.rds")
+# desfechos binários como 0/1 -> svymean/svyby/svyglm devolvem UMA coluna limpa
+# (depr_phq9/depr_diag ficam LÓGICOS: entram no case_when do grupo)
+pns19 <- pns19 |> mutate(across(c(saude_ruim, saude_boa), as.numeric))
+pns13 <- pns13 |> mutate(saude_ruim = as.numeric(saude_ruim))
+```
+
+## Antes de começar — material e pasta {.smaller}
+
+Baixe o material em **[demopop.github.io/pns-survey](https://demopop.github.io/pns-survey/)**: o script **`tutorial.R`** e os **dados** (`data/`). Organize numa pasta de trabalho:
+
+```
+workshop-pns/
+├── tutorial.R
+└── data/
+    ├── populacao_sintetica.rds
+    ├── pns2019.rds
+    └── pns2013.rds
+```
+
+E aponte o R para essa pasta (o *working directory*), para que os caminhos `data/...` funcionem:
+
+```{r}
+#| eval: false
+setwd("C:/Users/voce/Documents/workshop-pns")  # ajuste para a SUA pasta
+list.files("data")   # confere: os três .rds devem aparecer
+```
+
+::: {.notes}
+Ritmo: rodamos juntos, olhamos a saída, eu comento; em cada "Decida antes", vocês respondem antes de eu revelar. Quem usa RStudio pode abrir um Projeto (.Rproj) na pasta, dispensando o `setwd()`.
+:::
+
+# De onde vêm os números
+
+## Censo, amostra, registros — e as novas fontes {.smaller}
+
+Antes de qualquer análise, a pergunta: **como o dado foi gerado?**
+
+. . .
+
+- **Censo** — observa **toda** a população (decenal, caro, exaustivo).
+- **Amostra** — observa uma **parte** sorteada e **infere** o todo (PNS, PNAD Contínua): periódica, mas com **erro amostral** e desenho a respeitar.
+- **Registros administrativos** — subproduto da gestão (SIM, SINASC, CadÚnico): anuais, cobertura desigual.
+- **Big Data** — dados que *já existem*, gerados por outra finalidade.
+
+## Big Data: a tipologia UNECE {.smaller}
+
+A UNECE (2013) classifica as fontes de Big Data por **como nascem**:
+
+. . .
+
+- **gerados por pessoas** (*human-sourced*) — redes sociais, buscas, textos;
+- **mediados por processos** (*process-mediated*) — registros de transações, sistemas administrativos;
+- **gerados por máquinas** (*machine-generated*) — sensores, GPS, celulares, satélites.
+
+. . .
+
+A distinção que importa: **dados que desenhamos** (a pesquisa amostral, com probabilidade de seleção conhecida) **×** **dados que apenas encontramos** (sem desenho — quem está dentro? com que chance?).
+
+::: {.notes}
+Big Data é volumoso e barato, mas raramente tem desenho probabilístico — não se sabe a quem ele representa. A PNS é o oposto: cara, mas com inferência válida para a população. Esta aula é sobre extrair essa inferência corretamente.
+:::
+
+# Por que o desenho amostral importa
+
+## Tratar a amostra como se fosse censo {.smaller}
+
+A análise "ingênua" assume, sem dizer, uma **amostra aleatória simples** — todos com **peso igual**, como se cada respondente valesse por si só.
+
+. . .
+
+Mas a PNS é **estratificada**, **conglomerada** e com **pesos desiguais**. Ignorar isso:
+
+- **enviesa o ponto** (se um grupo está super-representado), e
+- **mente sobre a precisão** — o intervalo de confiança sai **estreito demais**.
+
+. . .
+
+O `survey` existe para uma coisa: **estimar respeitando o desenho**. Vamos construir esse desenho peça por peça.
+
+# Parte 1 · A crescente do plano amostral
+
+## A população sintética (a verdade conhecida) {.smaller}
+
+Geramos uma **população inteira** — REGIÃO > MUNICÍPIO > DOMICÍLIO > PESSOA — espelhando a hierarquia da PNS. Como temos todo mundo, a **verdade é conhecida**:
+
+```{r}
+N                                  # tamanho da população
+round(P, 4)                        # P(saúde ruim/regular) — a VERDADE
+round(tapply(pop$saude_ruim, pop$regiao, mean), 3)   # gradiente por região
+```
+
+A cada passo do plano vamos sortear uma amostra e ver a estimativa **bater (ou não)** nessa verdade.
+
+## AAS — sortear ao acaso {.smaller}
+
+::: {.callout-note}
+🤔 **Decida antes:** sorteando 300 das `r N` pessoas, quão perto de `r round(P,3)` a estimativa deve cair?
+:::
+
+. . .
+
+```{r}
+set.seed(1)
+am <- pop[sample(N, 300), ]        # sorteia 300 pessoas ao acaso
+am$peso <- N / 300                 # peso igual = N/n
+am$fpcN <- N
+
+# svydesign(): ids=~1 -> sem conglomerados; weights -> pesos; fpc -> correção de pop. finita
+des_aas <- svydesign(ids = ~1, weights = ~peso, fpc = ~fpcN, data = am)
+svymean(~saude_ruim, des_aas)      # média de variável 0/1 = PROPORÇÃO
+```
+
+A estimativa cai perto da verdade; o **erro-padrão** (≈ 0,025) é o erro amostral.
+
+## Estratificação {.smaller}
+
+::: {.callout-note}
+🤔 **Decida antes:** estratificar por região melhora a precisão? E **igual** para saúde e renda?
+:::
+
+. . .
+
+```{r}
+set.seed(2)
+am_e  <- pop |> group_by(regiao) |> slice_sample(prop = 300/N) |> ungroup()
+am_e  <- am_e |> left_join(Nh_df, by = "regiao") |>
+  group_by(regiao) |> mutate(peso = Nh / n()) |> ungroup()   # peso = Nh/nh
+
+des_est <- svydesign(ids = ~1, strata = ~regiao, weights = ~peso, fpc = ~Nh, data = am_e)
+c(saude = SE(svymean(~saude_ruim, des_est)), renda = SE(svymean(~rdpc, des_est)))
+```
+
+Ganho **grande na renda** (varia muito entre regiões), **pequeno na saúde** (varia pouco). Estratificar ajuda na medida em que o desfecho **difere entre os estratos**.
+
+## Conglomeração (dois estágios) {.smaller}
+
+::: {.callout-note}
+🤔 **Decida antes:** sorteando 15 municípios × 25 pessoas (n = 375), o erro-padrão **sobe ou desce**?
+:::
+
+. . .
+
+```{r}
+set.seed(7)
+sel  <- sample(muns, mm)                       # 1º estágio: sorteia municípios (UPAs)
+am_c <- pop |> filter(municipio %in% sel) |>
+  group_by(municipio) |> slice_sample(n = ni) |> ungroup()   # 2º estágio: pessoas em cada
+am_c <- am_c |> left_join(Ni_df, by = "municipio") |> mutate(peso = (M/mm)*(Ni/ni))
+
+des_cl <- svydesign(ids = ~municipio, weights = ~peso, data = am_c)   # ids = conglomerados
+svymean(~saude_ruim, des_cl, deff = TRUE)      # deff = efeito do plano amostral
+```
+
+**Sobe**: pessoas do mesmo município se parecem (correlação intraclasse) → `deff ≈ 2,2`.
+
+## Pesos desiguais {.smaller}
+
+::: {.callout-note}
+🤔 **Decida antes:** vamos **sobre-amostrar o Nordeste** (saúde pior). A média **sem peso** fica acima ou abaixo da verdade?
+:::
+
+. . .
+
+```{r}
+set.seed(9)
+mc <- replicate(300, {                         # repete o sorteio desigual 300 vezes
+  a <- sortear_desigual()
+  c(ingenua   = mean(a$saude_ruim),
+    ponderada = coef(svymean(~saude_ruim,
+                 svydesign(ids=~1, strata=~regiao, weights=~peso, data=a)))[[1]])
+})
+round(rowMeans(mc), 4)                          # ingênua (enviesada) × ponderada (correta)
+```
+
+A **ingênua** fica **acima** (≈ 0,31): o peso corrige *o ponto*. Mas o próprio peso infla a variância: $\text{deff}_w \approx 1 + \text{CV}^2(w)$.
+
+## Quanto o desenho importa? (Monte Carlo) {.smaller}
+
+Se você analisa um desenho conglomerado **como se fosse AAS**, o IC **mente**. Medimos a **cobertura** de 500 amostras:
+
+```{r}
+set.seed(5)
+cob <- replicate(500, {
+  a       <- sortear_cluster()
+  des_c   <- svydesign(ids = ~municipio, weights = ~peso, data = a)   # CERTO
+  des_i   <- svydesign(ids = ~1,         weights = ~peso, data = a)   # INGÊNUO
+  est     <- coef(svymean(~saude_ruim, des_c))
+  c(desenho = abs(est-P)/SE(svymean(~saude_ruim, des_c)) < 1.96,
+    ingenuo = abs(est-P)/SE(svymean(~saude_ruim, des_i)) < 1.96)
+})
+round(rowMeans(cob) * 100, 1)                   # % das vezes em que o IC95% cobriu a verdade
+```
+
+O IC do **desenho** cobre ~95% (honesto); o **ingênuo**, ~82% — promete 95% e entrega 82%.
+
+## A virada {.smaller}
+
+Cada peça, isolada, mostrou seu efeito:
+
+| peça | efeito | argumento do `svydesign` |
+|---|---|---|
+| estrato | ↓ erro-padrão | `strata =` |
+| conglomerado | ↑ erro-padrão (deff) | `ids =` |
+| peso | corrige o viés | `weights =` |
+
+. . .
+
+A **PNS combina as três** num só desenho. Na Parte 2, declaramos exatamente isso — agora com os **microdados reais**.
+
+# Parte 2 · O plano amostral da PNS
+
+## O que é a PNS {.smaller}
+
+A **Pesquisa Nacional de Saúde** (IBGE/Ministério da Saúde, 2013 e 2019) investiga saúde, estilos de vida e acesso a serviços. É **domiciliar**, de **abrangência nacional**, com um módulo respondido por **um morador adulto sorteado** do domicílio.
+
+. . .
+
+Três tipos de microdado, com **pesos e recortes diferentes**:
+
+- **domicílio** (todos os moradores) — peso `V0028`;
+- **morador selecionado** (módulos individuais) — peso `V0029` / `V00291`;
+- **antropometria** (subamostra).
+
+Usamos o **morador selecionado, 18+**.
+
+## Unidade de análise e desenho {.smaller}
+
+**Desenho:** estratificado + por **conglomerados** (UPAs sorteadas por **PPS** — probabilidade proporcional ao tamanho) + **dois estágios** (UPA → domicílio → morador selecionado).
+
+. . .
+
+No `survey`, isso vira quatro argumentos:
+
+| conceito | variável PNS | argumento |
+|---|---|---|
+| estrato | `V0024` | `strata =` |
+| conglomerado (UPA) | `UPA_PNS` | `ids =` |
+| peso (calibrado) | `V00291` | `weights =` |
+| UPA dentro do estrato | — | `nest = TRUE` |
+
+## Declarando o plano — sem PNSIBGE {.smaller}
+
+```{r}
+des <- svydesign(ids     = ~UPA_PNS,       # conglomerados (UPAs)
+                 strata  = ~V0024,         # estratos
+                 weights = ~peso_sel_cal,  # peso do morador selecionado (V00291, calibrado)
+                 nest    = TRUE,           # UPAs numeradas DENTRO de cada estrato
+                 data    = pns19)
+des
+```
+
+Os alunos **declaram o desenho na mão** — sem caixa-preta. (O pacote `PNSIBGE` faz isto por baixo dos panos.)
+
+## Calibração dos pesos {.smaller}
+
+O peso bruto vem de $1/\pi_i$. A **calibração** ajusta esses pesos para que a amostra **reproduza totais populacionais conhecidos** (projeções de população por sexo × idade na data de referência).
+
+```{r}
+des_sc <- svydesign(ids=~UPA_PNS, strata=~V0024, weights=~peso_sel, data=pns19, nest=TRUE)
+c(sem_calib = coef(svymean(~saude_boa, des_sc, na.rm=TRUE))[[1]],
+  calibrado = coef(svymean(~saude_boa, des,    na.rm=TRUE))[[1]]) |> round(3)
+```
+
+Sem calibração: 65,1%. Calibrado (oficial, `V00291`): **66,1%** — o publicado pelo IBGE.
+
+## Pós-estratificação {.smaller}
+
+A **pós-estratificação** é a **calibração mais simples**: força a amostra a bater **contagens populacionais** por domínio (em vez de médias).
+
+. . .
+
+- domínios em `V00293`; projeções (totais) em `V00292`.
+- O `PNSIBGE` faz `weights=~V0029` **+ `postStratify`** → mesmas estimativas pontuais, com **erro-padrão ~1–4% menor** (trata os totais como conhecidos).
+
+Pós-estratificar = calibrar a **totais/contagens**. É um caso particular de calibração.
+
+# Parte 3 · Estimativas descritivas
+
+## Replicar a tabela publicada {.smaller}
+
+```{r}
+round(svymean(~autoaval, des, na.rm = TRUE) * 100, 1)   # distribuição da autoavaliação
+```
+
+. . .
+
+Bate **exatamente** com o divulgado (boa/muito boa 66,1; regular 28,1; ruim/muito ruim 5,8). Reproduzir o oficial valida o pipeline **antes** de explorar o que não foi publicado.
+
+## Por domínio: `svyby` {.smaller}
+
+```{r}
+# svyby(): a mesma estimativa repartida POR um fator (aqui, sexo)
+sb <- svyby(~saude_ruim, ~sexo, des, svymean, vartype = "ci")
+transform(sb, saude_ruim = round(100*saude_ruim,1),
+          ci_l = round(100*ci_l,1), ci_u = round(100*ci_u,1))
+```
+
+. . .
+
+Mulheres avaliam a própria saúde como ruim/regular mais que homens (37,7% × 29,6%) — um achado que a tabela agregada esconde. **Subpopulação se faz com `subset(des, ...)`**, nunca filtrando o data.frame.
+
+## CV e seus limites {.smaller}
+
+O **coeficiente de variação** (`cv = SE/estimativa`) mede a precisão relativa. O IBGE **omite** estimativas com CV alto.
+
+. . .
+
+Mas o CV tem limites:
+
+- fica **instável** perto de 0% ou 100%;
+- num **domínio pequeno**, dispara — daí o corte de divulgação;
+- **não capta viés** (não-resposta, subdeclaração) — só a variância amostral.
+
+Precisão **não** é o mesmo que validade.
+
+# Parte 4 · Vitrines
+
+## Ideação suicida (PHQ-9, item 9) {.smaller}
+
+```{r}
+des <- update(des, ideacao = N018 %in% c("2","3","4"))   # > "nenhum dia"
+svyby(~ideacao, ~sexo, des, svyciprop, vartype = "ci") |>
+  transform(ideacao = round(ideacao*100,1))
+```
+
+. . .
+
+≈ **4,6%** dos adultos relatam pensamentos de que seria melhor estar morto/de autolesão nas duas semanas anteriores — mais entre mulheres. Um sinal que só os microdados captam.
+
+## PHQ-9 × diagnóstico: pessoas diferentes {.smaller}
+
+```{r}
+des <- update(des, grupo = factor(dplyr::case_when(
+  depr_phq9 & depr_diag ~ "ambos",
+  depr_phq9             ~ "só rastreio (PHQ-9)",
+  depr_diag             ~ "só diagnóstico",
+  TRUE                  ~ "nenhum")))
+round(svymean(~grupo, des, na.rm = TRUE) * 100, 1)
+```
+
+. . .
+
+Rastreio (PHQ-9 ≥ 10) e **diagnóstico** autorreferido captam **populações que pouco se sobrepõem** — depressão *não tratada* × *diagnosticada*.
+
+## Violência por parceiro (módulo V) {.smaller}
+
+```{r}
+itens <- c("V00201","V00202","V00203","V00204","V00205",      # psicológica
+           "V01401","V01402","V01403","V01404","V01405",      # física
+           "V02701","V02702")                                 # sexual
+des <- update(des,
+  viol_qq     = rowSums(sapply(pns19[itens], \(x) (x=="1") %in% TRUE)) > 0,  # algum item = "Sim"
+  companheiro = (V006 == "01") %in% TRUE)
+round(100*as.numeric(coef(svyciprop(~viol_qq, subset(des, sexo=="Mulher")))), 1)   # % mulheres c/ violência
+round(100*as.numeric(coef(svyciprop(~companheiro,
+                          subset(des, sexo=="Mulher" & viol_qq)))), 1)             # % agressor = companheiro
+```
+
+**19,4%** das mulheres sofreram alguma violência nos 12 meses; entre as agredidas, em **16,5%** o **principal agressor foi o companheiro** — a face doméstica, que o microdado isola.
+
+## Orientação sexual (Y008, novo em 2019) {.smaller}
+
+```{r}
+round(svymean(~orient_sexual, des, na.rm = TRUE) * 100, 1)
+```
+
+. . .
+
+A PNS 2019 foi a **1ª** pesquisa domiciliar nacional a perguntar orientação sexual: ≈ **1,9% não-heterossexual**. Categorias **pequenas** → CV alto e cuidado redobrado ao desagregar.
+
+# Parte 5 · Gráficos com o plano
+
+## Histograma ponderado {.smaller}
+
+```{r}
+#| fig-height: 3.6
+des_renda <- subset(des, rdpc > 0)                      # log exige positivos
+svyhist(~log10(rdpc), des_renda, main = "", col = "#d6e4f0", breaks = 30,
+        xlab = "Renda per capita (R$ — escala log)", axes = FALSE)
+axis(2); reais <- c(100,300,1000,3000,10000)
+axis(1, at = log10(reais), labels = reais)
+```
+
+`svyhist` usa os **pesos**: descreve a população. Em escala log, a renda revela a mediana ≈ R$ 1.000 e a cauda da desigualdade.
+
+## Estimativa com intervalo de confiança {.smaller}
+
+```{r}
+#| fig-height: 3.4
+des <- update(des, faixa = cut(idade, c(17,29,44,59,Inf),          # faixa etária no desenho
+                               labels = c("18-29","30-44","45-59","60+")))
+est <- svyby(~saude_ruim, ~faixa, des, svymean, vartype = "ci")
+ggplot(est, aes(faixa, saude_ruim)) +
+  geom_col(fill = "#2980b9", width = .65) +
+  geom_errorbar(aes(ymin = ci_l, ymax = ci_u), width = .2) +      # IC 95%
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Faixa etária", y = "Saúde ruim/regular") + theme_minimal()
+```
+
+A saúde percebida piora com a idade; as barras de erro mostram que o padrão é **firme**, não ruído.
+
+# Parte 6 · Regressão com o plano
+
+## Regressão logística (`svyglm`) {.smaller}
+
+```{r}
+mod <- svyglm(saude_ruim ~ sexo + faixa + regiao + raca_cor,
+              design = des, family = quasibinomial())     # logística respeitando o desenho
+round(exp(cbind(OR = coef(mod), confint(mod))), 2)[2:5, ] # razões de chance (OR): sexo e idade
+```
+
+Mulheres têm ~1,4× a chance de avaliar a saúde como ruim/regular; o efeito da idade é forte.
+
+## Desenho × ingênuo: o que muda {.smaller}
+
+Os **coeficientes** mudam pouco com os pesos. Os **erros-padrão** mudam **muito** com a conglomeração:
+
+```{r}
+dat   <- des$variables
+naive <- glm(saude_ruim ~ sexo + faixa + regiao + raca_cor, data = dat,
+             family = quasibinomial(), weights = peso_sel_cal/mean(peso_sel_cal))
+round(c(desenho = summary(mod)$coef["sexoMulher","Std. Error"],
+        ingenuo = summary(naive)$coef["sexoMulher","Std. Error"]), 4)
+```
+
+SE ingênuo ≈ 0,015 × desenho ≈ 0,026: ignorar o plano **subestima a incerteza em ~40%**.
+
+# Parte 7 · Comparar 2013 × 2019
+
+## Amostras independentes {.smaller}
+
+PNS 2013 e 2019 são **amostras independentes**. Logo, a variância da **diferença** é a **soma** das variâncias:
+
+$$\text{Var}(\hat\theta_{19} - \hat\theta_{13}) = \text{Var}(\hat\theta_{19}) + \text{Var}(\hat\theta_{13})$$
+
+. . .
+
+Cuidados: **harmonizar** as variáveis, restringir a **18+** nas duas, e lembrar que orientação sexual e o módulo V **só existem em 2019**.
+
+## A comparação {.smaller}
+
+```{r}
+des13 <- svydesign(ids=~UPA_PNS, strata=~V0024, weights=~peso_sel_cal, data=pns13, nest=TRUE)
+compara <- function(v) {
+  e13 <- svyciprop(reformulate(v), des13); e19 <- svyciprop(reformulate(v), des)
+  dif <- coef(e19) - coef(e13); se <- sqrt(SE(e13)^2 + SE(e19)^2)
+  c(`2013%` = round(coef(e13)*100,1), `2019%` = round(coef(e19)*100,1),
+    dif = round(dif*100,1), z = round(dif/se,1))
+}
+t(sapply(c(saude_ruim="saude_ruim", depr_diag="depr_diag", ideacao_suicida="ideacao_suicida"), compara))
+```
+
+Autoavaliação **estável**; **depressão diagnosticada** e **ideação suicida** sobem de forma significativa entre 2013 e 2019.
+
+# Encerramento
+
+## As pegadinhas {.smaller}
+
+1. **Filtrar o data.frame** em vez de `subset(des, ...)` — quebra a variância dos domínios.
+2. **`glm`/`mean` comuns** com peso — o ponto até sai, mas o erro-padrão **mente**.
+3. **Esquecer `nest = TRUE`** — UPAs de estratos diferentes se confundem.
+4. **Confiar no CV** como se fosse validade — ele ignora viés (não-resposta, subdeclaração).
+5. **Comparar anos** sem somar as variâncias / sem harmonizar.
+
+## Como reportar uma estimativa {.smaller}
+
+Sempre com **três números** e a **fonte do desenho**:
+
+> "Em 2019, **X,X%** (IC95% [a, b]) dos adultos... — PNS, peso calibrado `V00291`, desenho estratificado e conglomerado."
+
+. . .
+
+E uma frase sobre o que **não** se mede: cobertura, não-resposta, subdeclaração do tema sensível.
+
+## Mensagem final {.smaller}
+
+O `survey` não é burocracia: é a diferença entre **descrever a sua amostra** e **inferir sobre a população**.
+
+. . .
+
+O desenho que o IBGE construiu — estratos, conglomerados, pesos calibrados — carrega a informação que torna a inferência válida. **Declará-lo é honrar esse desenho.**
+
+. . .
+
+E todo número tem uma sombra: a incerteza amostral (que medimos) e os vieses que ele **não** capta (que declaramos).
+
+## Obrigado {.center}
+
+**Caio César Soares Gonçalves**
+Departamento de Demografia / CEDEPLAR-UFMG
+
+Material completo: **demopop.github.io/pns-survey**
+
+Refs.: Silva (*Amostragem com R*) · Lumley (*survey*, JSS 2004) · IBGE (PNS, notas técnicas)

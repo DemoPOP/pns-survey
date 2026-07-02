@@ -1,0 +1,49 @@
+project:
+  type: website
+  execute-dir: project
+  render:
+    - index.qmd
+    - tutorial.qmd
+    - slides.qmd
+  resources:
+    - data/
+    - assets/
+    - robots.txt
+    - tutorial.R
+
+website:
+  title: "PNS & survey"
+  site-url: "https://demopop.github.io/pns-survey/"
+  description: "Tutorial em R para analisar dados de amostra complexa da Pesquisa Nacional de Saúde (PNS 2013 e 2019) com o pacote survey: desenho amostral, estimativas com pesos e intervalos de confiança, estimativas por domínio, efeito de desenho e regressão. Workshop DEMOPOP 2026 — CEDEPLAR-UFMG."
+  reader-mode: true
+  page-navigation: true
+  navbar:
+    background: primary
+    left:
+      - href: index.qmd
+        text: Início
+      - href: tutorial.qmd
+        text: Tutorial
+      - href: slides.qmd
+        text: Slides
+    right:
+      - icon: github
+        href: https://github.com/DemoPOP/pns-survey
+        aria-label: GitHub
+  page-footer:
+    center: "Caio César Soares Gonçalves · Departamento de Demografia / CEDEPLAR-UFMG · DEMOPOP 2026 · CC BY 4.0"
+
+lang: pt
+
+format:
+  html:
+    theme: cosmo
+    css: custom.css
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    df-print: paged
+    fig-align: center
+    open-graph: true
+    twitter-card: true

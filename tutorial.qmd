@@ -1,0 +1,772 @@
+---
+title: "Tutorial — Explorando dados da PNS com o pacote survey"
+subtitle: "Análise de amostra complexa em R · PNS 2013 e 2019"
+author:
+  - name: Caio César Soares Gonçalves
+    orcid: 0000-0002-3366-7560
+    affiliation: "Departamento de Demografia / CEDEPLAR-UFMG"
+date: "2026-07-03"
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+options(scipen = 999, survey.lonely.psu = "adjust")
+```
+
+## Objetivos
+
+Ao final, você deverá ser capaz de:
+
+- reconhecer por que **microdados de amostra complexa** não podem ser tratados como uma amostra aleatória simples;
+- **construir e declarar** um plano amostral em R com o pacote `survey`, do mais simples (AAS) ao desenho real da PNS;
+- produzir **estimativas baseadas no desenho** — proporções, médias, totais — com **intervalo de confiança** e **coeficiente de variação**, e por **domínios**;
+- medir o **efeito do desenho** (deff), ajustar **regressões** que respeitam o plano e **comparar** as PNS de 2013 e 2019.
+
+O pacote central é o **`survey`** (Lumley); ao longo do caminho catalogamos as decisões de quem analisa uma pesquisa amostral.
+
+---
+
+# De onde vêm os números — censo, amostra e as novas fontes do dado
+
+Antes de qualquer análise, vale a pergunta: **de onde vêm os números?** Há, classicamente, duas formas de conhecer uma população. A primeira é o **censo** — observar **todos**, a população inteira, sem exceção. A segunda é a **amostra** — observar apenas uma **parte**, cuidadosamente escolhida, e a partir dela conhecer o todo.
+
+Que se possa **conhecer o todo a partir de uma parte** não foi sempre óbvio. Foi uma **quebra de paradigma**: por muito tempo, só o censo parecia confiável. A amostragem surge como possibilidade legítima de estudo na virada do século XIX para o XX (o "método representativo" de Kiaer, 1895) e ganha base científica com a teoria da **amostragem probabilística** (Neyman, 1934) — a ideia de que, com **probabilidades de seleção conhecidas**, uma parte permite inferir o todo *com incerteza mensurável*.
+
+No Brasil, as primeiras pesquisas amostrais nasceram no âmbito da produção de **estatísticas econômicas e agrícolas**. Hoje a situação se inverteu: as pesquisas amostrais estão **plenamente institucionalizadas**, parte corrente do processo de produção de estatísticas no mundo inteiro. A PNS é uma delas.
+
+A fronteira atual do debate é outra: o uso de **registros administrativos** e de **Big Data** como fontes de estatísticas. Os **registros administrativos** (cadastros, sistemas de gestão) têm história mais longa e vêm sendo aprimorados, mas carregam uma marca de origem — foram construídos para **controle e gestão, não com fins estatísticos**; adaptá-los exige cuidado. Já o **Big Data** — termo que se popularizou, mas que diz **muito mais do que "dados grandes"** — designa, em essência, dados que surgem como **subproduto de outras atividades**, e não foram desenhados para fins estatísticos. A estatística oficial costuma organizá-lo pela **classificação da UNECE** (2013), em três famílias:
+
+- **originados por humanos** (redes sociais) — posts, buscas, fotos, vídeos: pouco estruturados;
+- **mediados por processos** (sistemas de negócio) — transações, cadastros e registros de eventos: muito estruturados (é aqui que tangenciam os registros administrativos);
+- **gerados por máquinas** (Internet das Coisas) — **sensores**, **telefones móveis**, GPS, *logs*: registros automáticos do mundo físico.
+
+A distinção de fundo, que atravessa todos esses casos, é entre **dados desenhados** — coletados deliberadamente segundo um plano, como na amostra — e **dados que apenas encontramos**, subprodutos de outra atividade. O ponto, para nós, não é catalogar fontes, e sim reconhecer que **cada tipo de dado exige procedimentos próprios**. Num *pipeline* de análise, o **primeiro passo é saber com que tipo de dado se está trabalhando** — censo, amostra, registro administrativo ou Big Data —, porque cada um pede cuidados específicos: o que é correto para um pode ser um erro grosseiro em outro.
+
+Este workshop é uma **demonstração com dados amostrais**. Não vamos esgotar o assunto — vamos trazer os **principais pontos de atenção** ao analisar uma pesquisa amostral, usando a PNS como caso. E o ponto de partida é entender por que o **desenho** dessa amostra **redefine toda a análise**.
+
+---
+
+# Por que o desenho amostral importa
+
+A PNS **não** é uma amostra aleatória simples: ela é **estratificada**, sorteada por **conglomerados** (setores/UPAs) e cada pessoa entra com um **peso** diferente. O atalho tentador é tratá-la como se fosse uma AAS — mas, numa AAS, **todos os pesos são iguais**, e tomar médias simples (sem peso) equivale a tratar a amostra **como se fosse um censo**: como se cada respondente valesse só por si e a amostra já fosse a população inteira. Não é o caso. Ignorar o desenho tem, então, duas consequências de naturezas distintas:
+
+- os **pesos** corrigem *quem* está na amostra — ignorá-los **enviesa a estimativa** (o *ponto*);
+- os **estratos e conglomerados** mudam a *quantidade de informação* da amostra — ignorá-los **erra o erro-padrão** (e, portanto, o intervalo de confiança e os testes).
+
+Em vez de afirmar isso, vamos **demonstrá-lo**. A estratégia da Parte 1 é trabalhar com uma **população sintética** — pequena, mas com a mesma hierarquia da PNS (pessoas em domicílios, em municípios, em regiões). Como a geramos por inteiro, **conhecemos a verdade** e podemos sortear amostras dela e conferir, a cada passo, se a estimativa acerta e se o erro-padrão é honesto.
+
+---
+
+# Parte 1 · A crescente do plano amostral
+
+Vamos montar o plano da PNS **por partes**: amostra aleatória simples → estratificação → conglomeração → pesos desiguais. A cada passo, uma decisão nova e seu efeito.
+
+## Tipos de amostragem probabilística
+
+Antes de montar, vale nomear as peças. Toda **amostragem probabilística** compartilha um princípio: cada unidade da população tem uma **probabilidade de seleção conhecida e não nula**, e o **peso** de cada unidade é o inverso dela ($w_i = 1/\pi_i$) — é o que permite ir da amostra à população. Os tipos diferem em *como* se atribuem essas probabilidades:
+
+- **Aleatória simples (AAS)** — todas as unidades com a mesma probabilidade, sorteio direto; a referência contra a qual as demais se comparam ([Silva, cap. 4](https://amostragemcomr.github.io/livro/aas.html)).
+- **Estratificada** — divide-se a população em **estratos** e sorteia-se dentro de cada um; ganha precisão quando os estratos diferem no que se mede ([cap. 11](https://amostragemcomr.github.io/livro/estrat.html)).
+- **Por conglomerados** — sorteiam-se **grupos** inteiros e, dentro deles, as unidades — em **um** ou **dois estágios**; reduz o custo de campo ao preço de mais variância ([cap. 12](https://amostragemcomr.github.io/livro/cong.html)).
+- **Probabilidade proporcional ao tamanho (PPT / PPS)** — unidades maiores (p.ex. setores com mais domicílios) têm probabilidade de seleção maior; é o padrão no **primeiro estágio** das pesquisas domiciliares — e da PNS ([cap. 10](https://amostragemcomr.github.io/livro/ppt.html)).
+
+Há outros tipos que **não trataremos aqui** — como a **amostragem sistemática** (seleção a intervalos fixos numa lista ordenada; [cap. 8](https://amostragemcomr.github.io/livro/AS.html)) e variantes de PPT (Poisson, Pareto). O tratamento completo está no livro ***Amostragem com R*, de Pedro L. N. Silva** ([amostragemcomr.github.io/livro](https://amostragemcomr.github.io/livro/index.html)), em que esta parte se apoia.
+
+O ponto: a **PNS combina** estratificação + conglomerados em **dois estágios** + **PPT** no primeiro + pesos + **calibração**. A crescente a seguir monta essas peças, uma a uma.
+
+## A população (e a verdade)
+
+Cada linha é uma **pessoa**, com sua **região**, **município** e **domicílio** — a mesma hierarquia da PNS. Duas variáveis nos acompanharão por todo o workshop:
+
+- **`saude_ruim`** — espelha a **autoavaliação de saúde** da PNS (a pergunta *"em geral, como o(a) Sr(a) avalia a sua saúde?"*, variável `N001`, com respostas de *Muito boa* a *Muito ruim*). Aqui ela é **binária**: `saude_ruim = 1` reúne **Regular + Ruim + Muito ruim** — o complemento de "boa/muito boa". É o nosso **desfecho-âncora**.
+- **`rdpc`** — a **renda domiciliar per capita**: o rendimento total do domicílio dividido pelo número de moradores (na PNS, a variável `VDF003`).
+
+```{r pop}
+library(survey)   # análise de amostras complexas (Lumley)
+library(dplyr)    # manipulação de dados
+
+pop <- readRDS("data/populacao_sintetica.rds")  # carrega a população sintética inteira
+N <- nrow(pop)                                  # N = tamanho da população (nº de linhas)
+glimpse(pop)                                    # espia as colunas: região, município, sexo, saúde...
+
+# Como temos a POPULAÇÃO inteira, sabemos a VERDADE que queremos estimar:
+P <- mean(pop$saude_ruim)                            # proporção verdadeira de "saúde ruim/regular"
+P
+round(tapply(pop$saude_ruim, pop$regiao, mean), 3)   # tapply: a mesma média, calculada por região
+```
+
+::: {.leitura}
+A população tem `r N` pessoas distribuídas em domicílios, municípios e regiões — a mesma hierarquia da PNS. A proporção verdadeira de "saúde ruim/regular" é **`r round(P,3)`**, com um gradiente conhecido: maior no Norte/Nordeste, menor no Sul. Tudo o que vier a seguir é uma **tentativa de recuperar esses números** a partir de uma amostra — e nós poderemos checar.
+:::
+
+## Amostra aleatória simples (AAS)
+
+O ponto de partida: sortear `n = 300` pessoas ao acaso, todas com a mesma chance. Cada pessoa selecionada "representa" `N/n` pessoas da população — é o seu **peso**.
+
+::: {.callout-note collapse="true"}
+## 🤔 Decida antes: sorteando 300 das `r N` pessoas, quão perto da verdade (`r round(P,3)`) a estimativa deve cair?
+
+Deve cair **perto** de `r round(P,3)`, mas quase nunca exatamente nela — é uma amostra, não o censo. O **intervalo de confiança** calculado abaixo quantifica esse "perto".
+:::
+
+```{r aas}
+set.seed(1)               # fixa o gerador aleatório (resultados reproduzíveis)
+n  <- 300                 # tamanho da amostra
+am <- pop[sample(N, n), ] # sorteia n linhas (pessoas) ao acaso da população 'pop'
+am$peso <- N / n          # peso de cada pessoa = N/n: ela "representa" N/n habitantes
+am$fpcN <- N              # guarda o tamanho da população (para a correção de população finita)
+
+# svydesign() descreve o PLANO AMOSTRAL ao R — é a base de toda estimativa:
+#   ids     = ~1     -> NÃO há conglomerados (sorteio direto de pessoas)
+#   weights = ~peso  -> a coluna com os pesos amostrais
+#   fpc     = ~fpcN  -> tamanho da população (correção de população finita)
+#   data    = am     -> a tabela com a amostra
+des_aas <- svydesign(ids = ~1, weights = ~peso, fpc = ~fpcN, data = am)
+
+# svymean(): estima a MÉDIA/proporção respeitando o desenho (~ indica a variável):
+svymean(~saude_ruim, des_aas)
+# confint(): intervalo de confiança de 95% da estimativa acima
+confint(svymean(~saude_ruim, des_aas))
+```
+
+::: {.leitura}
+A estimativa de `~saude_ruim` é uma **proporção** — e aqui vale a primeira sutileza: como a variável é **binária** (0/1), a sua **média** é exatamente a **fração de 1s**, ou seja, a proporção de pessoas com saúde ruim/regular. (Toda média de uma variável 0/1 é uma proporção; por isso usamos `svymean` para estimá-la.) A estimativa cai perto da verdade, e o intervalo de confiança a cobre; o **erro-padrão** (≈ 0,025) traduz a incerteza de ter visto só 300 das `r N` pessoas — é o **erro amostral**.
+
+Dois argumentos do `svydesign` merecem nota. `ids = ~1` diz que **não há conglomerados** (sorteio direto de pessoas). Já o **`fpc`** (*finite population correction*, correção de população finita) entra porque sorteamos **sem reposição de uma população finita**: quando a amostra é uma fração não desprezível da população, a incerteza é **menor** do que a fórmula clássica supõe (no limite, uma amostra do tamanho da população teria erro zero — já é o censo). O `fpc` informa o tamanho `N` e aplica essa correção, encolhendo o erro-padrão pelo fator $\sqrt{1 - n/N}$. Aqui o efeito é pequeno (300 de `r N`); na PNS, em que a fração amostral é **ínfima**, ele é desprezível — e por isso será **omitido** na Parte 2.
+:::
+
+**Vantagens × desvantagens.** A AAS é **simples** e dá **pesos iguais** — é a referência contra a qual tudo se compara. Em troca, exige um **cadastro de todas as unidades** (inviável para pessoas), é **cara em campo** (entrevistados espalhados) e **menos eficiente** do que aproveitar a estrutura da população.
+
+## Estratificação
+
+E se, antes de sortear, dividíssemos a população em **estratos** (aqui, as regiões) e sorteássemos dentro de cada um, em proporções fixas? Essa é a **amostragem estratificada**. A intuição vem de uma decomposição: a variabilidade total de um indicador se separa em duas partes — a que existe **entre** os estratos e a que existe **dentro** deles. Ao fixar quantos sorteamos em cada estrato (alocação **proporcional**: $n_h \propto N_h$), a parte **entre estratos some do erro amostral** — nenhuma região fica sub ou sobre-representada por azar. Sobra apenas a variabilidade *de dentro*.
+
+Daí a regra: **estratificar ajuda na medida em que os estratos diferem no que se mede**, e (sob alocação proporcional) **nunca piora** a precisão.
+
+Vale abrir a caixa da **alocação** — como repartir o total da amostra entre os estratos. As principais opções:
+
+- **proporcional** — cada estrato recebe amostra proporcional ao seu tamanho ($n_h \propto N_h$); é a que usamos aqui, e mantém os pesos quase iguais;
+- **uniforme** — o mesmo $n_h$ em todos; boa quando se quer precisão **em cada** estrato, inclusive nos pequenos (mas gera pesos desiguais);
+- **ótima (Neyman)** — mais amostra onde há mais variabilidade ($n_h \propto N_h S_h$); minimiza a variância total ([Silva, cap. 11](https://amostragemcomr.github.io/livro/estrat.html)).
+
+E **na PNS**? Os estratos são **geográficos** (capital, região metropolitana, restante da UF; urbano/rural), e a alocação **não é proporcional**: o desenho precisa garantir **precisão em cada domínio** (capitais, RMs, UFs), então a amostra é dimensionada para atingir um **coeficiente de variação-alvo** em indicadores-chave de cada um. Isso torna a alocação **desproporcional** — domínios menos populosos ficam **sobre-amostrados** em relação à população —, e é justamente uma das origens dos **pesos desiguais**. No segundo estágio, sorteia-se um **número fixo de domicílios por UPA** (10 ou 14, conforme o domínio).
+
+::: {.callout-note collapse="true"}
+## 🤔 Decida antes: estratificar por região vai melhorar a precisão? E vai melhorar **igual** para a saúde e para a renda?
+
+Melhora — mas **desigualmente**. O ganho é **grande na renda** (que varia muito entre regiões) e **pequeno na saúde** (que varia pouco entre regiões). A regra: estratificar ajuda na medida em que o **desfecho difere entre os estratos**.
+:::
+
+```{r estrat}
+set.seed(2)
+taxa <- 300 / N                       # a MESMA fração sorteada em cada estrato (alocação proporcional)
+
+# sorteia essa fração de cada região:
+am_e <- pop |>
+  group_by(regiao) |>
+  slice_sample(prop = taxa) |>
+  ungroup()
+
+# para o peso, juntamos Nh (tamanho do estrato na população) e usamos nh (sorteados):
+Nh_df <- count(pop, regiao, name = "Nh")     # nº de pessoas em cada região (estrato)
+am_e  <- am_e |>
+  left_join(Nh_df, by = "regiao") |>         # cola o Nh em cada pessoa
+  group_by(regiao) |>
+  mutate(peso = Nh / n()) |>                 # peso = Nh / nh   (n() = nº sorteado no estrato)
+  ungroup()
+
+# o argumento NOVO aqui é 'strata':
+#   strata = ~regiao -> os estratos; fpc = ~Nh -> tamanho do estrato na população
+des_est <- svydesign(ids = ~1, strata = ~regiao, weights = ~peso, fpc = ~Nh, data = am_e)
+svymean(~saude_ruim, des_est)   # estima a proporção de saúde ruim/regular
+svymean(~rdpc,       des_est)   # e a média da renda domiciliar per capita
+```
+
+::: {.leitura}
+Compare os erros-padrão com a AAS: para a **saúde** o ganho é pequeno (≈ 0,0247 vs 0,0254), mas para a **renda** é grande (≈ 18 vs 21). A razão é instrutiva — **estratificar ajuda na medida em que o desfecho difere entre os estratos**. A renda varia muito entre regiões, então separar por região remove bastante variância; a saúde varia menos entre regiões, então o ganho é modesto. Estratificar nunca piora; o quanto melhora depende do indicador.
+:::
+
+**Vantagens × desvantagens.** Estratificar **aumenta a precisão** (ou, no pior caso, não piora) e garante a representação de cada estrato. Em troca, exige **conhecer o estrato de antemão** (uma variável na base) e, se a alocação for desproporcional, **gera pesos desiguais**.
+
+## Conglomeração (amostragem em dois estágios)
+
+Há um problema prático antes da estatística: **não existe uma lista de todas as pessoas do país** para sortear ao acaso. Existe, sim, uma lista de **áreas** (os setores censitários). Por isso toda pesquisa domiciliar — e a PNS — faz **amostragem por conglomerados**: sorteia **áreas** (as UPAs) e, dentro delas, domicílios e moradores. É também muito mais **barato** — o entrevistador trabalha concentrado num setor, em vez de cruzar a cidade entre uma casa e outra.
+
+O preço é estatístico. Pessoas do mesmo setor **se parecem** — mesma vizinhança, mesmo acesso a serviços, renda semelhante. Essa semelhança é a **correlação intraclasse** ($\rho$): quanto maior, menos *informação nova* cada pessoa adicional do mesmo conglomerado acrescenta. O efeito sobre a variância resume-se no **efeito de plano amostral**,
+
+$$\text{deff} \approx 1 + (\bar{m} - 1)\,\rho,$$
+
+onde $\bar{m}$ é o número médio de pessoas por conglomerado na amostra. A consequência orienta o desenho de qualquer pesquisa: **muitos conglomerados pequenos** rendem mais precisão que **poucos conglomerados grandes** ([Silva, cap. 12](https://amostragemcomr.github.io/livro/cong.html)). A PNS é de **dois estágios** (UPA → domicílios); em **um estágio**, sortearíamos a UPA e entrevistaríamos *todos* os seus domicílios.
+
+::: {.callout-note collapse="true"}
+## 🤔 Decida antes: sorteando 15 municípios e 25 pessoas em cada (n = 375), o erro-padrão vai subir ou descer em relação à AAS?
+
+Vai **subir**. Pessoas do mesmo município se parecem (correlação intraclasse), então cada nova entrevista no mesmo lugar traz **menos informação nova** — a variância infla (`deff` > 1).
+:::
+
+```{r congl}
+muns <- unique(pop$municipio); M <- length(muns)   # M = total de municípios na população
+mm <- 15; ni <- 25                                 # mm = municípios sorteados; ni = pessoas por município
+
+set.seed(7)
+sel  <- sample(muns, mm)                            # 1º estágio: sorteia mm municípios (as "UPAs")
+am_c <- pop |>
+  filter(municipio %in% sel) |>                     # mantém só os municípios sorteados
+  group_by(municipio) |> slice_sample(n = ni) |> ungroup()   # 2º estágio: ni pessoas em cada
+
+# peso dos dois estágios = (M/mm) · (Ni/ni):
+Ni_df <- count(pop, municipio, name = "Ni")         # nº de pessoas em cada município
+am_c  <- am_c |>
+  left_join(Ni_df, by = "municipio") |>             # cola o Ni
+  mutate(peso = (M/mm) * (Ni/ni))
+
+# o argumento NOVO aqui é 'ids' (os conglomerados):
+#   ids = ~municipio -> diz ao survey que o sorteio foi por conglomerados (municípios)
+des_cl <- svydesign(ids = ~municipio, weights = ~peso, data = am_c)
+svymean(~saude_ruim, des_cl, deff = TRUE)          # deff = TRUE -> também reporta o efeito de plano amostral
+```
+
+::: {.leitura}
+A estimativa continua perto da verdade, mas o **erro-padrão sobe** (≈ 0,034 contra 0,025 da AAS) e o **`deff` ≈ 2,2**: o desenho conglomerado tem mais que o dobro da variância de uma AAS de mesmo tamanho — os 375 entrevistados "valem", em informação, como ~170 sob AAS. `ids = ~municipio` é o que diz ao `survey` que o sorteio foi por conglomerados. Esse é o preço da economia de campo — e ignorá-lo é o erro mais comum na análise de pesquisas.
+:::
+
+**Vantagens × desvantagens.** Conglomerar é **barato e operacionalmente viável** — basta um cadastro de **áreas**, não de pessoas, e o entrevistador trabalha concentrado. O preço é **menos precisão**: a correlação intraclasse infla a variância (`deff` > 1).
+
+## Pesos desiguais
+
+Até aqui os pesos eram quase uniformes. Na prática, as **probabilidades de seleção são desiguais** por vários motivos: (i) **sobre-amostragem deliberada** de um grupo pequeno, para ter precisão nele; (ii) a **PPT** do primeiro estágio (setores maiores têm mais chance); (iii) ajustes de **não-resposta** e de **calibração**. Em todos, o **peso** $w_i = 1/\pi_i$ é o que reconcilia amostra e população: cada unidade representa $w_i$ pessoas, e o estimador (de **Horvitz–Thompson**) soma os valores ponderados por esse peso. Ignorar o peso é estimar *a amostra*, não a *população* — e, se a amostra super-representa um grupo atípico, a estimativa **enviesa**.
+
+Mas pesos desiguais têm um **custo** próprio: também inflam a variância. O "efeito dos pesos" é, aproximadamente,
+
+$$\text{deff}_w \approx 1 + \text{CV}^2(w),$$
+
+onde $\text{CV}(w)$ é o coeficiente de variação dos pesos. Por isso sobre-amostrar um domínio **dá precisão nele, mas a tira do todo** — um trade-off que todo desenho negocia.
+
+::: {.callout-note collapse="true"}
+## 🤔 Decida antes: vamos sobre-amostrar o Nordeste (onde a saúde é pior). A média **sem peso** vai ficar acima ou abaixo da verdade?
+
+**Acima.** O Nordeste, de saúde pior, entra com **mais gente** do que sua fração na população — sem o peso para compensar essa sobra, a média é puxada para cima. O peso corrige exatamente isso.
+:::
+
+```{r pesos}
+# uma função que sorteia UMA amostra SOBRE-AMOSTRANDO o Nordeste (120) frente às outras regiões:
+sortear_desigual <- function() {
+  bind_rows(
+    filter(pop, regiao == "Norte")        |> slice_sample(n = 40),
+    filter(pop, regiao == "Nordeste")     |> slice_sample(n = 120),
+    filter(pop, regiao == "Centro-Oeste") |> slice_sample(n = 40),
+    filter(pop, regiao == "Sudeste")      |> slice_sample(n = 50),
+    filter(pop, regiao == "Sul")          |> slice_sample(n = 50)
+  ) |>
+    left_join(Nh_df, by = "regiao") |>                       # cola o tamanho do estrato (Nh)
+    group_by(regiao) |> mutate(peso = Nh / n()) |> ungroup() # peso = Nh / nh
+}
+
+set.seed(4)
+am_w <- sortear_desigual()
+
+mean(am_w$saude_ruim)   # média INGÊNUA: ignora o peso (trata todos igual)
+# média PONDERADA: usa o peso no desenho — é a correta
+svymean(~saude_ruim, svydesign(ids = ~1, strata = ~regiao, weights = ~peso, data = am_w))
+```
+
+A diferença num único sorteio se confunde com o erro amostral. Para mostrar que é **viés sistemático**, repetimos o sorteio 300 vezes e tiramos a média das estimativas:
+
+```{r pesos-mc}
+set.seed(9)
+mc <- replicate(300, {                       # repete 300 vezes o sorteio desigual...
+  a <- sortear_desigual()                    # ...usando a mesma função de antes...
+  c(ingenua   = mean(a$saude_ruim),          # ...e guarda a média INGÊNUA (sem peso)...
+    ponderada = unname(coef(svymean(~saude_ruim,                        # ...e a PONDERADA
+                  svydesign(ids = ~1, strata = ~regiao, weights = ~peso, data = a)))))
+})
+round(rowMeans(mc), 4)   # a média das 300 estimativas (ingênua vs ponderada)
+```
+
+::: {.leitura}
+A média **ingênua** fica sistematicamente **acima** da verdade (≈ 0,312 vs `r round(P,3)`): como o Nordeste — de saúde pior — entra com peso a mais na amostra, ignorar o peso "puxa" a estimativa para cima. A média **ponderada** volta à verdade (≈ 0,296). É a lição central sobre pesos: eles corrigem *o ponto*, não a precisão.
+:::
+
+**Vantagens × desvantagens.** Pesos desiguais permitem **sobre-amostrar grupos de interesse** (mais precisão neles) e acomodam a PPS e a calibração, corrigindo o **ponto** (não-resposta, cobertura). Em troca, **inflam a variância** ($\text{deff}_w \approx 1 + \text{CV}^2(w)$) e **precisam ser usados** — ignorá-los enviesa a estimativa.
+
+## Quanto o desenho importa? (Monte Carlo)
+
+Juntando tudo: se você tem um desenho conglomerado mas o analisa **como se fosse AAS**, o erro-padrão sai pequeno demais e o intervalo de confiança **mente**. Vamos medir isso. Sorteamos 500 amostras conglomeradas; em cada uma calculamos o IC de 95% do jeito **certo** (declarando o conglomerado) e do jeito **ingênuo** (como AAS), e contamos quantas vezes o IC **cobre a verdade**.
+
+```{r mc-cobertura}
+# uma função que sorteia UMA amostra conglomerada (15 municípios, 25 pessoas em cada):
+sortear_cluster <- function() {
+  sm <- sample(muns, mm)
+  pop |> filter(municipio %in% sm) |>
+    group_by(municipio) |> slice_sample(n = ni) |> ungroup() |>
+    left_join(Ni_df, by = "municipio") |> mutate(peso = (M/mm) * (Ni/ni))
+}
+
+set.seed(5); B <- 500
+cob <- replicate(B, {                              # B amostras conglomeradas; em cada uma...
+  a       <- sortear_cluster()
+  des     <- svydesign(ids = ~municipio, weights = ~peso, data = a)   # desenho CERTO (com cluster)
+  des_ing <- svydesign(ids = ~1,         weights = ~peso, data = a)   # desenho INGÊNUO (sem cluster)
+  est     <- coef(svymean(~saude_ruim, des))                          # a estimativa
+  c(desenho = abs(est - P)/SE(svymean(~saude_ruim, des))     < 1.96,  # o IC do desenho cobre a verdade P?
+    ingenuo = abs(est - P)/SE(svymean(~saude_ruim, des_ing)) < 1.96)  # e o IC ingênuo?
+})
+round(rowMeans(cob) * 100, 1)   # % das vezes em que cada IC cobriu a verdade (desenho vs ingênuo)
+```
+
+::: {.leitura}
+O IC do **desenho** cobre a verdade perto dos **95%** prometidos (aqui, ≈ 98%). O IC **ingênuo** cobre bem menos — cerca de **82%**: é estreito demais e **mente em cerca de 1 a cada 5 amostras**. Esta é a resposta empírica a "por que o desenho importa" — não é um detalhe técnico, é **se você pode confiar no seu intervalo de confiança**.
+:::
+
+> **A virada.** Cada peça, isolada, mostrou seu efeito — o **estrato** reduz o erro-padrão, o **conglomerado** o infla (deff), o **peso** corrige o viés. A PNS combina **todas** num só desenho: estratos + conglomerados em dois estágios + pesos. Na **Parte 2**, declaramos exatamente isso de uma vez — a única mudança é trocar a população sintética pelos **microdados reais do IBGE**.
+
+---
+
+# Parte 2 · O plano amostral da PNS
+
+## O que é a PNS
+
+A **Pesquisa Nacional de Saúde (PNS)** é o maior inquérito domiciliar de saúde do Brasil, realizado pelo **Ministério da Saúde em parceria com o IBGE** em **2013** e **2019**. A ideia nasceu em 2003, no Comitê Temático de Informações Baseadas em População, e a pesquisa incorporou os módulos do **Suplemento Saúde da PNAD (2008)**, dando continuidade a uma série de indicadores de saúde. O campo de 2013 ocorreu de agosto a dezembro; o de 2019, de agosto de 2019 a março de 2020.
+
+Seu **objetivo** é caracterizar a situação de saúde e os estilos de vida da população, e a atenção à saúde (acesso, uso, prevenção, continuidade e financiamento), em três eixos: o **desempenho do sistema de saúde**, as **condições de saúde e estilos de vida** e a **vigilância de doenças e fatores de risco**.
+
+## Unidade de análise e os três microdados
+
+A PNS observa **dois níveis**: o **domicílio** e um **morador selecionado**. Em cada domicílio sorteado, todos os moradores respondem ao **questionário básico** (características do domicílio e dos moradores, acesso a serviços); e **um único morador** — sorteado com **igual probabilidade** entre os elegíveis (**18+ em 2013; 15+ em 2019**) — responde ao **questionário do morador selecionado**, com os módulos individuais (percepção de saúde, doenças crônicas, saúde mental, estilos de vida, violência…). Daí os **três arquivos de microdados**, com **pesos diferentes**:
+
+| Microdado | Quem responde | Peso (calibrado) |
+|---|---|---|
+| **Básico** | todos os moradores | `V00281` |
+| **Morador selecionado** | 1 por domicílio | `V00291` |
+| **Antropometria** | subamostra | `V00301` |
+
+A distinção é **operacional**: a âncora e as vitrines deste workshop vêm do **morador selecionado** (peso `V00291`, recorte dos selecionados); já um indicador do domicílio usaria o **banco todo** e o peso `V00281`.
+
+## O desenho
+
+A PNS é uma amostra **estratificada, por conglomerados, em dois estágios**:
+
+1. **Estratos** — definidos geograficamente (capital, região metropolitana, restante da UF; situação urbana/rural).
+2. **1º estágio** — sorteio das **UPAs** (unidades primárias — setores censitários ou agregados) com **probabilidade proporcional ao tamanho (PPT)**: setores com mais domicílios têm mais chance.
+3. **2º estágio** — um número fixo de **domicílios** por UPA, com **igual probabilidade**.
+4. Dentro do domicílio, **um morador** sorteado com igual probabilidade para o questionário individual.
+
+No `survey`, isso é exatamente `ids = ~UPA_PNS` (conglomerado), `strata = ~V0024` (estrato), `weights = ~V00291` (peso) e `nest = TRUE` (UPAs aninhadas nos estratos). O próprio IBGE quantifica a perda de eficiência do desenho por conglomerados pelo **efeito de plano amostral (EPA = deff)**, ampliando o tamanho da amostra para compensar.
+
+## Declarando o desenho — sem PNSIBGE
+
+Os participantes recebem o subconjunto já preparado (`data/pns2019.rds`). Para quem parte do microdado bruto do IBGE, o caminho **manual** (sem o pacote `PNSIBGE`) é ler o `.txt` de largura fixa pelas posições do dicionário:
+
+```{r leitura-manual, eval=FALSE}
+library(readr)
+# posições do input_PNS_2019.txt (exemplo abreviado):
+pns19 <- read_fwf("PNS_2019.txt",
+  fwf_positions(start = c(3, 10, 1426), end = c(9, 18, 1439),
+                col_names = c("V0024", "UPA_PNS", "V00291")))
+```
+
+Aqui carregamos direto o subconjunto pronto e declaramos o plano:
+
+```{r pns-design}
+pns19 <- readRDS("data/pns2019.rds")   # subconjunto da PNS 2019 já preparado
+
+# desenho da PNS — combina tudo o que vimos na Parte 1, agora com dados reais:
+#   ids     = ~UPA_PNS      -> conglomerados (as UPAs)
+#   strata  = ~V0024        -> estratos geográficos
+#   weights = ~peso_sel_cal -> peso do morador selecionado, calibrado (V00291)
+#   nest    = TRUE          -> UPAs numeradas DENTRO de cada estrato
+des <- svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel_cal,
+                 data = pns19, nest = TRUE)
+des                                    # imprime um resumo do plano amostral
+```
+
+O pacote `PNSIBGE` (`get_pns()`/`pns_design()`) faz isso automaticamente — e quase do mesmo jeito, com uma diferença que vale conhecer. Ele declara o desenho com o peso **sem** calibração (`V0029`) e aplica **pós-estratificação** (`postStratify`) às projeções de população; nós usamos o peso **já calibrado** (`V00291`) direto. As **estimativas pontuais são idênticas** (ambas reproduzem o oficial); os **erros-padrão** do `PNSIBGE` ficam *ligeiramente* menores (≈ 1–4%), porque a pós-estratificação trata os totais populacionais como conhecidos e reduz um pouco a variância — o caminho com o peso calibrado é uma aproximação simples e levemente conservadora.
+
+Note ainda que, ao contrário da Parte 1, **não** usamos `fpc` aqui: na PNS a fração amostral é ínfima (poucas UPAs num universo enorme), então a correção de população finita é desprezível e se omite — a variância é calculada como em amostragem com reposição.
+
+## Calibração — por que 65% vira 66%
+
+Os pesos do desenho (`V0029`) já expandem a amostra para a população. Mas, por amostragem, **não-resposta** e cobertura, a estrutura demográfica da amostra não bate *exatamente* com a conhecida. A **calibração** corrige isso: ajusta os pesos o **mínimo necessário** para que os **totais estimados de variáveis auxiliares** — na PNS, a **população por sexo e classes de idade** — **coincidam com as projeções oficiais** do IBGE (COPIS), na **data de referência** da pesquisa.
+
+Formalmente ([Silva, cap. 13](https://amostragemcomr.github.io/livro/calib.html)), buscam-se pesos calibrados $w_i$ tão próximos quanto possível dos pesos de desenho $d_i = 1/\pi_i$ — minimizando uma distância $\sum_{i}(w_i-d_i)^2/(q_i d_i)$ — sujeitos à restrição
+
+$$\sum_{i \in s} w_i\,\mathbf{x}_i = \mathbf{T}_x,$$
+
+onde $\mathbf{x}_i$ marca o **sexo e a classe de idade** da pessoa $i$ e $\mathbf{T}_x$ é o total populacional conhecido (a projeção). A **pós-estratificação** é o caso particular em que $\mathbf{x}$ são apenas indicadores de grupos: o peso de cada grupo $h$ é multiplicado por $N_h/\hat{N}_h$ (total real ÷ total estimado). É, no fundo, um ajuste **demográfico** — força a amostra a ter a mesma composição por sexo e idade da população projetada.
+
+Por que importa? (i) **reduz a variância**, porque sexo e idade predizem a saúde; (ii) **atenua o viés de não-resposta** — se quem deixa de responder difere por idade/sexo, calibrar puxa as estimativas na direção certa. Na PNS 2019, é o que separa `V0029` (sem calibração) de `V00291` (com):
+
+```{r calibracao}
+des_sc <- svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel,
+                    data = pns19, nest = TRUE)                 # mesmo desenho, peso SEM calibração
+round(100 * c(
+  `sem calibração` = coef(svymean(~saude_boa, des_sc))[2],    # coef()[2] = a proporção "saúde boa" (TRUE)
+  `com calibração` = coef(svymean(~saude_boa, des))[2]), 1)
+```
+
+::: {.leitura}
+A autoavaliação "boa/muito boa" passa de **65,1%** (sem calibração) para **66,1%** (com) — e é o valor calibrado que reproduz **exatamente** o publicado pelo IBGE. Esse ~1 ponto é a calibração realinhando a composição por sexo e idade da amostra à projeção populacional. Em demografia isso é central: o número final é, por construção, **coerente com a estrutura etária oficial**.
+:::
+
+## Pós-estratificação — a calibração mais simples
+
+E o que é, afinal, a **pós-estratificação**? **É uma calibração** — a sua forma mais simples. A ideia: divide-se a população em **pós-estratos** (grupos — na PNS, os domínios de **sexo × classe de idade**) e usam-se os **totais populacionais** de cada grupo — *quantas pessoas há em cada um*, segundo as **projeções do IBGE** — como alvo. Dentro de cada grupo $h$, os pesos são multiplicados por $N_h/\hat{N}_h$ (o **total real** conhecido ÷ o **total estimado** pela amostra), de modo que a soma dos pesos no grupo passe a bater **exatamente** com o total conhecido. Note: o alvo são **contagens** — *totais* de população, não proporções nem taxas.
+
+No microdado da PNS, os domínios estão em `V00293` e os totais (as projeções) em `V00292`. Dá para fazer **na mão**, sem o `PNSIBGE`:
+
+```{r poststrat}
+# totais populacionais por domínio = a projeção do IBGE (V00292, por V00293)
+totais <- unique(data.frame(V00293 = pns19$V00293, Freq = pns19$proj_dom))
+
+# postStratify(): ajusta os pesos do 'design' até baterem com os totais conhecidos:
+#   1º arg     -> o desenho (aqui com o peso SEM calibração)
+#   strata     = ~V00293 -> a variável que define os pós-estratos (domínios)
+#   population = totais   -> data.frame com os domínios e a coluna 'Freq' (os totais)
+des_ps <- postStratify(
+  svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel, data = pns19, nest = TRUE),
+  strata = ~V00293, population = totais)
+
+svymean(~saude_boa, des)      # peso calibrado direto (nosso caminho)
+svymean(~saude_boa, des_ps)   # pós-estratificação "na mão" (= PNSIBGE)
+```
+
+::: {.leitura}
+As duas vias dão a **mesma estimativa** (0,66112), mas o **erro-padrão** difere: ≈ **0,0031** com o peso calibrado direto e ≈ **0,0030** pós-estratificando — e este último é **exatamente** o que o `PNSIBGE` (e o tutorial de Gabriel Assunção) retorna. A pós-estratificação é um pouco mais **eficiente** porque trata os totais populacionais como **conhecidos**, removendo a variância das contagens dos grupos. Usar o peso calibrado direto é a aproximação simples e conservadora; pós-estratificar é a versão **oficial** — e agora você sabe fazer as duas, sem depender do pacote.
+:::
+
+# Parte 3 · Estimativas descritivas
+
+Com o desenho declarado (`des`), toda estimativa já vem com o **erro-padrão correto**. A âncora é a **autoavaliação de saúde**. Para deixar as saídas limpas, convertemos o desfecho binário "saúde ruim/regular" para 0/1 dentro do próprio objeto de desenho:
+
+```{r desc-update}
+# update(): cria/modifica uma variável DENTRO do objeto de desenho.
+# Aqui convertemos o lógico saude_ruim em 0/1, para as saídas ficarem limpas:
+des <- update(des, saude_ruim = as.numeric(saude_ruim))
+```
+
+## Prevalência — e a validação contra o publicado
+
+```{r desc-dist}
+svymean(~autoaval, des, na.rm = TRUE)   # média de variável CATEGÓRICA = proporção de cada categoria
+svyciprop(~saude_ruim, des)             # svyciprop(): proporção de um indicador 0/1, já com IC 95%
+```
+
+::: {.leitura}
+A distribuição reproduz **exatamente** o publicado: "boa" 50,9% + "muito boa" 15,2% = **66,1%**; "regular" 28,1%; "ruim/muito ruim" 5,8%. A proporção de saúde **ruim/regular** é **33,9%** (IC 95% 33,3–34,5). Reproduzir a tabela oficial é o **teste de sanidade** do pipeline: se bate, o desenho e os pesos estão certos — e podemos confiar no que vem a seguir, que *não* está nas tabelas publicadas.
+:::
+
+## Estimativas por domínio — e a pegadinha do `subset`
+
+A função `svyby()` repete a estimativa em subgrupos:
+
+```{r desc-sexo}
+# svyby(): repete uma estimativa em subgrupos
+#   ~saude_ruim            -> o que estimar
+#   ~sexo                  -> variável que define os subgrupos
+#   des                    -> o desenho
+#   svymean                -> função aplicada em cada grupo
+#   vartype = c("se","cv") -> além da estimativa, reporta erro-padrão e CV
+svyby(~saude_ruim, ~sexo, des, svymean, vartype = c("se", "cv"))
+```
+
+Para estimar **só num subgrupo**, vale uma regra de ouro: **subconjunte o objeto de desenho**, nunca o `data.frame`.
+
+```{r desc-subpop}
+# subset(des, ...): cria um SUBDESENHO (a forma CERTA de estimar num subgrupo) —
+# preserva estratos e UPAs de toda a amostra para o cálculo correto da variância
+svymean(~saude_ruim, subset(des, sexo == "Mulher"))   # só mulheres
+```
+
+::: {.leitura}
+As mulheres avaliam pior a própria saúde (**37,7%** ruim/regular) que os homens (**29,6%**) — diferença grande e precisa. Sobre a pegadinha: `subset(des, ...)` preserva os **estratos e UPAs** de toda a amostra para o cálculo da variância; já filtrar o `data.frame` e remontar o desenho **quebra** essa estrutura (estratos podem virar *singletons*), produzindo erros-padrão errados — sobretudo em domínios pequenos. Estime sempre sobre o **desenho**.
+:::
+
+## Cruzamentos que não estão nas tabelas (a vantagem do microdado)
+
+Com os microdados, criamos recortes que a divulgação não traz — por exemplo, a saúde autoavaliada por **cor/raça**:
+
+```{r desc-raca}
+svyby(~saude_ruim, ~raca_cor, des, svymean, vartype = "cv")  # proporção por cor/raça, com o CV de cada uma
+```
+
+::: {.leitura}
+Surge um gradiente nítido: **Branca 29,0%** e Amarela 30,0% de um lado; **Preta 37,1%, Parda 37,9% e Indígena 39,1%** de outro — uma desigualdade racial na percepção de saúde que a tabela-padrão por sexo e idade não revela. É o que justifica abrir os microdados em vez de parar nas divulgações.
+:::
+
+## O coeficiente de variação — e seus limites
+
+Na coluna `cv` acima, o **coeficiente de variação** mede a precisão *relativa* (erro-padrão como % da estimativa). Para **Branca** e **Parda** o CV é ~1–1,5% (muito preciso); para **Amarela** e **Indígena** chega a **~10%**. A razão é o **tamanho do grupo**: poucos casos → erro-padrão grande em relação à estimativa.
+
+O CV é útil, mas tem **três armadilhas**:
+
+- é **instável para proporções próximas de 0 ou 1** (o denominador encolhe), inflando artificialmente;
+- em **domínios pequenos** fica alto mesmo quando a estimativa é informativa — por isso o IBGE adota **regras de corte** (sinaliza ou omite estimativas com CV acima de um limite);
+- e, sobretudo, **mede apenas a variância — não capta viés**: uma estimativa de CV baixíssimo pode estar sistematicamente errada (subcobertura, não-resposta). **Precisão não é acurácia.**
+
+## O efeito do desenho na PNS real
+
+Por fim, quanto o desenho complexo custa em precisão? O **deff** compara a variância do desenho à de uma AAS de mesmo tamanho:
+
+```{r desc-deff}
+svymean(~saude_ruim, des, deff = "replace")  # deff = "replace": variância do desenho ÷ a de uma AAS
+```
+
+::: {.leitura}
+O **deff ≈ 3,8**: a combinação de conglomerados e pesos quase **quadruplica** a variância em relação a uma AAS de 88,5 mil pessoas — que, em informação, "valem" como ~23 mil sob AAS. É a tradução, em número, de tudo o que a Parte 1 antecipou. Ignorar o desenho daria um erro-padrão $\sqrt{3{,}8}\approx 1{,}9$ vez menor — e um IC quase **pela metade** do correto.
+:::
+
+# Parte 4 · Vitrines: temas subexplorados
+
+A força do microdado aparece nos temas que a divulgação trata pouco — e que a PNS, sozinha, permite estimar para o país inteiro. Quatro vitrines.
+
+## Ideação suicida (PHQ-9, item N018)
+
+O item 9 do PHQ-9 pergunta com que frequência, nas duas últimas semanas, a pessoa "pensou em se ferir ou achou que seria melhor estar morto" — um indicador de **ideação suicida/autolesão**, raríssimo em base populacional nacional.
+
+```{r vit-suicida}
+svyciprop(~ideacao_suicida, des)                          # prevalência nacional (proporção + IC)
+svyby(~ideacao_suicida, ~sexo, des, svyciprop, vartype = "ci")  # por sexo; vartype="ci" traz o IC
+```
+
+::: {.leitura}
+Cerca de **4,6%** dos adultos relataram ideação suicida nas duas semanas anteriores — com um contraste forte por sexo: **mulheres 6,2%** contra **homens 2,8%**. São estimativas nacionais, baseadas no desenho, para um tema que a literatura brasileira quase só aborda por registros de mortalidade ou amostras locais.
+:::
+
+## Depressão: a escala (PHQ-9) × o diagnóstico
+
+A PNS mede depressão de **duas formas**: o **diagnóstico médico autorreferido** (`Q092`) e o **rastreio pela escala PHQ-9** (escore ≥ 10). As prevalências são parecidas — mas serão as **mesmas pessoas**?
+
+```{r vit-phq}
+# prevalência de cada medida de depressão (coef() extrai só a estimativa):
+round(100 * c(rastreio_PHQ9 = coef(svyciprop(~depr_phq9, des)),
+              diagnostico   = coef(svyciprop(~depr_diag, des))), 1)
+
+# cria no desenho uma variável de 4 grupos (cruzamento rastreio × diagnóstico):
+des <- update(des, grupo = factor(dplyr::case_when(   # case_when: if/else encadeado
+  depr_phq9 & depr_diag ~ "ambos",
+  depr_phq9             ~ "só rastreio (PHQ-9)",
+  depr_diag             ~ "só diagnóstico",
+  TRUE                  ~ "nenhum")))
+svymean(~grupo, des, na.rm = TRUE)                    # proporção da população em cada grupo
+```
+
+::: {.leitura}
+Rastreio **10,8%** e diagnóstico **10,2%** — quase iguais no agregado. Mas o cruzamento desfaz a ilusão: só **4,0%** têm os dois; **6,8%** têm rastreio positivo **sem** diagnóstico (depressão provavelmente **não diagnosticada**) e **6,2%**, diagnóstico **sem** rastreio atual (tratamento/remissão). As duas medidas captam **populações em grande parte distintas** — a joia de medir o "mesmo" conceito de dois jeitos.
+:::
+
+## Violência por parceiro (módulo V)
+
+O módulo de violência registra atos psicológicos, físicos e sexuais nos últimos 12 meses e o **principal agressor**. Derivamos os indicadores a partir dos itens (tratando ausência como "não") e analisamos as **mulheres**:
+
+```{r vit-violencia}
+# cria os indicadores de violência a partir dos itens do módulo V.
+# (X=="1") %in% TRUE -> TRUE se "Sim"; trata ausência (NA) como "não":
+des <- update(des,
+  viol_fisica = (V01401=="1")%in%TRUE | (V01402=="1")%in%TRUE | (V01403=="1")%in%TRUE |
+                (V01404=="1")%in%TRUE | (V01405=="1")%in%TRUE,                   # alguma agressão física
+  viol_qq     = (V00201=="1")%in%TRUE | (V00202=="1")%in%TRUE | (V00203=="1")%in%TRUE |
+                (V00204=="1")%in%TRUE | (V00205=="1")%in%TRUE | (V01401=="1")%in%TRUE |
+                (V01402=="1")%in%TRUE | (V01403=="1")%in%TRUE | (V01404=="1")%in%TRUE |
+                (V01405=="1")%in%TRUE | (V02701=="1")%in%TRUE | (V02702=="1")%in%TRUE,  # qualquer violência
+  agr_companheiro = (V006 == "01") %in% TRUE)                                     # agressor = cônjuge/companheiro
+
+# prevalências entre as MULHERES (subconjunto do desenho):
+round(100 * c(qualquer = coef(svyciprop(~viol_qq,     subset(des, sexo == "Mulher"))),
+              fisica   = coef(svyciprop(~viol_fisica, subset(des, sexo == "Mulher")))), 1)
+# entre as agredidas, a % cujo principal agressor foi o companheiro:
+svyciprop(~agr_companheiro, subset(des, sexo == "Mulher" & viol_qq))
+```
+
+::: {.leitura}
+Entre as mulheres, **19,4%** sofreram alguma violência (psicológica, física ou sexual) nos 12 meses anteriores, e **4,2%**, violência **física**. Entre as agredidas, em **16,5%** (IC 95% 14,7–18,4) o **principal agressor foi o cônjuge/companheiro** — a face doméstica da violência, que só os microdados permitem isolar.
+:::
+
+## Orientação sexual (Y008, novo em 2019)
+
+```{r vit-orientacao}
+svymean(~orient_sexual, des, na.rm = TRUE)   # proporção em cada categoria de orientação sexual
+```
+
+::: {.leitura}
+A PNS 2019 foi a **primeira** pesquisa domiciliar nacional a perguntar a orientação sexual autoidentificada: **97,0% heterossexual**, **1,2% bissexual**, **0,7% homossexual** (≈ 1,9% não-heterossexual). As categorias são **pequenas** — logo, CV alto e cuidado redobrado ao desagregar (além do sigilo que o tema exige).
+:::
+
+# Parte 5 · Gráficos com o plano
+
+Gráficos de pesquisa amostral também respeitam o desenho — na **forma** (densidades ponderadas) e na **honestidade** (mostrar a incerteza).
+
+## Densidade ponderada
+
+```{r graf-hist, fig.height=3.4}
+# a renda é MUITO assimétrica -> usamos a escala LOG, que "abre" a distribuição.
+# log exige valores positivos, então tiramos antes quem tem renda zero:
+des_renda <- subset(des, rdpc > 0)
+
+# svyhist(): histograma PONDERADO (usa os pesos do desenho) de log10(renda).
+# axes = FALSE para, em seguida, rotular o eixo x em REAIS (e não em "3, 4, 5"):
+svyhist(~log10(rdpc), des_renda, main = "", col = "#d6e4f0", breaks = 30,
+        xlab = "Renda domiciliar per capita (R$ — escala log)", axes = FALSE)
+axis(2)                                    # eixo y (densidade)
+reais <- c(100, 300, 1000, 3000, 10000)    # marcas que QUEREMOS mostrar, em reais...
+axis(1, at = log10(reais), labels = reais) # ...posicionadas no lugar certo (log10) do eixo
+```
+
+::: {.leitura}
+Na escala original, a renda viraria um pico colado no zero. Em **escala log** a distribuição se "abre" e fica quase simétrica (uma **lognormal**), revelando a **mediana perto de R$ 1.000** e a longa **cauda à direita** (a desigualdade). O `svyhist` é **ponderado** — descreve a **população**, não a amostra; um `hist()` comum ignoraria os pesos e distorceria a forma.
+:::
+
+## Estimativas com intervalo de confiança
+
+O gráfico mais útil de uma pesquisa: a estimativa por domínio **com a barra de incerteza**. Os números vêm do `svyby()`; o desenho, do `ggplot2`:
+
+```{r graf-ic, fig.height=3.6}
+library(ggplot2)
+# cria a faixa etária dentro do desenho:
+des <- update(des, faixa = cut(idade, c(17, 29, 44, 59, Inf),
+                               labels = c("18-29", "30-44", "45-59", "60+")))
+# svyby com vartype="ci" devolve um data.frame com a estimativa e as colunas ci_l / ci_u:
+est <- svyby(~saude_ruim, ~faixa, des, svymean, vartype = "ci")
+
+ggplot(est, aes(faixa, saude_ruim)) +
+  geom_col(fill = "#2980b9", width = .65) +                   # barras = estimativa
+  geom_errorbar(aes(ymin = ci_l, ymax = ci_u), width = .2) +  # barras de erro = IC 95%
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Faixa etária", y = "Saúde ruim/regular") +
+  theme_minimal()
+```
+
+::: {.leitura}
+A percepção de saúde piora com a idade — de ~20% entre 18–29 a ~50% no 60+ — e as **barras de erro** (estreitas, porque cada faixa tem milhares de casos) mostram que o padrão é firme, não ruído. Plotar a estimativa sem o intervalo seria esconder metade da informação.
+:::
+
+# Parte 6 · Regressão com o plano
+
+Modelos também precisam do desenho: os **coeficientes** mudam pouco com os pesos, mas os **erros-padrão** mudam muito com a conglomeração. Use `svyglm`, não `glm`.
+
+## Regressão logística (svyglm)
+
+Modelamos a chance de avaliar a própria saúde como ruim/regular:
+
+```{r reg-glm}
+# svyglm(): regressão respeitando o desenho.
+#   saude_ruim ~ ...       -> desfecho (0/1) e preditores
+#   design = des           -> o plano amostral
+#   family = quasibinomial -> regressão LOGÍSTICA
+mod <- svyglm(saude_ruim ~ sexo + faixa + regiao + raca_cor,
+              design = des, family = quasibinomial())
+round(cbind(OR = exp(coef(mod)), exp(confint(mod))), 2)   # exp(coef)=razões de chance (OR); confint=IC
+```
+
+::: {.leitura}
+As **razões de chance** quantificam os padrões: mulheres têm **1,43×** a chance dos homens; ela cresce com a idade (60+: **5,3×** vs 18–29); é maior no Nordeste (1,16×) e menor no Sul/Sudeste (~0,64×); e há gradiente por cor/raça (Preta 1,47×, Parda 1,49×, Indígena 1,61× vs Branca). Tudo com IC que respeita o desenho.
+:::
+
+## Por que não `glm` comum?
+
+```{r reg-naive}
+dat   <- des$variables                                       # os dados de dentro do desenho
+# glm() COMUM: ignora estrato/conglomerado (só usa os pesos, normalizados):
+naive <- glm(saude_ruim ~ sexo + faixa + regiao + raca_cor, data = dat,
+             family = quasibinomial(), weights = peso_sel_cal / mean(peso_sel_cal))
+# compara o erro-padrão de um coeficiente: desenho (svyglm) × ingênuo (glm):
+round(c(desenho = summary(mod)$coef["sexoMulher", "Std. Error"],
+        ingenuo = summary(naive)$coef["sexoMulher", "Std. Error"]), 4)
+```
+
+::: {.leitura}
+O erro-padrão **ingênuo** (0,0151) é ~**42% menor** que o do **desenho** (0,0262) — porque o `glm` comum ignora a conglomeração. Quem o usa reporta IC estreito demais e "significâncias" infladas; a razão entre os dois SE é, de novo, a raiz do deff.
+:::
+
+## Modelo ordinal da autoavaliação (svyolr)
+
+A autoavaliação tem **cinco categorias ordenadas** — desperdício reduzi-la a binária. O modelo de **odds proporcionais** usa todas de uma vez:
+
+```{r reg-olr}
+# transforma a autoavaliação num fator ORDENADO (Muito boa < ... < Muito ruim):
+des <- update(des, autoaval_ord = ordered(autoaval,
+        levels = c("Muito boa","Boa","Regular","Ruim","Muito ruim")))
+# svyolr(): regressão ORDINAL (odds proporcionais) respeitando o desenho:
+mod_ord <- svyolr(autoaval_ord ~ sexo + faixa + regiao, design = des)
+round(exp(coef(mod_ord)), 2)   # exp(coef) = razões de chance de estar numa categoria pior
+```
+
+::: {.leitura}
+A leitura é a mesma do logístico, mas sobre a escala inteira: mulheres têm **1,40×** a chance de estar numa categoria **pior** de saúde, e o efeito da idade é forte (60+: 4,6×). O `svyolr` é a ferramenta certa quando o desfecho é ordinal.
+:::
+
+# Parte 7 · Comparar 2013 × 2019
+
+A PNS tem duas edições — então podemos perguntar o que **mudou**. Mas comparar pesquisas amostrais exige cuidado: são **amostras independentes**, cada uma com seu desenho.
+
+## Os dois desenhos e a comparabilidade
+
+```{r comp-design}
+pns13 <- readRDS("data/pns2013.rds")   # subconjunto da PNS 2013 (mesma estrutura de variáveis)
+# mesmo desenho de 2019, agora para 2013:
+des13 <- svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel_cal,
+                   data = pns13, nest = TRUE)
+```
+
+As duas estão restritas ao **morador selecionado de 18 anos ou mais** (em 2019 o sorteio é 15+, mas recortamos a 18+ na curadoria, para a população-alvo ser a mesma). Usamos apenas indicadores **harmonizáveis** — autoavaliação, depressão (diagnóstico e PHQ-9) e ideação suicida. **Orientação sexual** e o **módulo de violência** mudaram entre as edições e **não** entram na série.
+
+## Testando a diferença — do jeito certo
+
+Como as amostras são **independentes**, a variância da diferença é a **soma** das variâncias: $\text{SE}(\hat p_{19}-\hat p_{13}) = \sqrt{\text{SE}_{19}^2 + \text{SE}_{13}^2}$.
+
+```{r comp-diff}
+compara <- function(v) {                        # compara um indicador 'v' entre 2013 e 2019
+  e13 <- svyciprop(reformulate(v), des13)        # estimativa em 2013 (reformulate monta ~v)
+  e19 <- svyciprop(reformulate(v), des)          # estimativa em 2019
+  dif <- coef(e19) - coef(e13)                   # diferença 2019 − 2013
+  se  <- sqrt(SE(e13)^2 + SE(e19)^2)             # SE da diferença: amostras INDEPENDENTES -> soma das variâncias
+  data.frame(`2013 (%)` = round(coef(e13)*100, 1), `2019 (%)` = round(coef(e19)*100, 1),
+             `diferença` = round(dif*100, 1),
+             `IC95% da diferença` = sprintf("[%.1f, %.1f]", (dif-1.96*se)*100, (dif+1.96*se)*100),
+             check.names = FALSE)
+}
+do.call(rbind, lapply(
+  c(`autoavaliação ruim` = "saude_ruim", `depressão (diagnóstico)` = "depr_diag",
+    `ideação suicida` = "ideacao_suicida", `depressão (PHQ-9)` = "depr_phq9"), compara))
+```
+
+::: {.leitura}
+A história é nítida — e é a tese do workshop. A **autoavaliação de saúde não mudou** (33,8 → 33,9; diferença +0,1, IC [−0,9, 1,0], que **inclui o zero**). Mas a **saúde mental piorou**: depressão diagnosticada **+2,6** pontos (7,6 → 10,2), rastreio PHQ-9 **+3,0** (7,9 → 10,8) e **ideação suicida +0,9** (3,7 → 4,6) — todas com IC bem afastado do zero. O número-síntese mais comunicado **cala** justamente a dimensão que mais se moveu — e só os microdados, com o desenho, permitem medir essa mudança com a incerteza correta.
+:::
+
+---
+
+# Encerramento — boas práticas, pegadinhas e comunicação
+
+## As pegadinhas que vimos (e como evitá-las)
+
+- **Ignorar o desenho** → IC estreito demais (Parte 1: a cobertura cai de 95% para ~82%). Sempre declare o `svydesign`.
+- **Filtrar o `data.frame`** para um subgrupo → erro-padrão errado; use `subset(des, …)` (Parte 3).
+- **Peso sem calibração** → estimativa ~1 ponto fora do oficial; use o peso calibrado, `V00291` (Parte 2).
+- **`glm` comum** sobre dados ponderados → SE subestimado em ~40%; use `svyglm`/`svyolr` (Parte 6).
+- **Empilhar edições** ingenuamente → variância da diferença errada; trate 2013 e 2019 como **amostras independentes** (Parte 7).
+- **Confiar só no CV** → ele mede variância, não viés, e é instável em domínios pequenos (Parte 3).
+
+## Como reportar uma estimativa de amostra complexa
+
+Toda estimativa deveria vir com: **ponto + IC 95% + CV**, o **n não ponderado** do domínio e — quando relevante — o **deff**; mais a fonte, o ano e a **população-alvo** (aqui, morador selecionado de 18+).
+
+## Como ler qualquer pesquisa amostral, em 4 perguntas
+
+1. **Qual é o desenho?** (estratos, conglomerados, pesos — e foram declarados na análise?)
+2. **Qual a população-alvo e a unidade?** (atenção ao recorte etário ao comparar edições)
+3. **O peso é calibrado — a quê?** (sexo, idade?)
+4. **A incerteza respeita o desenho?** (IC/CV/deff baseados no plano, não em uma AAS imaginária)
+
+## Declaração de uso de inteligência artificial
+
+Na preparação deste material, o autor utilizou o assistente **Claude** (Anthropic) como apoio — no desenvolvimento e comentário do código em R, na curadoria dos microdados, na redação e na verificação de consistência. Todas as decisões metodológicas, a interpretação dos resultados e a redação final são de responsabilidade do autor.
+
+## Referências
+
+- **Silva, P. L. N.** *Amostragem com R.* Disponível em: <https://amostragemcomr.github.io/livro/>
+- **Lumley, T.** (2010). *Complex Surveys: A Guide to Analysis Using R.* Hoboken: Wiley. (pacote `survey`; Lumley, 2004, *Journal of Statistical Software*, 9(8).)
+- **IBGE.** *Pesquisa Nacional de Saúde* (2013; 2019): microdados, dicionários e planos amostrais. Disponível em: <https://www.ibge.gov.br/estatisticas/sociais/saude/9160-pesquisa-nacional-de-saude.html>
+- **Souza-Júnior, P. R. B. et al.** (2015). *Desenho da amostra da Pesquisa Nacional de Saúde 2013.* Epidemiologia e Serviços de Saúde, 24(2).
+- **Stopa, S. R. et al.** (2020). *Pesquisa Nacional de Saúde 2019: histórico, métodos e perspectivas.* Epidemiologia e Serviços de Saúde, 29(5).

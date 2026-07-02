@@ -1,0 +1,51 @@
+---
+title: "Explorando dados da PNS com o pacote survey"
+subtitle: "Workshop · DEMOPOP 2026"
+author:
+  - name: Caio César Soares Gonçalves
+    orcid: 0000-0002-3366-7560
+    affiliation: "Departamento de Demografia / CEDEPLAR-UFMG"
+---
+
+Material do workshop **Explorando dados da PNS com o pacote `survey`** (DEMOPOP 2026), por **Caio César Soares Gonçalves** — Departamento de Demografia / CEDEPLAR-UFMG.
+
+O workshop ensina a analisar **dados de amostra complexa** da **Pesquisa Nacional de Saúde (PNS, IBGE)** — aqui nas edições de **2013 e 2019** — com o pacote **`survey`** do R. A partir de um desfecho de saúde-âncora, percorremos o pipeline completo da inferência baseada em desenho: declarar o desenho amostral (pesos, estratos e conglomerados), estimar prevalências com intervalos de confiança, desagregar por domínios, medir o efeito do desenho e ajustar modelos de regressão — sempre contrastando o resultado *ingênuo* (que ignora o desenho) com o resultado correto.
+
+## Comece aqui
+
+[**→ Abrir o Tutorial**](tutorial.qmd) · [**→ Abrir os Slides**](slides.qmd)
+
+## Arquivos para download
+
+- [**`tutorial.R`**](tutorial.R) — todo o código do tutorial, comentado, num único script.
+- [`populacao_sintetica.rds`](data/populacao_sintetica.rds) — a população sintética da Parte 1 (28 KB).
+- [`pns2019.rds`](data/pns2019.rds) — subconjunto da PNS 2019, morador selecionado 18+ (3,9 MB).
+- [`pns2013.rds`](data/pns2013.rds) — subconjunto da PNS 2013, harmonizado (1,9 MB).
+
+Os subconjuntos foram preparados a partir dos [microdados públicos do IBGE](https://www.ibge.gov.br/estatisticas/sociais/saude/9160-pesquisa-nacional-de-saude.html) pelos scripts em [`R/`](https://github.com/DemoPOP/pns-survey/tree/main/R) — leitura do arquivo de largura fixa **sem** o pacote `PNSIBGE`, com validação contra as tabelas publicadas.
+
+## Autor
+
+**Caio César Soares Gonçalves** é professor do Departamento de Demografia do Cedeplar/UFMG, atuando em métodos estatísticos e computacionais e em ciência de dados. Doutor em População, Território e Estatísticas Públicas (ENCE/IBGE), mestre em Economia (UFRGS), especialista em Ciência de Dados e Big Data e economista (PUC Minas). Pesquisa métodos de produção de estatísticas demográficas, sociais e ambientais — combinando censos, pesquisas amostrais, registros administrativos e *big data*, com ênfase na estimação em pequenos domínios e na desagregação espaço-temporal de indicadores. Coordenou a área de indicadores sociais da Fundação João Pinheiro (IDHM e IMRS) e colaborou com IBGE, Ipea, IPEDF (Codeplan) e o *Office for National Statistics* (Reino Unido). Recebeu o *Young Statistician Prize* da IAOS (2021) e foi premiado no concurso de melhor tese de doutorado da ABE (2024).
+
+[ORCID](https://orcid.org/0000-0002-3366-7560) · [Google Scholar](https://scholar.google.com/citations?user=_uOyB2AAAAAJ&hl=en) · [Lattes](http://lattes.cnpq.br/6829577347369187) · [ResearchGate](https://www.researchgate.net/profile/Caio-Cesar-Soares-Goncalves) · [LinkedIn](https://www.linkedin.com/in/caiocsg/)
+
+## Como citar
+
+> Gonçalves, C. C. S. (2026). *Explorando dados da PNS com o pacote survey* [material de workshop]. DEMOPOP — Departamento de Demografia / CEDEPLAR-UFMG. <https://demopop.github.io/pns-survey/>
+
+## Licença
+
+Material distribuído sob a licença [Creative Commons Atribuição 4.0 Internacional (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/deed.pt-br) — livre para compartilhar e adaptar, inclusive para fins comerciais, desde que citada a autoria.
+
+## Dúvidas e correções
+
+Encontrou um erro ou tem sugestão? Abra uma *issue* no [repositório do material](https://github.com/DemoPOP/pns-survey) ou escreva para caiocsg@cedeplar.ufmg.br.
+
+*Versão 1.0.0 · julho de 2026 · workshop realizado em 03/07/2026.*
+
+<p style="text-align:center; margin-top:2.5rem;">
+  <img src="assets/cedeplar-logo.png" height="46" style="margin:0 14px;">
+  <img src="assets/log_face.png" height="46" style="margin:0 14px;">
+  <img src="assets/Logo_UFMG.png" height="46" style="margin:0 14px;">
+</p>

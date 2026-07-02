@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "Se você usar este material, por favor cite-o como abaixo."
+title: "Explorando dados da PNS com o pacote survey — Workshop DEMOPOP"
+abstract: >-
+  Tutorial em R para análise de dados de amostra complexa da Pesquisa
+  Nacional de Saúde (PNS, IBGE), edições 2013 e 2019, com o pacote survey:
+  construção do plano amostral passo a passo numa população sintética
+  (AAS, estratificação, conglomeração, pesos), declaração do desenho da
+  PNS sem o pacote PNSIBGE, calibração e pós-estratificação, estimativas
+  por domínio, efeito do desenho, regressão e comparação entre edições.
+  Material do workshop DEMOPOP (CEDEPLAR-UFMG).
+type: dataset
+authors:
+  - family-names: "Gonçalves"
+    given-names: "Caio César Soares"
+    orcid: "https://orcid.org/0000-0002-3366-7560"
+    affiliation: "Departamento de Demografia / CEDEPLAR-UFMG"
+date-released: "2026-07-03"
+version: "1.0.0"
+license: CC-BY-4.0
+url: "https://demopop.github.io/pns-survey/"
+repository-code: "https://github.com/DemoPOP/pns-survey"
+keywords:
+  - PNS
+  - Pesquisa Nacional de Saúde
+  - amostra complexa
+  - plano amostral
+  - pacote survey
+  - inferência baseada em desenho
+  - demografia
+  - R
