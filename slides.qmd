@@ -374,6 +374,26 @@ Mas o CV tem limites:
 
 Precisão **não** é o mesmo que validade.
 
+## Precisão × acurácia {.smaller}
+
+Precisão é o quanto os tiros se **agrupam** (dispersão); acurácia é o quanto **acertam o centro** (viés). São independentes — dá para ser preciso e estar sistematicamente fora:
+
+```{r echo=FALSE, fig.width=9.5, fig.height=2.9}
+op <- par(mfrow = c(1, 4), mar = c(0, 0, 2, 0)); set.seed(3)
+alvo <- function(mx, my, s, tit) {
+  plot(NA, xlim = c(-3, 3), ylim = c(-3, 3), asp = 1, axes = FALSE, ann = FALSE)
+  title(tit, cex.main = 1.3, font.main = 1)
+  for (k in 1:3) symbols(0, 0, circles = c(2.6, 1.7, 0.8)[k], inches = FALSE, add = TRUE,
+                         bg = c("#fdebd0", "#f5b7b1", "#e6807a")[k], fg = "#c9c9c9")
+  points(rnorm(18, mx, s), rnorm(18, my, s), pch = 19, cex = 1, col = "#1a5276")
+}
+alvo(0, 0, 0.22, "acurado + preciso");        alvo(0, 0, 0.95, "acurado, impreciso")
+alvo(1.3, 1.0, 0.22, "preciso, não acurado"); alvo(1.3, 1.0, 0.95, "nem um, nem outro")
+par(op)
+```
+
+O **CV** mede só a precisão (dispersão) — nunca a acurácia (viés).
+
 # Parte 4 · Aplicações
 
 ## Ideação suicida (PHQ-9, item 9) {.smaller}
