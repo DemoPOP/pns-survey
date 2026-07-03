@@ -694,6 +694,12 @@ autoavalMuito ruim
 </ul>
 <p>Precisão <strong>não</strong> é o mesmo que validade.</p>
 </div>
+</section>
+<section id="precisão-acurácia" class="slide level2 smaller">
+<h2>Precisão × acurácia</h2>
+<p>Precisão é o quanto os tiros se <strong>agrupam</strong> (dispersão); acurácia é o quanto <strong>acertam o centro</strong> (viés). São independentes — dá para ser preciso e estar sistematicamente fora:</p>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-14-1.png" width="912" class="r-stretch"><p>O <strong>CV</strong> mede só a precisão (dispersão) — nunca a acurácia (viés).</p>
 </section></section>
 <section>
 <section id="parte-4-aplicações" class="title-slide slide level1 center">
@@ -813,7 +819,7 @@ gruposó rastreio (PHQ-9)
 <span id="cb38-5"><a aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="fu">log10</span>(reais), <span class="at">labels =</span> reais)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 
 </div>
-<img data-src="slides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"><p><code>svyhist</code> usa os <strong>pesos</strong>: descreve a população. Em escala log, a renda revela a mediana ≈ R$ 1.000 e a cauda da desigualdade.</p>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"><p><code>svyhist</code> usa os <strong>pesos</strong>: descreve a população. Em escala log, a renda revela a mediana ≈ R$ 1.000 e a cauda da desigualdade.</p>
 </section>
 <section id="estimativa-com-intervalo-de-confiança" class="slide level2 smaller">
 <h2>Estimativa com intervalo de confiança</h2>
@@ -828,7 +834,7 @@ gruposó rastreio (PHQ-9)
 <span id="cb39-8"><a aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Faixa etária"</span>, <span class="at">y =</span> <span class="st">"Saúde ruim/regular"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 
 </div>
-<img data-src="slides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"><p>A saúde percebida piora com a idade; as barras de erro mostram que o padrão é <strong>firme</strong>, não ruído.</p>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"><p>A saúde percebida piora com a idade; as barras de erro mostram que o padrão é <strong>firme</strong>, não ruído.</p>
 </section></section>
 <section>
 <section id="parte-6-regressão-com-o-plano" class="title-slide slide level1 center">

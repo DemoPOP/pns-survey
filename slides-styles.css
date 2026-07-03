@@ -1,10 +1,10 @@
 /* Slides — legibilidade para projeção em sala */
-.reveal pre code { font-size: 0.88em; line-height: 1.3; }
+.reveal pre code { font-size: 1.05em; line-height: 1.28; }
 .reveal div.sourceCode { margin: 0.35em 0; }
 
-/* saídas de console (summary, glimpse...) um pouco menores, por serem largas */
+/* saídas de console (summary, glimpse...) — bem legíveis também */
 .reveal pre:not(.sourceCode) code,
-.reveal .cell-output pre code { font-size: 0.86em; }
+.reveal .cell-output pre code { font-size: 0.98em; }
 
 /* tabelas de saída (df-print: kable) também maiores */
 .reveal .cell-output-display table { font-size: 0.9em; }

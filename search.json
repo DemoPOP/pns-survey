@@ -133,6 +133,13 @@
     "text": "CV e seus limites\nO coeficiente de variação (cv = SE/estimativa) mede a precisão relativa. O IBGE omite estimativas com CV alto.\n\nMas o CV tem limites:\n\nfica instável perto de 0% ou 100%;\nnum domínio pequeno, dispara — daí o corte de divulgação;\nnão capta viés (não-resposta, subdeclaração) — só a variância amostral.\n\nPrecisão não é o mesmo que validade."
   },
   {
+    "objectID": "slides.html#precisão-acurácia",
+    "href": "slides.html#precisão-acurácia",
+    "title": "Explorando dados da PNS com o pacote survey",
+    "section": "Precisão × acurácia",
+    "text": "Precisão × acurácia\nPrecisão é o quanto os tiros se agrupam (dispersão); acurácia é o quanto acertam o centro (viés). São independentes — dá para ser preciso e estar sistematicamente fora:\n\nO CV mede só a precisão (dispersão) — nunca a acurácia (viés)."
+  },
+  {
     "objectID": "slides.html#ideação-suicida-phq-9-item-9",
     "href": "slides.html#ideação-suicida-phq-9-item-9",
     "title": "Explorando dados da PNS com o pacote survey",
