@@ -9,12 +9,6 @@
 # Requer: survey, dplyr, ggplot2 (instalados automaticamente pelo bloco
 # abaixo). Mantenha a pasta data/ (com populacao_sintetica.rds, pns2019.rds
 # e pns2013.rds) no diretorio de trabalho e rode de cima para baixo.
-# ---------------------------------------------------------------------
-# ANTES DE RODAR: aponte o diretorio de trabalho para a pasta que contem
-# a subpasta data/.
-#   No RStudio: menu Session > Set Working Directory > To Source File Location
-# Ou descomente e ajuste:
-# setwd("C:/caminho/para/workshop-pns")
 # =====================================================================
 
 pacotes  <- c("survey", "dplyr", "ggplot2")
@@ -49,12 +43,12 @@ set.seed(1)               # fixa o gerador aleatório (resultados reproduzíveis
 n  <- 300                 # tamanho da amostra
 am <- pop[sample(N, n), ] # sorteia n linhas (pessoas) ao acaso da população 'pop'
 am$peso <- N / n          # peso de cada pessoa = N/n: ela "representa" N/n habitantes
-am$fpcN <- N              # guarda o tamanho da população (para a correção de população finita)
+am$fpcN <- N              # N = tamanho da POPULAÇÃO (não a fração n/N) — para o fpc
 
 # svydesign() descreve o PLANO AMOSTRAL ao R — é a base de toda estimativa:
 #   ids     = ~1     -> NÃO há conglomerados (sorteio direto de pessoas)
 #   weights = ~peso  -> a coluna com os pesos amostrais
-#   fpc     = ~fpcN  -> tamanho da população (correção de população finita)
+#   fpc     = ~fpcN  -> N, o tamanho da população (não a fração!); correção de pop. finita
 #   data    = am     -> a tabela com a amostra
 des_aas <- svydesign(ids = ~1, weights = ~peso, fpc = ~fpcN, data = am)
 
@@ -96,21 +90,29 @@ svymean(~rdpc,       des_est)   # e a média da renda domiciliar per capita
 ## Alocação desproporcional → pesos desiguais
 ######################################################################
 
-# alocação DESPROPORCIONAL: sobre-amostra o Nordeste (120) frente às outras regiões
-set.seed(4)
-am_d <- bind_rows(
-  filter(pop, regiao == "Norte")        |> slice_sample(n = 40),
-  filter(pop, regiao == "Nordeste")     |> slice_sample(n = 120),
-  filter(pop, regiao == "Centro-Oeste") |> slice_sample(n = 40),
-  filter(pop, regiao == "Sudeste")      |> slice_sample(n = 50),
-  filter(pop, regiao == "Sul")          |> slice_sample(n = 50)
-) |>
-  left_join(Nh_df, by = "regiao") |>
-  group_by(regiao) |> mutate(peso = Nh / n()) |> ungroup()   # peso = Nh/nh (varia entre estratos)
+# uma função que sorteia UMA amostra desproporcional (sobre-amostra o Nordeste, 120):
+sortear_desig <- function() {
+  bind_rows(
+    filter(pop, regiao == "Norte")        |> slice_sample(n = 40),
+    filter(pop, regiao == "Nordeste")     |> slice_sample(n = 120),
+    filter(pop, regiao == "Centro-Oeste") |> slice_sample(n = 40),
+    filter(pop, regiao == "Sudeste")      |> slice_sample(n = 50),
+    filter(pop, regiao == "Sul")          |> slice_sample(n = 50)
+  ) |>
+    left_join(Nh_df, by = "regiao") |>
+    group_by(regiao) |> mutate(peso = Nh / n()) |> ungroup()   # peso = Nh/nh (varia entre estratos)
+}
 
-mean(am_d$saude_ruim)                                          # média SEM peso (ingênua)
-svymean(~saude_ruim, svydesign(ids = ~1, strata = ~regiao,    # média COM peso (correta)
-                               weights = ~peso, data = am_d))
+# num ÚNICO sorteio o erro amostral confunde tudo; então repetimos 1000 vezes
+# e tiramos a média das estimativas — assim o VIÉS (que é sistemático) aparece:
+set.seed(9)
+mc <- replicate(1000, {
+  a <- sortear_desig()
+  c(ingenua   = mean(a$saude_ruim),                                 # média SEM peso
+    ponderada = coef(svymean(~saude_ruim,                           # média COM peso
+                  svydesign(ids=~1, strata=~regiao, weights=~peso, data=a)))[[1]])
+})
+round(rowMeans(mc), 3)   # médias das 1000 estimativas — comparar com a verdade 0,291
 
 
 ######################################################################
@@ -166,12 +168,52 @@ round(rowMeans(cob) * 100, 1)   # % das vezes em que cada IC cobriu a verdade (d
 ## Declarando o desenho amostral
 ######################################################################
 
-# (bloco ILUSTRATIVO - nao rode: requer o microdado bruto do IBGE)
-# library(readr)
-# # posições do input_PNS_2019.txt (exemplo abreviado — só três colunas):
-# pns19 <- read_fwf("PNS_2019.txt",
-#   fwf_positions(start = c(3, 10, 1426), end = c(9, 18, 1439),
-#                 col_names = c("V0024", "UPA_PNS", "V00291")))
+# (bloco ILUSTRATIVO - nao rode aqui: requer o microdado bruto do IBGE)
+# library(readr); library(dplyr)
+# 
+# # 1) O "input" do IBGE tem, em cada linha, "@início  NOME  formato." — onde cada
+# #    variável começa e sua largura. Lemos esse input como uma TABELA e ficamos só
+# #    com as linhas de posição (as que começam por "@"):
+# dic <- read_table("data/input_PNS_2019.txt", col_names = FALSE, col_types = cols()) |>
+#   filter(startsWith(X1, "@")) |>
+#   transmute(nome = X2,
+#             ini  = as.integer(chartr("@", " ", X1)),   # "@01426" -> 1426
+#             larg = as.integer(chartr("$", " ", X3)),   # "$1." -> 1 ; "14.8" -> 14
+#             fim  = ini + larg - 1)
+# 
+# # 2) O input tem mais de mil variáveis; escolhemos só as que vamos usar:
+# vars <- c("V0001","V0024","UPA_PNS","M001","C006","C008","C009","N001","N018","Q092",
+#           "V0029","V00291","V00292","V00293","VDF003")
+# #   (N010–N017 do PHQ-9, o módulo V de violência e Y008 seguem a mesma lógica)
+# d <- dic[match(vars, dic$nome), ]
+# 
+# # 3) LEITURA de largura fixa — tudo como TEXTO (col_types="c"), para não perder zeros:
+# pns19 <- read_fwf("data/PNS_2019.txt",
+#                   fwf_positions(d$ini, d$fim, d$nome),
+#                   col_types = strrep("c", nrow(d)), na = "")
+# 
+# # 4) DERIVAÇÃO das variáveis de análise (rótulos, pesos ÷ 1e8, desfechos 0/1):
+# pns19 <- pns19 |>
+#   mutate(
+#     idade        = as.integer(C008),
+#     selecionado  = M001 == "1",
+#     peso_sel     = as.numeric(V0029)  / 1e8,   # os pesos vêm inteiros (×1e8)
+#     peso_sel_cal = as.numeric(V00291) / 1e8,
+#     proj_dom     = as.numeric(V00292) / 1e8,
+#     sexo     = factor(C006, c("1","2"), c("Homem","Mulher")),
+#     regiao   = factor(substr(V0001, 1, 1), as.character(1:5),
+#                       c("Norte","Nordeste","Sudeste","Sul","Centro-Oeste")),
+#     raca_cor = factor(C009, as.character(1:5),
+#                       c("Branca","Preta","Amarela","Parda","Indígena")),
+#     autoaval = factor(N001, as.character(1:5),
+#                       c("Muito boa","Boa","Regular","Ruim","Muito ruim")),
+#     saude_boa  = N001 %in% c("1","2"),           # boa/muito boa
+#     saude_ruim = N001 %in% c("3","4","5"),        # regular/ruim/muito ruim
+#     ideacao_suicida = N018 %in% c("2","3","4"),   # PHQ-9 item 9 > "nenhum dia"
+#     depr_diag  = Q092 == "1",
+#     rdpc       = as.numeric(VDF003)
+#   ) |>
+#   filter(selecionado, idade >= 18, peso_sel_cal > 0)   # morador selecionado, 18+
 
 pns19 <- readRDS("data/pns2019.rds")   # subconjunto da PNS 2019 já preparado
 
@@ -231,7 +273,7 @@ des <- update(des, saude_ruim = as.numeric(saude_ruim))
 ######################################################################
 
 svymean(~autoaval, des, na.rm = TRUE)   # média de variável CATEGÓRICA = proporção de cada categoria
-svyciprop(~saude_ruim, des)             # svyciprop(): proporção de um indicador 0/1, já com IC 95%
+svyciprop(~saude_ruim, des, na.rm = TRUE)   # svyciprop(): proporção de um indicador 0/1, já com IC 95%
 
 
 ######################################################################
@@ -244,33 +286,57 @@ svyciprop(~saude_ruim, des)             # svyciprop(): proporção de um indicad
 #   des                    -> o desenho
 #   svymean                -> função aplicada em cada grupo
 #   vartype = c("se","cv") -> além da estimativa, reporta erro-padrão e CV
-svyby(~saude_ruim, ~sexo, des, svymean, vartype = c("se", "cv"))
+svyby(~saude_ruim, ~sexo, des, svymean, vartype = c("se", "cv"), na.rm = TRUE)
 
 # subset(des, ...): cria um SUBDESENHO (a forma CERTA de estimar num subgrupo) —
 # preserva estratos e UPAs de toda a amostra para o cálculo correto da variância
-svymean(~saude_ruim, subset(des, sexo == "Mulher"))   # só mulheres
+svymean(~saude_ruim, subset(des, sexo == "Mulher"), na.rm = TRUE)   # só mulheres
 
 
 ######################################################################
 ## Cruzamentos que não estão nas tabelas (a vantagem do microdado)
 ######################################################################
 
-svyby(~saude_ruim, ~raca_cor, des, svymean, vartype = "cv")  # proporção por cor/raça, com o CV de cada uma
+svyby(~saude_ruim, ~raca_cor, des, svymean, vartype = "cv", na.rm = TRUE)  # proporção por cor/raça, com o CV
+
+
+######################################################################
+## Cruzando duas dimensões: cor/raça × sexo
+######################################################################
+
+svyby(~saude_ruim, ~raca_cor + sexo, des, svymean, vartype = "cv", na.rm = TRUE)
+
+
+######################################################################
+## O coeficiente de variação — e seus limites
+######################################################################
+
+op <- par(mfrow = c(1, 4), mar = c(0, 0, 2, 0)); set.seed(3)
+alvo <- function(mx, my, s, tit) {
+  plot(NA, xlim = c(-3, 3), ylim = c(-3, 3), asp = 1, axes = FALSE, ann = FALSE)
+  title(tit, cex.main = 1.1, font.main = 1)
+  for (k in 1:3) symbols(0, 0, circles = c(2.6, 1.7, 0.8)[k], inches = FALSE, add = TRUE,
+                         bg = c("#fdebd0", "#f5b7b1", "#e6807a")[k], fg = "#c9c9c9")
+  points(rnorm(18, mx, s), rnorm(18, my, s), pch = 19, cex = 0.9, col = "#1a5276")
+}
+alvo(0, 0, 0.22, "acurado + preciso");       alvo(0, 0, 0.95, "acurado, impreciso")
+alvo(1.3, 1.0, 0.22, "preciso, não acurado"); alvo(1.3, 1.0, 0.95, "nem um, nem outro")
+par(op)
 
 
 ######################################################################
 ## O efeito do desenho na PNS real
 ######################################################################
 
-svymean(~saude_ruim, des, deff = "replace")  # deff = "replace": variância do desenho ÷ a de uma AAS
+svymean(~saude_ruim, des, deff = "replace", na.rm = TRUE)  # deff = "replace": variância do desenho ÷ a de uma AAS
 
 
 ######################################################################
 ## Ideação suicida (PHQ-9, item N018)
 ######################################################################
 
-svyciprop(~ideacao_suicida, des)                          # prevalência nacional (proporção + IC)
-svyby(~ideacao_suicida, ~sexo, des, svyciprop, vartype = "ci")  # por sexo; vartype="ci" traz o IC
+svyciprop(~ideacao_suicida, des, na.rm = TRUE)                  # prevalência nacional (proporção + IC)
+svyby(~ideacao_suicida, ~sexo, des, svyciprop, vartype = "ci", na.rm = TRUE)  # por sexo (com IC)
 
 
 ######################################################################
@@ -278,8 +344,8 @@ svyby(~ideacao_suicida, ~sexo, des, svyciprop, vartype = "ci")  # por sexo; vart
 ######################################################################
 
 # prevalência de cada medida de depressão (coef() extrai só a estimativa):
-round(100 * c(rastreio_PHQ9 = coef(svyciprop(~depr_phq9, des)),
-              diagnostico   = coef(svyciprop(~depr_diag, des))), 1)
+round(100 * c(rastreio_PHQ9 = coef(svyciprop(~depr_phq9, des, na.rm = TRUE)),
+              diagnostico   = coef(svyciprop(~depr_diag, des, na.rm = TRUE))), 1)
 
 # cria no desenho uma variável de 4 grupos (cruzamento rastreio × diagnóstico):
 des <- update(des, grupo = factor(dplyr::case_when(   # case_when: if/else encadeado
@@ -306,10 +372,10 @@ des <- update(des,
   agr_companheiro = (V006 == "01") %in% TRUE)                                     # agressor = cônjuge/companheiro
 
 # prevalências entre as MULHERES (subconjunto do desenho):
-round(100 * c(qualquer = coef(svyciprop(~viol_qq,     subset(des, sexo == "Mulher"))),
-              fisica   = coef(svyciprop(~viol_fisica, subset(des, sexo == "Mulher")))), 1)
+round(100 * c(qualquer = coef(svyciprop(~viol_qq,     subset(des, sexo == "Mulher"), na.rm = TRUE)),
+              fisica   = coef(svyciprop(~viol_fisica, subset(des, sexo == "Mulher"), na.rm = TRUE))), 1)
 # entre as agredidas, a % cujo principal agressor foi o companheiro:
-svyciprop(~agr_companheiro, subset(des, sexo == "Mulher" & viol_qq))
+svyciprop(~agr_companheiro, subset(des, sexo == "Mulher" & viol_qq), na.rm = TRUE)
 
 
 ######################################################################
@@ -353,6 +419,13 @@ ggplot(est, aes(faixa, saude_ruim)) +
   scale_y_continuous(labels = scales::percent) +
   labs(x = "Faixa etária", y = "Saúde ruim/regular") +
   theme_minimal()
+
+
+######################################################################
+## Outras funções gráficas do desenho
+######################################################################
+
+svyboxplot(idade ~ regiao, des, col = "#d6e4f0", ylab = "Idade (anos)", main = "")
 
 
 ######################################################################

@@ -236,10 +236,11 @@ window.Quarto = {
   <li><a href="#prevalência-e-a-validação-contra-o-publicado" id="toc-prevalência-e-a-validação-contra-o-publicado" class="nav-link" data-scroll-target="#prevalência-e-a-validação-contra-o-publicado">Prevalência — e a validação contra o publicado</a></li>
   <li><a href="#estimativas-por-domínio-e-a-pegadinha-do-subset" id="toc-estimativas-por-domínio-e-a-pegadinha-do-subset" class="nav-link" data-scroll-target="#estimativas-por-domínio-e-a-pegadinha-do-subset">Estimativas por domínio — e a pegadinha do <code>subset</code></a></li>
   <li><a href="#cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado" id="toc-cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado" class="nav-link" data-scroll-target="#cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado">Cruzamentos que não estão nas tabelas (a vantagem do microdado)</a></li>
+  <li><a href="#cruzando-duas-dimensões-corraça-sexo" id="toc-cruzando-duas-dimensões-corraça-sexo" class="nav-link" data-scroll-target="#cruzando-duas-dimensões-corraça-sexo">Cruzando duas dimensões: cor/raça × sexo</a></li>
   <li><a href="#o-coeficiente-de-variação-e-seus-limites" id="toc-o-coeficiente-de-variação-e-seus-limites" class="nav-link" data-scroll-target="#o-coeficiente-de-variação-e-seus-limites">O coeficiente de variação — e seus limites</a></li>
   <li><a href="#o-efeito-do-desenho-na-pns-real" id="toc-o-efeito-do-desenho-na-pns-real" class="nav-link" data-scroll-target="#o-efeito-do-desenho-na-pns-real">O efeito do desenho na PNS real</a></li>
   </ul></li>
-  <li><a href="#parte-4-vitrines-temas-subexplorados" id="toc-parte-4-vitrines-temas-subexplorados" class="nav-link" data-scroll-target="#parte-4-vitrines-temas-subexplorados">Parte 4 · Vitrines: temas subexplorados</a>
+  <li><a href="#parte-4-aplicações-temas-pouco-explorados" id="toc-parte-4-aplicações-temas-pouco-explorados" class="nav-link" data-scroll-target="#parte-4-aplicações-temas-pouco-explorados">Parte 4 · Aplicações: temas pouco explorados</a>
   <ul class="collapse">
   <li><a href="#ideação-suicida-phq-9-item-n018" id="toc-ideação-suicida-phq-9-item-n018" class="nav-link" data-scroll-target="#ideação-suicida-phq-9-item-n018">Ideação suicida (PHQ-9, item N018)</a></li>
   <li><a href="#depressão-a-escala-phq-9-o-diagnóstico" id="toc-depressão-a-escala-phq-9-o-diagnóstico" class="nav-link" data-scroll-target="#depressão-a-escala-phq-9-o-diagnóstico">Depressão: a escala (PHQ-9) × o diagnóstico</a></li>
@@ -250,12 +251,14 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#densidade-ponderada" id="toc-densidade-ponderada" class="nav-link" data-scroll-target="#densidade-ponderada">Densidade ponderada</a></li>
   <li><a href="#estimativas-com-intervalo-de-confiança" id="toc-estimativas-com-intervalo-de-confiança" class="nav-link" data-scroll-target="#estimativas-com-intervalo-de-confiança">Estimativas com intervalo de confiança</a></li>
+  <li><a href="#outras-funções-gráficas-do-desenho" id="toc-outras-funções-gráficas-do-desenho" class="nav-link" data-scroll-target="#outras-funções-gráficas-do-desenho">Outras funções gráficas do desenho</a></li>
   </ul></li>
   <li><a href="#parte-6-regressão-com-o-plano" id="toc-parte-6-regressão-com-o-plano" class="nav-link" data-scroll-target="#parte-6-regressão-com-o-plano">Parte 6 · Regressão com o plano</a>
   <ul class="collapse">
   <li><a href="#regressão-logística-svyglm" id="toc-regressão-logística-svyglm" class="nav-link" data-scroll-target="#regressão-logística-svyglm">Regressão logística (svyglm)</a></li>
   <li><a href="#por-que-não-glm-comum" id="toc-por-que-não-glm-comum" class="nav-link" data-scroll-target="#por-que-não-glm-comum">Por que não <code>glm</code> comum?</a></li>
   <li><a href="#modelo-ordinal-da-autoavaliação-svyolr" id="toc-modelo-ordinal-da-autoavaliação-svyolr" class="nav-link" data-scroll-target="#modelo-ordinal-da-autoavaliação-svyolr">Modelo ordinal da autoavaliação (svyolr)</a></li>
+  <li><a href="#o-mapa-dos-modelos-com-desenho" id="toc-o-mapa-dos-modelos-com-desenho" class="nav-link" data-scroll-target="#o-mapa-dos-modelos-com-desenho">O mapa dos modelos com desenho</a></li>
   </ul></li>
   <li><a href="#parte-7-comparar-2013-2019" id="toc-parte-7-comparar-2013-2019" class="nav-link" data-scroll-target="#parte-7-comparar-2013-2019">Parte 7 · Comparar 2013 × 2019</a>
   <ul class="collapse">
@@ -331,7 +334,7 @@ window.Quarto = {
 <h1>De onde vêm os números — censo, amostra e as novas fontes do dado</h1>
 <p>Antes de qualquer análise, vale a pergunta: <strong>de onde vêm os números?</strong> Há, classicamente, duas formas de conhecer uma população. A primeira é o <strong>censo</strong> — observar todos, a população inteira, sem exceção. A segunda é a <strong>amostra</strong> — observar apenas uma parte, cuidadosamente escolhida, e a partir dela conhecer o todo.</p>
 <p>Que se possa conhecer o todo a partir de uma parte não foi sempre óbvio. Foi uma quebra de paradigma: por muito tempo, só o censo parecia confiável. A amostragem surge como possibilidade legítima de estudo na virada do século XIX para o XX (o “método representativo” de Kiaer, 1895) e ganha base científica com a teoria da <strong>amostragem probabilística</strong> (Neyman, 1934) — a ideia de que, com probabilidades de seleção conhecidas, uma parte permite inferir o todo <em>com incerteza mensurável</em>.</p>
-<p>No Brasil, as primeiras pesquisas amostrais nasceram no âmbito da produção de estatísticas econômicas e agrícolas. Hoje a situação se inverteu: as pesquisas amostrais estão plenamente institucionalizadas, parte corrente do processo de produção de estatísticas no mundo inteiro. A PNS é uma delas.</p>
+<p>No Brasil, a amostragem probabilística firmou-se primeiro na produção de estatísticas demográficas e sociais — estreou no Censo de 1960 e ganhou corpo com a criação da PNAD em 1967 —, enquanto pesquisas econômicas e agrícolas só a incorporaram plenamente mais tarde. O que antes era método experimental, olhado com desconfiança frente ao censo completo, hoje está plenamente institucionalizado: as pesquisas amostrais são parte corrente do processo de produção de estatísticas oficiais no mundo inteiro. A PNS é uma delas.</p>
 <p>A fronteira atual do debate é outra: o uso de <strong>registros administrativos</strong> e de <strong>Big Data</strong> como fontes de estatísticas. Os registros administrativos (cadastros, sistemas de gestão) têm história mais longa e vêm sendo aprimorados, mas carregam uma marca de origem — foram construídos para controle e gestão, não com fins estatísticos; adaptá-los exige cuidado. Já o Big Data — termo que se popularizou, mas que diz muito mais do que “dados grandes” — designa, em essência, dados que surgem como subproduto de outras atividades, e não foram desenhados para fins estatísticos. A estatística oficial costuma organizá-lo pela classificação da UNECE (2013), em três famílias:</p>
 <ul>
 <li><strong>originados por humanos</strong> (redes sociais) — posts, buscas, fotos, vídeos: pouco estruturados;</li>
@@ -371,7 +374,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-população-e-a-verdade">A população (e a verdade)</h2>
 <p>Cada linha é uma <strong>pessoa</strong>, com sua <strong>região</strong>, <strong>município</strong> e <strong>domicílio</strong> — a mesma hierarquia da PNS. Duas variáveis nos acompanharão por todo o workshop:</p>
 <ul>
-<li><strong><code>saude_ruim</code></strong> — espelha a autoavaliação de saúde da PNS (a pergunta <em>“em geral, como o(a) Sr(a) avalia a sua saúde?”</em>, variável <code>N001</code>, com respostas de <em>Muito boa</em> a <em>Muito ruim</em>). Aqui ela é binária: <code>saude_ruim = 1</code> reúne <em>Regular + Ruim + Muito ruim</em> — o complemento de “boa/muito boa”. É o nosso desfecho-âncora.</li>
+<li><strong><code>saude_ruim</code></strong> — espelha a autoavaliação de saúde da PNS (a pergunta <em>“em geral, como o(a) Sr(a) avalia a sua saúde?”</em>, variável <code>N001</code>, com respostas de <em>Muito boa</em> a <em>Muito ruim</em>). Aqui ela é binária: <code>saude_ruim = 1</code> reúne <em>Regular + Ruim + Muito ruim</em> — o complemento de “boa/muito boa”. É o nosso desfecho principal.</li>
 <li><strong><code>rdpc</code></strong> — a renda domiciliar per capita: o rendimento total do domicílio dividido pelo número de moradores (na PNS, a variável <code>VDF003</code>).</li>
 </ul>
 <div class="cell">
@@ -434,12 +437,12 @@ $ id         &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n  <span class="ot">&lt;-</span> <span class="dv">300</span>                 <span class="co"># tamanho da amostra</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>am <span class="ot">&lt;-</span> pop[<span class="fu">sample</span>(N, n), ] <span class="co"># sorteia n linhas (pessoas) ao acaso da população 'pop'</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>am<span class="sc">$</span>peso <span class="ot">&lt;-</span> N <span class="sc">/</span> n          <span class="co"># peso de cada pessoa = N/n: ela "representa" N/n habitantes</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>am<span class="sc">$</span>fpcN <span class="ot">&lt;-</span> N              <span class="co"># guarda o tamanho da população (para a correção de população finita)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>am<span class="sc">$</span>fpcN <span class="ot">&lt;-</span> N              <span class="co"># N = tamanho da POPULAÇÃO (não a fração n/N) — para o fpc</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># svydesign() descreve o PLANO AMOSTRAL ao R — é a base de toda estimativa:</span></span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   ids     = ~1     -&gt; NÃO há conglomerados (sorteio direto de pessoas)</span></span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   weights = ~peso  -&gt; a coluna com os pesos amostrais</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   fpc     = ~fpcN  -&gt; tamanho da população (correção de população finita)</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   fpc     = ~fpcN  -&gt; N, o tamanho da população (não a fração!); correção de pop. finita</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   data    = am     -&gt; a tabela com a amostra</span></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>des_aas <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">fpc =</span> <span class="sc">~</span>fpcN, <span class="at">data =</span> am)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
@@ -460,6 +463,54 @@ saude_ruim 0.2336449 0.3330217</code></pre>
 <p>A estimativa de <code>~saude_ruim</code> é uma proporção — e aqui vale a primeira sutileza: como a variável é <strong>binária</strong> (0/1), a sua média é exatamente a fração de 1s, ou seja, a proporção de pessoas com saúde ruim/regular. (Toda média de uma variável 0/1 é uma proporção; por isso usamos <code>svymean</code> para estimá-la.) A estimativa cai perto da verdade, e o intervalo de confiança a cobre; o erro-padrão (≈ 0,025) traduz a incerteza de ter visto só 300 das 5596 pessoas — é o <strong>erro amostral</strong>.</p>
 <p>Dois argumentos do <code>svydesign</code> merecem nota. <code>ids = ~1</code> diz que não há conglomerados (sorteio direto de pessoas); e o <strong><code>fpc</code></strong> (<em>correção de população finita</em>) informa o tamanho <code>N</code>: como sorteamos <strong>sem reposição</strong> de uma população finita, a incerteza é um pouco menor do que a fórmula clássica supõe (fator <span class="math inline">\(\sqrt{1 - n/N}\)</span>). Aqui o efeito é pequeno; na PNS, com fração amostral ínfima, ele é desprezível e será omitido.</p>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Por que “população finita”? (um nome enganoso)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Nenhuma população real é infinita — o nome vem de uma <strong>idealização matemática</strong>. A estatística “de manual” (<span class="math inline">\(\sigma/\sqrt{n}\)</span>) foi deduzida supondo amostra de uma população <strong>infinita</strong> (ou, o que dá no mesmo, <strong>com reposição</strong>): sortear alguém nunca “esgota” nada, e cada observação é independente. O <em>survey sampling</em> trabalha no mundo real — população <strong>finita</strong> de tamanho <span class="math inline">\(N\)</span>, amostra <strong>sem reposição</strong> —, em que cada unidade sorteada de fato <em>reduz</em> o que resta. O <strong><code>fpc</code></strong> <span class="math inline">\(= 1 - n/N\)</span> é o desconto que corrige a fórmula infinita para esse caso:</p>
+<p><span class="math display">\[\text{Var}_{\text{real}} = \underbrace{\frac{\sigma^2}{n}}_{\text{fórmula ``infinita''}} \times \underbrace{\left(1 - \frac{n}{N}\right)}_{\text{fpc}}.\]</span></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 31%">
+<col style="width: 31%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>situação</th>
+<th style="text-align: center;"><span class="math inline">\(n/N\)</span></th>
+<th style="text-align: center;">fpc</th>
+<th>efeito</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>censo (amostra = população)</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td>variância <strong>zero</strong> — você viu todo mundo</td>
+</tr>
+<tr class="even">
+<td>fração amostral minúscula (PNS)</td>
+<td style="text-align: center;">≈ 0</td>
+<td style="text-align: center;">≈ 1</td>
+<td>correção <strong>some</strong>; “infinita” ≈ “finita”</td>
+</tr>
+</tbody>
+</table>
+<p>É o mesmo <span class="math inline">\(1 - n/N\)</span> que liga <strong>“sem reposição”</strong> a <strong>“população finita”</strong> — são o mesmo fenômeno. Por isso o <code>fpc</code> quase não aparece em pesquisa populacional (a fração é ínfima) e só “morde” quando se amostra uma fatia grande — 30%, 40% da população, como num censo de escolas de município pequeno.</p>
+</div>
+</div>
+</div>
 <p><strong>Vantagens × desvantagens.</strong> A AAS é simples e dá pesos iguais — é a referência contra a qual tudo se compara. Em troca, exige um cadastro de todas as unidades (inviável para pessoas), é cara em campo (entrevistados espalhados) e menos eficiente do que aproveitar a estrutura da população.</p>
 </section>
 <section id="estratificação" class="level2">
@@ -468,7 +519,7 @@ saude_ruim 0.2336449 0.3330217</code></pre>
 <p>Daí a regra: <strong>estratificar ajuda na medida em que os estratos diferem no que se mede</strong>, e (sob alocação proporcional) nunca piora a precisão.</p>
 <p>A <strong>alocação</strong> — como repartir a amostra entre os estratos — pode ser <strong>proporcional</strong> (<span class="math inline">\(n_h \propto N_h\)</span>, pesos ~iguais, a que usamos abaixo), <strong>uniforme</strong> (mesmo <span class="math inline">\(n_h\)</span> em todos) ou <strong>ótima de Neyman</strong> (<span class="math inline">\(n_h \propto N_h S_h\)</span>, mais amostra onde há mais variabilidade; <a href="https://amostragemcomr.github.io/livro/estrat.html">Silva, cap. 11</a>). A PNS <strong>não</strong> usa proporcional: aloca para garantir um coeficiente de variação-alvo em cada domínio geográfico (capitais, RMs, UFs), o que <strong>sobre-amostra os domínios menores</strong> — e é aí que nascem os <strong>pesos desiguais</strong>, tema que retomamos logo abaixo.</p>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -477,7 +528,7 @@ saude_ruim 0.2336449 0.3330217</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Melhora — mas <strong>desigualmente</strong>. O ganho é grande na renda (que varia muito entre regiões) e pequeno na saúde (que varia pouco entre regiões). A regra: estratificar ajuda na medida em que o desfecho difere entre os estratos.</p>
 </div>
@@ -523,31 +574,36 @@ rdpc 436.62 18.089</code></pre>
 <h3 class="anchored" data-anchor-id="alocação-desproporcional-pesos-desiguais">Alocação desproporcional → pesos desiguais</h3>
 <p>Quando a alocação é <strong>desproporcional</strong> (como na PNS), cada estrato entra com um <strong>peso</strong> diferente (<span class="math inline">\(w = N_h/n_h\)</span>) — e surge um risco: <strong>ignorar o peso enviesa a estimativa</strong>. O peso <span class="math inline">\(w_i = 1/\pi_i\)</span> (estimador de <strong>Horvitz–Thompson</strong>) é o que reconcilia amostra e população; sem ele, estima-se <em>a amostra</em>, não a <em>população</em>. Vejamos, sobre-amostrando o Nordeste (onde a saúde é pior):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># alocação DESPROPORCIONAL: sobre-amostra o Nordeste (120) frente às outras regiões</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>am_d <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Norte"</span>)        <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">40</span>),</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Nordeste"</span>)     <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">120</span>),</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Centro-Oeste"</span>) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">40</span>),</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Sudeste"</span>)      <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">50</span>),</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Sul"</span>)          <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">50</span>)</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(Nh_df, <span class="at">by =</span> <span class="st">"regiao"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(regiao) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">peso =</span> Nh <span class="sc">/</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>()   <span class="co"># peso = Nh/nh (varia entre estratos)</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(am_d<span class="sc">$</span>saude_ruim)                                          <span class="co"># média SEM peso (ingênua)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uma função que sorteia UMA amostra desproporcional (sobre-amostra o Nordeste, 120):</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>sortear_desig <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Norte"</span>)        <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">40</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Nordeste"</span>)     <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">120</span>),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Centro-Oeste"</span>) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">40</span>),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Sudeste"</span>)      <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">50</span>),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(pop, regiao <span class="sc">==</span> <span class="st">"Sul"</span>)          <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">50</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(Nh_df, <span class="at">by =</span> <span class="st">"regiao"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(regiao) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">peso =</span> Nh <span class="sc">/</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>()   <span class="co"># peso = Nh/nh (varia entre estratos)</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co"># num ÚNICO sorteio o erro amostral confunde tudo; então repetimos 1000 vezes</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co"># e tiramos a média das estimativas — assim o VIÉS (que é sistemático) aparece:</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">9</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>mc <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">1000</span>, {</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">sortear_desig</span>()</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">ingenua   =</span> <span class="fu">mean</span>(a<span class="sc">$</span>saude_ruim),                                 <span class="co"># média SEM peso</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">ponderada =</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim,                           <span class="co"># média COM peso</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">svydesign</span>(<span class="at">ids=</span><span class="sc">~</span><span class="dv">1</span>, <span class="at">strata=</span><span class="sc">~</span>regiao, <span class="at">weights=</span><span class="sc">~</span>peso, <span class="at">data=</span>a)))[[<span class="dv">1</span>]])</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">rowMeans</span>(mc), <span class="dv">3</span>)   <span class="co"># médias das 1000 estimativas — comparar com a verdade 0,291</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">strata =</span> <span class="sc">~</span>regiao,    <span class="co"># média COM peso (correta)</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> am_d))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>              mean     SE
-saude_ruim 0.27961 0.0264</code></pre>
+<pre><code>  ingenua ponderada 
+    0.310     0.293 </code></pre>
 </div>
 </div>
 <div class="leitura">
-<p>Num único sorteio, a média <strong>ingênua</strong> (0,30) já aparece acima da verdade (0.291), e a <strong>ponderada</strong> a recupera (0,28). Não é acaso: repetindo o sorteio centenas de vezes, a ingênua fica sistematicamente em ≈ 0,31 — <strong>viés</strong>, porque o Nordeste (de saúde pior) entra sobre-representado e, sem o peso, “puxa” a estimativa para cima. O peso corrige o <em>ponto</em>; em troca, pesos muito desiguais <strong>inflam a variância</strong> (<span class="math inline">\(\text{deff}_w \approx 1 + \text{CV}^2(w)\)</span>) — sobre-amostrar um domínio dá precisão nele e tira do todo. Na PNS há ainda outra fonte de peso desigual (o <strong>morador selecionado</strong>, um por domicílio), já embutida no <code>V00291</code>.</p>
+<p>Sobre mil sorteios, a média <strong>ingênua</strong> fica <strong>sistematicamente acima</strong> da verdade (≈ 0,31 vs 0.291): o Nordeste — de saúde pior — entra sobre-representado, e sem o peso ele “puxa” a estimativa para cima. A média <strong>ponderada</strong> recupera a verdade (≈ 0,293). Esse é o <strong>viés</strong> de ignorar o peso — e um sorteio só não o revela, porque o erro amostral o encobre; é preciso a média de muitos para vê-lo. O peso corrige o <em>ponto</em>; em troca, pesos muito desiguais <strong>inflam a variância</strong> (<span class="math inline">\(\text{deff}_w \approx 1 + \text{CV}^2(w)\)</span>) — sobre-amostrar um domínio dá precisão nele e tira do todo. Na PNS há ainda outra fonte de peso desigual (o <strong>morador selecionado</strong>, um por domicílio), já embutida no <code>V00291</code>.</p>
 </div>
 </section>
 </section>
@@ -557,9 +613,9 @@ saude_ruim 0.27961 0.0264</code></pre>
 <p>Na PNS, esse sorteio de áreas é por <strong>PPT</strong> (probabilidade proporcional ao tamanho — setores maiores têm mais chance). Um ponto que costuma confundir: combinado com um <strong>número fixo de domicílios por UPA</strong>, o PPT fica <strong>aproximadamente autoponderado dentro do estrato</strong> — ou seja, ele existe por razão <em>operacional</em> (sortear áreas com eficiência), e <strong>não</strong> é o que gera pesos desiguais. Aqui, para simplificar, sorteamos os municípios com igual probabilidade.</p>
 <p>O preço é estatístico. Pessoas do mesmo setor se parecem — mesma vizinhança, mesmo acesso a serviços, renda semelhante. Essa semelhança é a <strong>correlação intraclasse</strong> (<span class="math inline">\(\rho\)</span>): quanto maior, menos <em>informação nova</em> cada pessoa adicional do mesmo conglomerado acrescenta. O efeito sobre a variância resume-se no <strong>efeito de plano amostral</strong>,</p>
 <p><span class="math display">\[\text{deff} \approx 1 + (\bar{m} - 1)\,\rho,\]</span></p>
-<p>onde <span class="math inline">\(\bar{m}\)</span> é o número médio de pessoas por conglomerado na amostra. A consequência orienta o desenho de qualquer pesquisa: <strong>muitos conglomerados pequenos</strong> rendem mais precisão que <strong>poucos conglomerados grandes</strong> (<a href="https://amostragemcomr.github.io/livro/cong.html">Silva, cap. 12</a>). A PNS é de dois estágios (UPA → domicílios); em um estágio, sortearíamos a UPA e entrevistaríamos <em>todos</em> os seus domicílios.</p>
+<p>onde <span class="math inline">\(\bar{m}\)</span> é o número médio de pessoas por conglomerado na amostra. Os <strong>extremos</strong> dão a intuição: se <span class="math inline">\(\rho = 0\)</span> (pessoas do mesmo setor tão diferentes quanto quaisquer outras), <span class="math inline">\(\text{deff} = 1\)</span> e conglomerar <strong>não custa nada</strong>; se <span class="math inline">\(\rho = 1\)</span> (todas idênticas dentro do setor), <span class="math inline">\(\text{deff} = \bar{m}\)</span> — cada conglomerado rende a informação de <strong>uma só</strong> pessoa, e as outras <span class="math inline">\(\bar{m}-1\)</span> são redundantes. Na prática <span class="math inline">\(0 &lt; \rho &lt; 1\)</span> e o deff fica <strong>entre 1 e <span class="math inline">\(\bar{m}\)</span></strong> (só seria menor que 1 no caso raro de <span class="math inline">\(\rho\)</span> negativo — vizinhos mais <em>diferentes</em> que o acaso). A consequência orienta o desenho de qualquer pesquisa: <strong>muitos conglomerados pequenos</strong> rendem mais precisão que <strong>poucos conglomerados grandes</strong> (<a href="https://amostragemcomr.github.io/livro/cong.html">Silva, cap. 12</a>). A PNS é de dois estágios (UPA → domicílios); em um estágio, sortearíamos a UPA e entrevistaríamos <em>todos</em> os seus domicílios.</p>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -568,32 +624,32 @@ saude_ruim 0.27961 0.0264</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Vai <strong>subir</strong>. Pessoas do mesmo município se parecem (correlação intraclasse), então cada nova entrevista no mesmo lugar traz menos informação nova — a variância infla (<code>deff</code> &gt; 1).</p>
 </div>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>muns <span class="ot">&lt;-</span> <span class="fu">unique</span>(pop<span class="sc">$</span>municipio); M <span class="ot">&lt;-</span> <span class="fu">length</span>(muns)   <span class="co"># M = total de municípios na população</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="dv">15</span>; ni <span class="ot">&lt;-</span> <span class="dv">25</span>                                 <span class="co"># mm = municípios sorteados; ni = pessoas por município</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>sel  <span class="ot">&lt;-</span> <span class="fu">sample</span>(muns, mm)                            <span class="co"># 1º estágio: sorteia mm municípios (as "UPAs")</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>am_c <span class="ot">&lt;-</span> pop <span class="sc">|&gt;</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(municipio <span class="sc">%in%</span> sel) <span class="sc">|&gt;</span>                     <span class="co"># mantém só os municípios sorteados</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(municipio) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> ni) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>()   <span class="co"># 2º estágio: ni pessoas em cada</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># peso dos dois estágios = (M/mm) · (Ni/ni):</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>Ni_df <span class="ot">&lt;-</span> <span class="fu">count</span>(pop, municipio, <span class="at">name =</span> <span class="st">"Ni"</span>)         <span class="co"># nº de pessoas em cada município</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>am_c  <span class="ot">&lt;-</span> am_c <span class="sc">|&gt;</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(Ni_df, <span class="at">by =</span> <span class="st">"municipio"</span>) <span class="sc">|&gt;</span>             <span class="co"># cola o Ni</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">peso =</span> (M<span class="sc">/</span>mm) <span class="sc">*</span> (Ni<span class="sc">/</span>ni))</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co"># o argumento NOVO aqui é 'ids' (os conglomerados):</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   ids = ~municipio -&gt; diz ao survey que o sorteio foi por conglomerados (municípios)</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>des_cl <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>municipio, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> am_c)</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_cl, <span class="at">deff =</span> <span class="cn">TRUE</span>)          <span class="co"># deff = TRUE -&gt; também reporta o efeito de plano amostral</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>muns <span class="ot">&lt;-</span> <span class="fu">unique</span>(pop<span class="sc">$</span>municipio); M <span class="ot">&lt;-</span> <span class="fu">length</span>(muns)   <span class="co"># M = total de municípios na população</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="dv">15</span>; ni <span class="ot">&lt;-</span> <span class="dv">25</span>                                 <span class="co"># mm = municípios sorteados; ni = pessoas por município</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>sel  <span class="ot">&lt;-</span> <span class="fu">sample</span>(muns, mm)                            <span class="co"># 1º estágio: sorteia mm municípios (as "UPAs")</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>am_c <span class="ot">&lt;-</span> pop <span class="sc">|&gt;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(municipio <span class="sc">%in%</span> sel) <span class="sc">|&gt;</span>                     <span class="co"># mantém só os municípios sorteados</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(municipio) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> ni) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>()   <span class="co"># 2º estágio: ni pessoas em cada</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># peso dos dois estágios = (M/mm) · (Ni/ni):</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>Ni_df <span class="ot">&lt;-</span> <span class="fu">count</span>(pop, municipio, <span class="at">name =</span> <span class="st">"Ni"</span>)         <span class="co"># nº de pessoas em cada município</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>am_c  <span class="ot">&lt;-</span> am_c <span class="sc">|&gt;</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(Ni_df, <span class="at">by =</span> <span class="st">"municipio"</span>) <span class="sc">|&gt;</span>             <span class="co"># cola o Ni</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">peso =</span> (M<span class="sc">/</span>mm) <span class="sc">*</span> (Ni<span class="sc">/</span>ni))</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co"># o argumento NOVO aqui é 'ids' (os conglomerados):</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   ids = ~municipio -&gt; diz ao survey que o sorteio foi por conglomerados (municípios)</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>des_cl <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>municipio, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> am_c)</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_cl, <span class="at">deff =</span> <span class="cn">TRUE</span>)          <span class="co"># deff = TRUE -&gt; também reporta o efeito de plano amostral</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               mean       SE   DEff
 saude_ruim 0.297868 0.033784 2.1865</code></pre>
@@ -608,24 +664,24 @@ saude_ruim 0.297868 0.033784 2.1865</code></pre>
 <h2 class="anchored" data-anchor-id="quanto-o-desenho-importa-monte-carlo">Quanto o desenho importa? (Monte Carlo)</h2>
 <p>Juntando tudo: se você tem um desenho conglomerado mas o analisa como se fosse AAS, o erro-padrão sai pequeno demais e o intervalo de confiança <strong>mente</strong>. Vamos medir isso. Sorteamos 500 amostras conglomeradas; em cada uma calculamos o IC de 95% do jeito certo (declarando o conglomerado) e do jeito ingênuo (como AAS), e contamos quantas vezes o IC cobre a verdade.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uma função que sorteia UMA amostra conglomerada (15 municípios, 25 pessoas em cada):</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>sortear_cluster <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  sm <span class="ot">&lt;-</span> <span class="fu">sample</span>(muns, mm)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  pop <span class="sc">|&gt;</span> <span class="fu">filter</span>(municipio <span class="sc">%in%</span> sm) <span class="sc">|&gt;</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(municipio) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> ni) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(Ni_df, <span class="at">by =</span> <span class="st">"municipio"</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">peso =</span> (M<span class="sc">/</span>mm) <span class="sc">*</span> (Ni<span class="sc">/</span>ni))</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>); B <span class="ot">&lt;-</span> <span class="dv">500</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>cob <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {                              <span class="co"># B amostras conglomeradas; em cada uma...</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  a       <span class="ot">&lt;-</span> <span class="fu">sortear_cluster</span>()</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  des     <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>municipio, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> a)   <span class="co"># desenho CERTO (com cluster)</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  des_ing <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>,         <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> a)   <span class="co"># desenho INGÊNUO (sem cluster)</span></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  est     <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des))                          <span class="co"># a estimativa</span></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">desenho =</span> <span class="fu">abs</span>(est <span class="sc">-</span> P)<span class="sc">/</span><span class="fu">SE</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des))     <span class="sc">&lt;</span> <span class="fl">1.96</span>,  <span class="co"># o IC do desenho cobre a verdade P?</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ingenuo =</span> <span class="fu">abs</span>(est <span class="sc">-</span> P)<span class="sc">/</span><span class="fu">SE</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_ing)) <span class="sc">&lt;</span> <span class="fl">1.96</span>)  <span class="co"># e o IC ingênuo?</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">rowMeans</span>(cob) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)   <span class="co"># % das vezes em que cada IC cobriu a verdade (desenho vs ingênuo)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uma função que sorteia UMA amostra conglomerada (15 municípios, 25 pessoas em cada):</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>sortear_cluster <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  sm <span class="ot">&lt;-</span> <span class="fu">sample</span>(muns, mm)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  pop <span class="sc">|&gt;</span> <span class="fu">filter</span>(municipio <span class="sc">%in%</span> sm) <span class="sc">|&gt;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(municipio) <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> ni) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(Ni_df, <span class="at">by =</span> <span class="st">"municipio"</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">peso =</span> (M<span class="sc">/</span>mm) <span class="sc">*</span> (Ni<span class="sc">/</span>ni))</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>); B <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>cob <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {                              <span class="co"># B amostras conglomeradas; em cada uma...</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  a       <span class="ot">&lt;-</span> <span class="fu">sortear_cluster</span>()</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  des     <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>municipio, <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> a)   <span class="co"># desenho CERTO (com cluster)</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  des_ing <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>,         <span class="at">weights =</span> <span class="sc">~</span>peso, <span class="at">data =</span> a)   <span class="co"># desenho INGÊNUO (sem cluster)</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  est     <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des))                          <span class="co"># a estimativa</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">desenho =</span> <span class="fu">abs</span>(est <span class="sc">-</span> P)<span class="sc">/</span><span class="fu">SE</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des))     <span class="sc">&lt;</span> <span class="fl">1.96</span>,  <span class="co"># o IC do desenho cobre a verdade P?</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ingenuo =</span> <span class="fu">abs</span>(est <span class="sc">-</span> P)<span class="sc">/</span><span class="fu">SE</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des_ing)) <span class="sc">&lt;</span> <span class="fl">1.96</span>)  <span class="co"># e o IC ingênuo?</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">rowMeans</span>(cob) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)   <span class="co"># % das vezes em que cada IC cobriu a verdade (desenho vs ingênuo)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>desenho ingenuo 
    98.0    81.8 </code></pre>
@@ -698,7 +754,7 @@ saude_ruim 0.297868 0.033784 2.1865</code></pre>
 </tr>
 </tbody>
 </table>
-<p>A âncora e as vitrines deste workshop vêm do morador selecionado (peso <code>V00291</code>, recorte dos selecionados); um indicador do domicílio usaria o banco todo e o peso <code>V00281</code>.</p>
+<p>O desfecho principal e as aplicações deste workshop vêm do morador selecionado (peso <code>V00291</code>, recorte dos selecionados); um indicador do domicílio usaria o banco todo e o peso <code>V00281</code>.</p>
 <p><strong>Qual peso usar — com ou sem calibração?</strong> Para praticamente toda estimativa, use o peso <em>calibrado</em> (a coluna com o dígito extra: <code>V00291</code>, no morador selecionado): é ele que ajusta a composição da amostra às projeções de população e reproduz os números oficiais do IBGE (ver <em>Calibração</em>, adiante). O peso de desenho, sem calibração (<code>V0029</code>), serve a dois casos: (i) quando <em>você</em> vai aplicar a calibração ou a pós-estratificação — é o que o <code>PNSIBGE</code> faz internamente, partindo de <code>V0029</code> + <code>V00292</code>/<code>V00293</code>; e (ii) como contraste didático, para medir o efeito da calibração. Fora isso, o calibrado é o padrão.</p>
 <p><strong>Como você lê os dados também importa.</strong> O peso que entra no desenho depende de <em>quais colunas de peso estão presentes</em>. Ao analisar o morador selecionado, é preciso garantir que o desenho use o peso do selecionado — não o do básico. Há três caminhos:</p>
 <ul>
@@ -722,32 +778,94 @@ saude_ruim 0.297868 0.033784 2.1865</code></pre>
 </section>
 <section id="declarando-o-desenho-amostral" class="level2">
 <h2 class="anchored" data-anchor-id="declarando-o-desenho-amostral">Declarando o desenho amostral</h2>
-<p>Os participantes recebem o subconjunto já preparado (<code>data/pns2019.rds</code>). Para quem parte do microdado bruto do IBGE — baixado no FTP, <a href="https://ftp.ibge.gov.br/PNS/" class="uri">https://ftp.ibge.gov.br/PNS/</a> —, o caminho é ler o <code>.txt</code> de largura fixa pelas posições do dicionário:</p>
+<p>Antes de qualquer estimativa vem o passo que você mais fará na prática: <strong>ler o microdado bruto do IBGE e derivar as variáveis</strong>. Baixe o <code>PNS_2019.txt</code> e o dicionário de leitura (<code>input_PNS_2019.txt</code>) no FTP (<a href="https://ftp.ibge.gov.br/PNS/" class="uri">https://ftp.ibge.gov.br/PNS/</a>) e deixe-os na pasta <code>data/</code>. A leitura é de <strong>largura fixa</strong> — cada variável ocupa colunas fixas; e, em vez de digitar as posições à mão, <strong>lemos o próprio <code>input</code> do IBGE</strong> (um programa de leitura em linguagem SAS, no arquivo <code>input_PNS_2019.txt</code>) para descobri-las:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># posições do input_PNS_2019.txt (exemplo abreviado — só três colunas):</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>pns19 <span class="ot">&lt;-</span> <span class="fu">read_fwf</span>(<span class="st">"PNS_2019.txt"</span>,</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fwf_positions</span>(<span class="at">start =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">1426</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">9</span>, <span class="dv">18</span>, <span class="dv">1439</span>),</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"V0024"</span>, <span class="st">"UPA_PNS"</span>, <span class="st">"V00291"</span>)))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr); <span class="fu">library</span>(dplyr)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) O "input" do IBGE tem, em cada linha, "@início  NOME  formato." — onde cada</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#    variável começa e sua largura. Lemos esse input como uma TABELA e ficamos só</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">#    com as linhas de posição (as que começam por "@"):</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>dic <span class="ot">&lt;-</span> <span class="fu">read_table</span>(<span class="st">"data/input_PNS_2019.txt"</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>, <span class="at">col_types =</span> <span class="fu">cols</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">startsWith</span>(X1, <span class="st">"@"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">nome =</span> X2,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">ini  =</span> <span class="fu">as.integer</span>(<span class="fu">chartr</span>(<span class="st">"@"</span>, <span class="st">" "</span>, X1)),   <span class="co"># "@01426" -&gt; 1426</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">larg =</span> <span class="fu">as.integer</span>(<span class="fu">chartr</span>(<span class="st">"$"</span>, <span class="st">" "</span>, X3)),   <span class="co"># "$1." -&gt; 1 ; "14.8" -&gt; 14</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">fim  =</span> ini <span class="sc">+</span> larg <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) O input tem mais de mil variáveis; escolhemos só as que vamos usar:</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"V0001"</span>,<span class="st">"V0024"</span>,<span class="st">"UPA_PNS"</span>,<span class="st">"M001"</span>,<span class="st">"C006"</span>,<span class="st">"C008"</span>,<span class="st">"C009"</span>,<span class="st">"N001"</span>,<span class="st">"N018"</span>,<span class="st">"Q092"</span>,</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>          <span class="st">"V0029"</span>,<span class="st">"V00291"</span>,<span class="st">"V00292"</span>,<span class="st">"V00293"</span>,<span class="st">"VDF003"</span>)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   (N010–N017 do PHQ-9, o módulo V de violência e Y008 seguem a mesma lógica)</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> dic[<span class="fu">match</span>(vars, dic<span class="sc">$</span>nome), ]</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) LEITURA de largura fixa — tudo como TEXTO (col_types="c"), para não perder zeros:</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>pns19 <span class="ot">&lt;-</span> <span class="fu">read_fwf</span>(<span class="st">"data/PNS_2019.txt"</span>,</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">fwf_positions</span>(d<span class="sc">$</span>ini, d<span class="sc">$</span>fim, d<span class="sc">$</span>nome),</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>                  <span class="at">col_types =</span> <span class="fu">strrep</span>(<span class="st">"c"</span>, <span class="fu">nrow</span>(d)), <span class="at">na =</span> <span class="st">""</span>)</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="co"># 4) DERIVAÇÃO das variáveis de análise (rótulos, pesos ÷ 1e8, desfechos 0/1):</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>pns19 <span class="ot">&lt;-</span> pns19 <span class="sc">|&gt;</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">idade        =</span> <span class="fu">as.integer</span>(C008),</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">selecionado  =</span> M001 <span class="sc">==</span> <span class="st">"1"</span>,</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">peso_sel     =</span> <span class="fu">as.numeric</span>(V0029)  <span class="sc">/</span> <span class="fl">1e8</span>,   <span class="co"># os pesos vêm inteiros (×1e8)</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">peso_sel_cal =</span> <span class="fu">as.numeric</span>(V00291) <span class="sc">/</span> <span class="fl">1e8</span>,</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">proj_dom     =</span> <span class="fu">as.numeric</span>(V00292) <span class="sc">/</span> <span class="fl">1e8</span>,</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">sexo     =</span> <span class="fu">factor</span>(C006, <span class="fu">c</span>(<span class="st">"1"</span>,<span class="st">"2"</span>), <span class="fu">c</span>(<span class="st">"Homem"</span>,<span class="st">"Mulher"</span>)),</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">regiao   =</span> <span class="fu">factor</span>(<span class="fu">substr</span>(V0001, <span class="dv">1</span>, <span class="dv">1</span>), <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">c</span>(<span class="st">"Norte"</span>,<span class="st">"Nordeste"</span>,<span class="st">"Sudeste"</span>,<span class="st">"Sul"</span>,<span class="st">"Centro-Oeste"</span>)),</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">raca_cor =</span> <span class="fu">factor</span>(C009, <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">c</span>(<span class="st">"Branca"</span>,<span class="st">"Preta"</span>,<span class="st">"Amarela"</span>,<span class="st">"Parda"</span>,<span class="st">"Indígena"</span>)),</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">autoaval =</span> <span class="fu">factor</span>(N001, <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),</span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">c</span>(<span class="st">"Muito boa"</span>,<span class="st">"Boa"</span>,<span class="st">"Regular"</span>,<span class="st">"Ruim"</span>,<span class="st">"Muito ruim"</span>)),</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">saude_boa  =</span> N001 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"1"</span>,<span class="st">"2"</span>),           <span class="co"># boa/muito boa</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">saude_ruim =</span> N001 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"3"</span>,<span class="st">"4"</span>,<span class="st">"5"</span>),        <span class="co"># regular/ruim/muito ruim</span></span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">ideacao_suicida =</span> N018 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"2"</span>,<span class="st">"3"</span>,<span class="st">"4"</span>),   <span class="co"># PHQ-9 item 9 &gt; "nenhum dia"</span></span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">depr_diag  =</span> Q092 <span class="sc">==</span> <span class="st">"1"</span>,</span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">rdpc       =</span> <span class="fu">as.numeric</span>(VDF003)</span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(selecionado, idade <span class="sc">&gt;=</span> <span class="dv">18</span>, peso_sel_cal <span class="sc">&gt;</span> <span class="dv">0</span>)   <span class="co"># morador selecionado, 18+</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>O exemplo acima é abreviado; a leitura completa — com todas as variáveis de desenho e as do estudo — está no script <a href="https://github.com/DemoPOP/pns-survey/blob/main/R/01_curar_pns2019.R"><code>R/01_curar_pns2019.R</code></a> do repositório. Como o peso é escolhido explicitamente e o desenho é montado à mão, você <strong>não precisa remover da base os blocos de peso dos outros questionários</strong> — é a via mais limpa quando se parte do <code>.txt</code> bruto.</p>
-<p>Aqui carregamos direto o subconjunto pronto e declaramos o plano:</p>
+<p>É esse o processo por trás do <code>data/pns2019.rds</code> que você já tem — leitura de largura fixa, rótulos, pesos ÷ 1e8 e o recorte do morador selecionado 18+. Para a aula, e para não esperar a leitura do arquivo de ~450 MB, <strong>carregamos o resultado pronto</strong> (idêntico) e declaramos o plano:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>pns19 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/pns2019.rds"</span>)   <span class="co"># subconjunto da PNS 2019 já preparado</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># desenho da PNS — combina tudo o que vimos na Parte 1, agora com dados reais:</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   ids     = ~UPA_PNS      -&gt; conglomerados (as UPAs)</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   strata  = ~V0024        -&gt; estratos geográficos</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   weights = ~peso_sel_cal -&gt; peso do morador selecionado, calibrado (V00291)</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   nest    = TRUE          -&gt; UPAs numeradas DENTRO de cada estrato</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel_cal,</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>des                                    <span class="co"># imprime um resumo do plano amostral</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pns19 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/pns2019.rds"</span>)   <span class="co"># subconjunto da PNS 2019 já preparado</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># desenho da PNS — combina tudo o que vimos na Parte 1, agora com dados reais:</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   ids     = ~UPA_PNS      -&gt; conglomerados (as UPAs)</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   strata  = ~V0024        -&gt; estratos geográficos</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   weights = ~peso_sel_cal -&gt; peso do morador selecionado, calibrado (V00291)</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   nest    = TRUE          -&gt; UPAs numeradas DENTRO de cada estrato</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel_cal,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>des                                    <span class="co"># imprime um resumo do plano amostral</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Stratified 1 - level Cluster Sampling design (with replacement)
 With (8027) clusters.
 svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel_cal, 
     data = pns19, nest = TRUE)</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>O que é <code>survey.lonely.psu = "adjust"</code>?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>No <code>setup</code> ligamos <code>options(survey.lonely.psu = "adjust")</code>. Um estrato com <strong>uma única UPA</strong> na amostra (<em>lonely PSU</em>) é um problema para a variância: com uma só UPA, não há como medir a variação <em>entre</em> UPAs daquele estrato. As opções do <code>survey</code>:</p>
+<ul>
+<li><code>"fail"</code> (padrão) — <strong>para com erro</strong> ao encontrar um estrato assim;</li>
+<li><code>"remove"</code> — ignora esses estratos (subestima a variância);</li>
+<li><code>"adjust"</code> — trata a UPA solitária como se variasse em torno da <strong>média geral</strong> (contribuição conservadora, não zero);</li>
+<li><code>"average"</code> — usa a variância média dos demais estratos.</li>
+</ul>
+<p>O <code>"adjust"</code> é a escolha usual (e a do <code>PNSIBGE</code>): não quebra e não subestima. Estratos com uma só UPA aparecem na PNS por conta de recortes finos — por isso a opção é, na prática, obrigatória.</p>
+</div>
 </div>
 </div>
 <p>Este é, no fundo, o mesmo desenho que o pacote <code>PNSIBGE</code> monta automaticamente; aqui o declaramos à mão para deixar cada peça explícita. Falta ainda a <strong>calibração</strong> (a pós-estratificação às projeções de população), que declaramos nas próximas seções — e é ela que reproduz <strong>exatamente</strong> o erro-padrão oficial.</p>
@@ -761,11 +879,11 @@ svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel_cal,
 <p>onde <span class="math inline">\(\mathbf{x}_i\)</span> marca o sexo e a classe de idade da pessoa <span class="math inline">\(i\)</span> e <span class="math inline">\(\mathbf{T}_x\)</span> é o total populacional conhecido (a projeção). A <strong>pós-estratificação</strong> é o caso particular em que <span class="math inline">\(\mathbf{x}\)</span> são apenas indicadores de grupos: o peso de cada grupo <span class="math inline">\(h\)</span> é multiplicado por <span class="math inline">\(N_h/\hat{N}_h\)</span> (total real ÷ total estimado). É, no fundo, um ajuste demográfico — força a amostra a ter a mesma composição por sexo e idade da população projetada.</p>
 <p>Por que importa? (i) reduz a variância, porque sexo e idade predizem a saúde; (ii) atenua o viés de não-resposta — se quem deixa de responder difere por idade/sexo, calibrar puxa as estimativas na direção certa. Na PNS 2019, é o que separa <code>V0029</code> (sem calibração) de <code>V00291</code> (com):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>des_sc <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel,</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>)                 <span class="co"># mesmo desenho, peso SEM calibração</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">sem calibração</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des_sc))[<span class="dv">2</span>],    <span class="co"># coef()[2] = a proporção "saúde boa" (TRUE)</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">com calibração</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des))[<span class="dv">2</span>]), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>des_sc <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel,</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>)                 <span class="co"># mesmo desenho, peso SEM calibração</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">sem calibração</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des_sc))[<span class="dv">2</span>],    <span class="co"># coef()[2] = a proporção "saúde boa" (TRUE)</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">com calibração</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des))[<span class="dv">2</span>]), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>sem calibração.saude_boaTRUE com calibração.saude_boaTRUE 
                         65.1                         66.1 </code></pre>
@@ -780,30 +898,30 @@ svydesign(ids = ~UPA_PNS, strata = ~V0024, weights = ~peso_sel_cal,
 <p>E o que é, afinal, a <strong>pós-estratificação</strong>? <strong>É uma calibração</strong> — a sua forma mais simples. A ideia: divide-se a população em pós-estratos (grupos — na PNS, os domínios de sexo × classe de idade) e usam-se os totais populacionais de cada grupo — <em>quantas pessoas há em cada um</em>, segundo as projeções do IBGE — como alvo. Dentro de cada grupo <span class="math inline">\(h\)</span>, os pesos são multiplicados por <span class="math inline">\(N_h/\hat{N}_h\)</span> (o total real conhecido ÷ o total estimado pela amostra), de modo que a soma dos pesos no grupo passe a bater exatamente com o total conhecido. Note: o alvo são contagens — <em>totais</em> de população, não proporções nem taxas.</p>
 <p>No microdado da PNS, os domínios estão em <code>V00293</code> e os totais (as projeções) em <code>V00292</code>. <strong>Este é o procedimento para reproduzir o erro-padrão oficial do IBGE</strong>, à mão:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># totais populacionais por domínio = a projeção do IBGE (V00292, por V00293)</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>totais <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">data.frame</span>(<span class="at">V00293 =</span> pns19<span class="sc">$</span>V00293, <span class="at">Freq =</span> pns19<span class="sc">$</span>proj_dom))</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># postStratify(): ajusta os pesos do 'design' até baterem com os totais conhecidos:</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   1º arg     -&gt; o desenho (aqui com o peso SEM calibração)</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   strata     = ~V00293 -&gt; a variável que define os pós-estratos (domínios)</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   population = totais   -&gt; data.frame com os domínios e a coluna 'Freq' (os totais)</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>des_ps <span class="ot">&lt;-</span> <span class="fu">postStratify</span>(</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel, <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">strata =</span> <span class="sc">~</span>V00293, <span class="at">population =</span> totais)</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des)      <span class="co"># atalho: peso calibrado (V00291) direto</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># totais populacionais por domínio = a projeção do IBGE (V00292, por V00293)</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>totais <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">data.frame</span>(<span class="at">V00293 =</span> pns19<span class="sc">$</span>V00293, <span class="at">Freq =</span> pns19<span class="sc">$</span>proj_dom))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># postStratify(): ajusta os pesos do 'design' até baterem com os totais conhecidos:</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   1º arg     -&gt; o desenho (aqui com o peso SEM calibração)</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   strata     = ~V00293 -&gt; a variável que define os pós-estratos (domínios)</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   population = totais   -&gt; data.frame com os domínios e a coluna 'Freq' (os totais)</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>des_ps <span class="ot">&lt;-</span> <span class="fu">postStratify</span>(</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>UPA_PNS, <span class="at">strata =</span> <span class="sc">~</span>V0024, <span class="at">weights =</span> <span class="sc">~</span>peso_sel, <span class="at">data =</span> pns19, <span class="at">nest =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">strata =</span> <span class="sc">~</span>V00293, <span class="at">population =</span> totais)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des)      <span class="co"># atalho: peso calibrado (V00291) direto</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  mean     SE
 saude_boaFALSE 0.33888 0.0031
 saude_boaTRUE  0.66112 0.0031</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des_ps)   <span class="co"># via oficial: pós-estratificada — reproduz o SE do IBGE</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_boa, des_ps)   <span class="co"># via oficial: pós-estratificada — reproduz o SE do IBGE</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  mean    SE
 saude_boaFALSE 0.33888 0.003
 saude_boaTRUE  0.66112 0.003</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> des_ps                 <span class="co"># adotamos a via oficial daqui em diante</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> des_ps                 <span class="co"># adotamos a via oficial daqui em diante</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="leitura">
 <p>As duas vias dão a <strong>mesma estimativa</strong> (0,66112) — como esperado, já que o <code>V00291</code> <strong>é</strong> o <code>V0029</code> pós-estratificado, então a média ponderada é idêntica. O que difere é o <strong>erro-padrão</strong>: ≈ 0,0031 com o peso calibrado direto e ≈ 0,0030 pós-estratificando. <em>“Mas não deveria dar o mesmo?”</em> O ponto, sim; o erro-padrão, não — e por um motivo preciso: ao receber o <code>V00291</code> <strong>pronto</strong>, o <code>svydesign</code> <strong>não sabe</strong> que aqueles pesos foram ajustados a totais <strong>conhecidos</strong>, e os trata como pesos fixos (variância ligeiramente <strong>conservadora</strong>); já o <code>postStratify</code> <strong>sabe</strong> que os totais por domínio são conhecidos e <strong>desconta</strong> a variância das contagens desses grupos, dando o erro-padrão <strong>oficial</strong> — o mesmo que o <code>PNSIBGE</code> retorna. Mesmo ponto, variâncias diferentes: a diferença não está nos pesos, e sim em <strong>o método saber (ou não) que a calibração aconteceu</strong>. Para replicar o IBGE <strong>exatamente</strong> — ponto e erro-padrão —, use esta via (<code>V0029</code> + <code>postStratify</code>); é a que adotamos no restante do tutorial.</p>
@@ -812,16 +930,16 @@ saude_boaTRUE  0.66112 0.003</code></pre>
 </section>
 <section id="parte-3-estimativas-descritivas" class="level1">
 <h1>Parte 3 · Estimativas descritivas</h1>
-<p>Com o desenho declarado (<code>des</code>), toda estimativa já vem com o erro-padrão correto. A âncora é a <strong>autoavaliação de saúde</strong>. Para deixar as saídas limpas, convertemos o desfecho binário “saúde ruim/regular” para 0/1 dentro do próprio objeto de desenho:</p>
+<p>Com o desenho declarado (<code>des</code>), toda estimativa já vem com o erro-padrão correto. O desfecho principal é a <strong>autoavaliação de saúde</strong>. Para deixar as saídas limpas, convertemos o desfecho binário “saúde ruim/regular” para 0/1 dentro do próprio objeto de desenho — e, por hábito seguro, passamos <code>na.rm = TRUE</code> nas estimativas (sem isso, qualquer valor ausente seria propagado como <code>NA</code> no resultado):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># update(): cria/modifica uma variável DENTRO do objeto de desenho.</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Aqui convertemos o lógico saude_ruim em 0/1, para as saídas ficarem limpas:</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">saude_ruim =</span> <span class="fu">as.numeric</span>(saude_ruim))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># update(): cria/modifica uma variável DENTRO do objeto de desenho.</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Aqui convertemos o lógico saude_ruim em 0/1, para as saídas ficarem limpas:</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">saude_ruim =</span> <span class="fu">as.numeric</span>(saude_ruim))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="prevalência-e-a-validação-contra-o-publicado" class="level2">
 <h2 class="anchored" data-anchor-id="prevalência-e-a-validação-contra-o-publicado">Prevalência — e a validação contra o publicado</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>autoaval, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   <span class="co"># média de variável CATEGÓRICA = proporção de cada categoria</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>autoaval, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   <span class="co"># média de variável CATEGÓRICA = proporção de cada categoria</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                       mean     SE
 autoavalMuito boa  0.152416 0.0026
@@ -830,7 +948,7 @@ autoavalRegular    0.281029 0.0027
 autoavalRuim       0.046283 0.0012
 autoavalMuito ruim 0.011565 0.0006</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>saude_ruim, des)             <span class="co"># svyciprop(): proporção de um indicador 0/1, já com IC 95%</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>saude_ruim, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   <span class="co"># svyciprop(): proporção de um indicador 0/1, já com IC 95%</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  2.5% 97.5%
 saude_ruim 0.339 0.333 0.345</code></pre>
@@ -844,13 +962,13 @@ saude_ruim 0.339 0.333 0.345</code></pre>
 <h2 class="anchored" data-anchor-id="estimativas-por-domínio-e-a-pegadinha-do-subset">Estimativas por domínio — e a pegadinha do <code>subset</code></h2>
 <p>A função <code>svyby()</code> repete a estimativa em subgrupos:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># svyby(): repete uma estimativa em subgrupos</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   ~saude_ruim            -&gt; o que estimar</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   ~sexo                  -&gt; variável que define os subgrupos</span></span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   des                    -&gt; o desenho</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   svymean                -&gt; função aplicada em cada grupo</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   vartype = c("se","cv") -&gt; além da estimativa, reporta erro-padrão e CV</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>sexo, des, svymean, <span class="at">vartype =</span> <span class="fu">c</span>(<span class="st">"se"</span>, <span class="st">"cv"</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># svyby(): repete uma estimativa em subgrupos</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   ~saude_ruim            -&gt; o que estimar</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   ~sexo                  -&gt; variável que define os subgrupos</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   des                    -&gt; o desenho</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   svymean                -&gt; função aplicada em cada grupo</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   vartype = c("se","cv") -&gt; além da estimativa, reporta erro-padrão e CV</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>sexo, des, svymean, <span class="at">vartype =</span> <span class="fu">c</span>(<span class="st">"se"</span>, <span class="st">"cv"</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -861,9 +979,9 @@ saude_ruim 0.339 0.333 0.345</code></pre>
 </div>
 <p>Para estimar só num subgrupo, vale uma regra de ouro: <strong>subconjunte o objeto de desenho</strong>, nunca o <code>data.frame</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># subset(des, ...): cria um SUBDESENHO (a forma CERTA de estimar num subgrupo) —</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="co"># preserva estratos e UPAs de toda a amostra para o cálculo correto da variância</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>))   <span class="co"># só mulheres</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># subset(des, ...): cria um SUBDESENHO (a forma CERTA de estimar num subgrupo) —</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co"># preserva estratos e UPAs de toda a amostra para o cálculo correto da variância</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   <span class="co"># só mulheres</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>              mean     SE
 saude_ruim 0.37674 0.0039</code></pre>
@@ -877,7 +995,7 @@ saude_ruim 0.37674 0.0039</code></pre>
 <h2 class="anchored" data-anchor-id="cruzamentos-que-não-estão-nas-tabelas-a-vantagem-do-microdado">Cruzamentos que não estão nas tabelas (a vantagem do microdado)</h2>
 <p>Com os microdados, criamos recortes que a divulgação não traz — por exemplo, a saúde autoavaliada por <strong>cor/raça</strong>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>raca_cor, des, svymean, <span class="at">vartype =</span> <span class="st">"cv"</span>)  <span class="co"># proporção por cor/raça, com o CV de cada uma</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>raca_cor, des, svymean, <span class="at">vartype =</span> <span class="st">"cv"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)  <span class="co"># proporção por cor/raça, com o CV</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -890,6 +1008,23 @@ saude_ruim 0.37674 0.0039</code></pre>
 <p>Surge um gradiente nítido: Branca 29,0% e Amarela 30,0% de um lado; Preta 37,1%, Parda 37,9% e Indígena 39,1% de outro — uma desigualdade racial na percepção de saúde que a tabela-padrão por sexo e idade não revela. É o que justifica abrir os microdados em vez de parar nas divulgações.</p>
 </div>
 </section>
+<section id="cruzando-duas-dimensões-corraça-sexo" class="level2">
+<h2 class="anchored" data-anchor-id="cruzando-duas-dimensões-corraça-sexo">Cruzando duas dimensões: cor/raça × sexo</h2>
+<p>Basta somar <code>~raca_cor + sexo</code> no <code>svyby</code> para cruzar as duas dimensões de uma vez:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>raca_cor <span class="sc">+</span> sexo, des, svymean, <span class="at">vartype =</span> <span class="st">"cv"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["raca_cor"],"name":[1],"type":["fct"],"align":["left"]},{"label":["sexo"],"name":[2],"type":["fct"],"align":["left"]},{"label":["saude_ruim"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["cv"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Branca","2":"Homem","3":"0.2532545","4":"0.02296700","_rn_":"Branca.Homem"},{"1":"Preta","2":"Homem","3":"0.3170715","4":"0.03352337","_rn_":"Preta.Homem"},{"1":"Amarela","2":"Homem","3":"0.2207872","4":"0.18528171","_rn_":"Amarela.Homem"},{"1":"Parda","2":"Homem","3":"0.3326844","4":"0.01913182","_rn_":"Parda.Homem"},{"1":"Indígena","2":"Homem","3":"0.3159054","4":"0.16628803","_rn_":"Indígena.Homem"},{"1":"Branca","2":"Mulher","3":"0.3209781","4":"0.01879251","_rn_":"Branca.Mulher"},{"1":"Preta","2":"Mulher","3":"0.4183505","4":"0.02726424","_rn_":"Preta.Mulher"},{"1":"Amarela","2":"Mulher","3":"0.3738582","4":"0.11652246","_rn_":"Amarela.Mulher"},{"1":"Parda","2":"Mulher","3":"0.4212957","4":"0.01305609","_rn_":"Parda.Mulher"},{"1":"Indígena","2":"Mulher","3":"0.4776813","4":"0.10599864","_rn_":"Indígena.Mulher"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div class="leitura">
+<p>As duas desigualdades se <strong>somam</strong>: em cada grupo de cor/raça as mulheres avaliam pior a própria saúde que os homens, e o gradiente racial vale para ambos os sexos — do extremo dos <strong>homens brancos (25,3%)</strong> ao das <strong>mulheres indígenas (47,8%)</strong> e pardas (42,1%). Repare também na coluna <code>cv</code>: para <strong>Amarela</strong> e <strong>Indígena</strong> ela passa de 10% (grupos pequenos na amostra), um lembrete de que nem toda célula do cruzamento é igualmente confiável — e de que cruzamentos finos esbarram no tamanho da amostra.</p>
+</div>
+</section>
 <section id="o-coeficiente-de-variação-e-seus-limites" class="level2">
 <h2 class="anchored" data-anchor-id="o-coeficiente-de-variação-e-seus-limites">O coeficiente de variação — e seus limites</h2>
 <p>Na coluna <code>cv</code> acima, o <strong>coeficiente de variação</strong> mede a precisão <em>relativa</em> (erro-padrão como % da estimativa). Para Branca e Parda o CV é ~1–1,5% (muito preciso); para Amarela e Indígena chega a ~10%. A razão é o tamanho do grupo: poucos casos → erro-padrão grande em relação à estimativa.</p>
@@ -899,12 +1034,22 @@ saude_ruim 0.37674 0.0039</code></pre>
 <li>em domínios pequenos fica alto mesmo quando a estimativa é informativa — por isso o IBGE adota regras de corte (sinaliza ou omite estimativas com CV acima de um limite);</li>
 <li>e, sobretudo, mede apenas a variância — não capta viés: uma estimativa de CV baixíssimo pode estar sistematicamente errada (subcobertura, não-resposta). <strong>Precisão não é acurácia.</strong></li>
 </ul>
+<p>A distinção é a da analogia clássica dos alvos: <strong>precisão</strong> é o quanto os tiros se agrupam (dispersão); <strong>acurácia</strong> é o quanto acertam o centro (viés). São independentes — dá para ser preciso e estar sistematicamente fora.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tutorial_files/figure-html/alvo-precisao-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="o-efeito-do-desenho-na-pns-real" class="level2">
 <h2 class="anchored" data-anchor-id="o-efeito-do-desenho-na-pns-real">O efeito do desenho na PNS real</h2>
 <p>Por fim, quanto o desenho complexo custa em precisão? O <strong>deff</strong> compara a variância do desenho à de uma AAS de mesmo tamanho:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des, <span class="at">deff =</span> <span class="st">"replace"</span>)  <span class="co"># deff = "replace": variância do desenho ÷ a de uma AAS</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>saude_ruim, des, <span class="at">deff =</span> <span class="st">"replace"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)  <span class="co"># deff = "replace": variância do desenho ÷ a de uma AAS</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               mean       SE   DEff
 saude_ruim 0.338876 0.003038 3.6469</code></pre>
@@ -913,21 +1058,22 @@ saude_ruim 0.338876 0.003038 3.6469</code></pre>
 <div class="leitura">
 <p>O <strong>deff ≈ 3,6</strong>: a combinação de conglomerados e pesos mais que <strong>triplica</strong> a variância em relação a uma AAS de 88,5 mil pessoas — que, em informação, “valem” como ~25 mil sob AAS. É a tradução, em número, de tudo o que a Parte 1 antecipou. Ignorar o desenho daria um erro-padrão <span class="math inline">\(\sqrt{3{,}6}\approx 1{,}9\)</span> vez menor — e um IC quase pela metade do correto.</p>
 </div>
+<p>Uma distinção conceitual fecha a parte. Diz-se que o plano amostral é <strong>informativo</strong> (ou <em>não ignorável</em>) quando a probabilidade de seleção se relaciona com o próprio desfecho, mesmo após condicionar nas covariáveis do modelo — e aí ignorar o desenho <strong>enviesa o ponto</strong>, não apenas o erro-padrão. É o risco da PNS, cujos pesos desiguais (alocação desproporcional, morador selecionado) podem se correlacionar com saúde. Quando o plano é <strong>não informativo</strong> (a seleção é independente do desfecho dado o modelo), ignorá-lo mexe pouco no ponto — mas ainda assim erra o erro-padrão. Como raramente se sabe de antemão em que caso se está, a regra prática é uma só: <strong>respeite o desenho</strong> — é o que garante validade nos dois cenários.</p>
 </section>
 </section>
-<section id="parte-4-vitrines-temas-subexplorados" class="level1">
-<h1>Parte 4 · Vitrines: temas subexplorados</h1>
-<p>A força do microdado aparece nos temas que a divulgação trata pouco — e que a PNS, sozinha, permite estimar para o país inteiro. Quatro vitrines.</p>
+<section id="parte-4-aplicações-temas-pouco-explorados" class="level1">
+<h1>Parte 4 · Aplicações: temas pouco explorados</h1>
+<p>A força do microdado aparece nos temas que a divulgação trata pouco — e que a PNS, sozinha, permite estimar para o país inteiro. Quatro aplicações.</p>
 <section id="ideação-suicida-phq-9-item-n018" class="level2">
 <h2 class="anchored" data-anchor-id="ideação-suicida-phq-9-item-n018">Ideação suicida (PHQ-9, item N018)</h2>
 <p>O item 9 do PHQ-9 pergunta com que frequência, nas duas últimas semanas, a pessoa “pensou em se ferir ou achou que seria melhor estar morto” — um indicador de <strong>ideação suicida/autolesão</strong>, raríssimo em base populacional nacional.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>ideacao_suicida, des)                          <span class="co"># prevalência nacional (proporção + IC)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>ideacao_suicida, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)                  <span class="co"># prevalência nacional (proporção + IC)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                         2.5%  97.5%
 ideacao_suicida 0.0462 0.0437 0.0490</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>ideacao_suicida, <span class="sc">~</span>sexo, des, svyciprop, <span class="at">vartype =</span> <span class="st">"ci"</span>)  <span class="co"># por sexo; vartype="ci" traz o IC</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>ideacao_suicida, <span class="sc">~</span>sexo, des, svyciprop, <span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)  <span class="co"># por sexo (com IC)</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
@@ -944,20 +1090,20 @@ ideacao_suicida 0.0462 0.0437 0.0490</code></pre>
 <h2 class="anchored" data-anchor-id="depressão-a-escala-phq-9-o-diagnóstico">Depressão: a escala (PHQ-9) × o diagnóstico</h2>
 <p>A PNS mede depressão de duas formas: o diagnóstico médico autorreferido (<code>Q092</code>) e o rastreio pela escala PHQ-9 (escore ≥ 10). As prevalências são parecidas — mas serão as <strong>mesmas pessoas</strong>?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prevalência de cada medida de depressão (coef() extrai só a estimativa):</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="at">rastreio_PHQ9 =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>depr_phq9, des)),</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">diagnostico   =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>depr_diag, des))), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prevalência de cada medida de depressão (coef() extrai só a estimativa):</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="at">rastreio_PHQ9 =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>depr_phq9, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">diagnostico   =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>depr_diag, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>rastreio_PHQ9.depr_phq9   diagnostico.depr_diag 
                    10.8                    10.2 </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cria no desenho uma variável de 4 grupos (cruzamento rastreio × diagnóstico):</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">grupo =</span> <span class="fu">factor</span>(dplyr<span class="sc">::</span><span class="fu">case_when</span>(   <span class="co"># case_when: if/else encadeado</span></span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  depr_phq9 <span class="sc">&amp;</span> depr_diag <span class="sc">~</span> <span class="st">"ambos"</span>,</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  depr_phq9             <span class="sc">~</span> <span class="st">"só rastreio (PHQ-9)"</span>,</span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  depr_diag             <span class="sc">~</span> <span class="st">"só diagnóstico"</span>,</span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span>                  <span class="sc">~</span> <span class="st">"nenhum"</span>)))</span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>grupo, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)                    <span class="co"># proporção da população em cada grupo</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cria no desenho uma variável de 4 grupos (cruzamento rastreio × diagnóstico):</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">grupo =</span> <span class="fu">factor</span>(dplyr<span class="sc">::</span><span class="fu">case_when</span>(   <span class="co"># case_when: if/else encadeado</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  depr_phq9 <span class="sc">&amp;</span> depr_diag <span class="sc">~</span> <span class="st">"ambos"</span>,</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  depr_phq9             <span class="sc">~</span> <span class="st">"só rastreio (PHQ-9)"</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  depr_diag             <span class="sc">~</span> <span class="st">"só diagnóstico"</span>,</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span>                  <span class="sc">~</span> <span class="st">"nenhum"</span>)))</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>grupo, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)                    <span class="co"># proporção da população em cada grupo</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                             mean     SE
 grupoambos               0.039905 0.0012
@@ -974,26 +1120,26 @@ gruposó rastreio (PHQ-9) 0.068382 0.0015</code></pre>
 <h2 class="anchored" data-anchor-id="violência-por-parceiro-módulo-v">Violência por parceiro (módulo V)</h2>
 <p>O módulo de violência registra atos psicológicos, físicos e sexuais nos últimos 12 meses e o principal agressor. Derivamos os indicadores a partir dos itens (tratando ausência como “não”) e analisamos as mulheres:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cria os indicadores de violência a partir dos itens do módulo V.</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (X=="1") %in% TRUE -&gt; TRUE se "Sim"; trata ausência (NA) como "não":</span></span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des,</span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">viol_fisica =</span> (V01401<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01402<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01403<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>                (V01404<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01405<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span>,                   <span class="co"># alguma agressão física</span></span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">viol_qq     =</span> (V00201<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00202<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00203<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
-<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>                (V00204<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00205<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01401<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
-<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>                (V01402<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01403<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01404<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
-<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>                (V01405<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V02701<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V02702<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span>,  <span class="co"># qualquer violência</span></span>
-<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">agr_companheiro =</span> (V006 <span class="sc">==</span> <span class="st">"01"</span>) <span class="sc">%in%</span> <span class="cn">TRUE</span>)                                     <span class="co"># agressor = cônjuge/companheiro</span></span>
-<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="co"># prevalências entre as MULHERES (subconjunto do desenho):</span></span>
-<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="at">qualquer =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>viol_qq,     <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>))),</span>
-<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">fisica   =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>viol_fisica, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>)))), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cria os indicadores de violência a partir dos itens do módulo V.</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (X=="1") %in% TRUE -&gt; TRUE se "Sim"; trata ausência (NA) como "não":</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">viol_fisica =</span> (V01401<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01402<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01403<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>                (V01404<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01405<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span>,                   <span class="co"># alguma agressão física</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">viol_qq     =</span> (V00201<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00202<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00203<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>                (V00204<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V00205<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01401<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>                (V01402<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01403<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V01404<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>                (V01405<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V02701<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span> <span class="sc">|</span> (V02702<span class="sc">==</span><span class="st">"1"</span>)<span class="sc">%in%</span><span class="cn">TRUE</span>,  <span class="co"># qualquer violência</span></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">agr_companheiro =</span> (V006 <span class="sc">==</span> <span class="st">"01"</span>) <span class="sc">%in%</span> <span class="cn">TRUE</span>)                                     <span class="co"># agressor = cônjuge/companheiro</span></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a><span class="co"># prevalências entre as MULHERES (subconjunto do desenho):</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="at">qualquer =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>viol_qq,     <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">fisica   =</span> <span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>viol_fisica, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>))), <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  qualquer.viol_qq fisica.viol_fisica 
               19.4                4.2 </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># entre as agredidas, a % cujo principal agressor foi o companheiro:</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>agr_companheiro, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span> <span class="sc">&amp;</span> viol_qq))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># entre as agredidas, a % cujo principal agressor foi o companheiro:</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">svyciprop</span>(<span class="sc">~</span>agr_companheiro, <span class="fu">subset</span>(des, sexo <span class="sc">==</span> <span class="st">"Mulher"</span> <span class="sc">&amp;</span> viol_qq), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                       2.5% 97.5%
 agr_companheiro 0.165 0.148 0.183</code></pre>
@@ -1006,7 +1152,7 @@ agr_companheiro 0.165 0.148 0.183</code></pre>
 <section id="orientação-sexual-y008-novo-em-2019" class="level2">
 <h2 class="anchored" data-anchor-id="orientação-sexual-y008-novo-em-2019">Orientação sexual (Y008, novo em 2019)</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>orient_sexual, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   <span class="co"># proporção em cada categoria de orientação sexual</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>orient_sexual, des, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   <span class="co"># proporção em cada categoria de orientação sexual</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                 mean     SE
 orient_sexualHeterossexual 0.96960541 0.0011
@@ -1028,17 +1174,17 @@ orient_sexualNão respondeu 0.00000000 0.0000</code></pre>
 <section id="densidade-ponderada" class="level2">
 <h2 class="anchored" data-anchor-id="densidade-ponderada">Densidade ponderada</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a renda é MUITO assimétrica -&gt; usamos a escala LOG, que "abre" a distribuição.</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="co"># log exige valores positivos, então tiramos antes quem tem renda zero:</span></span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>des_renda <span class="ot">&lt;-</span> <span class="fu">subset</span>(des, rdpc <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="co"># svyhist(): histograma PONDERADO (usa os pesos do desenho) de log10(renda).</span></span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="co"># axes = FALSE para, em seguida, rotular o eixo x em REAIS (e não em "3, 4, 5"):</span></span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svyhist</span>(<span class="sc">~</span><span class="fu">log10</span>(rdpc), des_renda, <span class="at">main =</span> <span class="st">""</span>, <span class="at">col =</span> <span class="st">"#d6e4f0"</span>, <span class="at">breaks =</span> <span class="dv">30</span>,</span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Renda domiciliar per capita (R$ — escala log)"</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>)                                    <span class="co"># eixo y (densidade)</span></span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>reais <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">300</span>, <span class="dv">1000</span>, <span class="dv">3000</span>, <span class="dv">10000</span>)    <span class="co"># marcas que QUEREMOS mostrar, em reais...</span></span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="fu">log10</span>(reais), <span class="at">labels =</span> reais) <span class="co"># ...posicionadas no lugar certo (log10) do eixo</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a renda é MUITO assimétrica -&gt; usamos a escala LOG, que "abre" a distribuição.</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="co"># log exige valores positivos, então tiramos antes quem tem renda zero:</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>des_renda <span class="ot">&lt;-</span> <span class="fu">subset</span>(des, rdpc <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="co"># svyhist(): histograma PONDERADO (usa os pesos do desenho) de log10(renda).</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="co"># axes = FALSE para, em seguida, rotular o eixo x em REAIS (e não em "3, 4, 5"):</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a><span class="fu">svyhist</span>(<span class="sc">~</span><span class="fu">log10</span>(rdpc), des_renda, <span class="at">main =</span> <span class="st">""</span>, <span class="at">col =</span> <span class="st">"#d6e4f0"</span>, <span class="at">breaks =</span> <span class="dv">30</span>,</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Renda domiciliar per capita (R$ — escala log)"</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>)                                    <span class="co"># eixo y (densidade)</span></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>reais <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">300</span>, <span class="dv">1000</span>, <span class="dv">3000</span>, <span class="dv">10000</span>)    <span class="co"># marcas que QUEREMOS mostrar, em reais...</span></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="fu">log10</span>(reais), <span class="at">labels =</span> reais) <span class="co"># ...posicionadas no lugar certo (log10) do eixo</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1055,19 +1201,19 @@ orient_sexualNão respondeu 0.00000000 0.0000</code></pre>
 <h2 class="anchored" data-anchor-id="estimativas-com-intervalo-de-confiança">Estimativas com intervalo de confiança</h2>
 <p>O gráfico mais útil de uma pesquisa: a estimativa por domínio com a barra de incerteza. Os números vêm do <code>svyby()</code>; o desenho, do <code>ggplot2</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="co"># cria a faixa etária dentro do desenho:</span></span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">faixa =</span> <span class="fu">cut</span>(idade, <span class="fu">c</span>(<span class="dv">17</span>, <span class="dv">29</span>, <span class="dv">44</span>, <span class="dv">59</span>, <span class="cn">Inf</span>),</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"18-29"</span>, <span class="st">"30-44"</span>, <span class="st">"45-59"</span>, <span class="st">"60+"</span>)))</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="co"># svyby com vartype="ci" devolve um data.frame com a estimativa e as colunas ci_l / ci_u:</span></span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>est <span class="ot">&lt;-</span> <span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>faixa, des, svymean, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(est, <span class="fu">aes</span>(faixa, saude_ruim)) <span class="sc">+</span></span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#2980b9"</span>, <span class="at">width =</span> .<span class="dv">65</span>) <span class="sc">+</span>                   <span class="co"># barras = estimativa</span></span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> ci_l, <span class="at">ymax =</span> ci_u), <span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span>  <span class="co"># barras de erro = IC 95%</span></span>
-<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
-<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Faixa etária"</span>, <span class="at">y =</span> <span class="st">"Saúde ruim/regular"</span>) <span class="sc">+</span></span>
-<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="co"># cria a faixa etária dentro do desenho:</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">faixa =</span> <span class="fu">cut</span>(idade, <span class="fu">c</span>(<span class="dv">17</span>, <span class="dv">29</span>, <span class="dv">44</span>, <span class="dv">59</span>, <span class="cn">Inf</span>),</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"18-29"</span>, <span class="st">"30-44"</span>, <span class="st">"45-59"</span>, <span class="st">"60+"</span>)))</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="co"># svyby com vartype="ci" devolve um data.frame com a estimativa e as colunas ci_l / ci_u:</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>est <span class="ot">&lt;-</span> <span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>faixa, des, svymean, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(est, <span class="fu">aes</span>(faixa, saude_ruim)) <span class="sc">+</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#2980b9"</span>, <span class="at">width =</span> .<span class="dv">65</span>) <span class="sc">+</span>                   <span class="co"># barras = estimativa</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> ci_l, <span class="at">ymax =</span> ci_u), <span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span>  <span class="co"># barras de erro = IC 95%</span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Faixa etária"</span>, <span class="at">y =</span> <span class="st">"Saúde ruim/regular"</span>) <span class="sc">+</span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1079,6 +1225,55 @@ orient_sexualNão respondeu 0.00000000 0.0000</code></pre>
 <div class="leitura">
 <p>A percepção de saúde piora com a idade — de ~20% entre 18–29 a ~50% no 60+ — e as barras de erro (estreitas, porque cada faixa tem milhares de casos) mostram que o padrão é firme, não ruído. Plotar a estimativa sem o intervalo seria esconder metade da informação.</p>
 </div>
+</section>
+<section id="outras-funções-gráficas-do-desenho" class="level2">
+<h2 class="anchored" data-anchor-id="outras-funções-gráficas-do-desenho">Outras funções gráficas do desenho</h2>
+<p>O <code>survey</code> traz um gráfico <strong>ponderado</strong> para cada tarefa comum. Um <strong>boxplot</strong> por domínio, por exemplo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">svyboxplot</span>(idade <span class="sc">~</span> regiao, des, <span class="at">col =</span> <span class="st">"#d6e4f0"</span>, <span class="at">ylab =</span> <span class="st">"Idade (anos)"</span>, <span class="at">main =</span> <span class="st">""</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tutorial_files/figure-html/graf-box-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>E o repertório, todos respeitando os pesos e o desenho (e sempre a partir do objeto de desenho, nunca do <code>data.frame</code> cru):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>função</th>
+<th>para quê</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>svyhist</code></td>
+<td>histograma (densidade ponderada)</td>
+</tr>
+<tr class="even">
+<td><code>svyboxplot</code></td>
+<td>boxplot por grupo</td>
+</tr>
+<tr class="odd">
+<td><code>svyplot</code></td>
+<td>dispersão ponderada (métodos <code>"bubble"</code>, <code>"hex"</code>, <code>"transparent"</code>, <code>"subsample"</code>)</td>
+</tr>
+<tr class="even">
+<td><code>svycdf</code></td>
+<td>função de distribuição acumulada empírica</td>
+</tr>
+<tr class="odd">
+<td><code>svysmooth</code></td>
+<td>densidade e curvas suavizadas (kernel)</td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 <section id="parte-6-regressão-com-o-plano" class="level1">
@@ -1134,6 +1329,7 @@ raca_corIndígena   1.61  1.19   2.19</code></pre>
 <div class="leitura">
 <p>O erro-padrão ingênuo (0,0151) é ~<strong>42% menor</strong> que o do desenho (0,0259) — porque o <code>glm</code> comum ignora a conglomeração. Quem o usa reporta IC estreito demais e “significâncias” infladas; a razão entre os dois SE é, de novo, a raiz do deff.</p>
 </div>
+<p>Vale registrar uma alternativa que às vezes se ouve: em vez de ponderar, <strong>incluir as variáveis do plano como covariáveis</strong> no modelo — os estratos como efeitos fixos, os conglomerados como <strong>efeito aleatório</strong> (modelo multinível). É a abordagem <strong>baseada em modelo</strong>, em contraste com a <strong>baseada em desenho</strong> do <code>svyglm</code>. Ela pode ser válida — e até mais eficiente — <strong>se</strong> o modelo da média estiver bem especificado e capturar tudo o que torna a seleção informativa; caso contrário, enviesa. O caminho do desenho (pesos + <code>svyglm</code>) é mais <strong>robusto</strong>: não depende dessa especificação, entregando o resultado certo mesmo com o modelo “errado”. Em dúvida, prefira o desenho.</p>
 </section>
 <section id="modelo-ordinal-da-autoavaliação-svyolr" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-ordinal-da-autoavaliação-svyolr">Modelo ordinal da autoavaliação (svyolr)</h2>
@@ -1157,6 +1353,72 @@ raca_corIndígena   1.61  1.19   2.19</code></pre>
 <div class="leitura">
 <p>A leitura é a mesma do logístico, mas sobre a escala inteira: mulheres têm 1,40× a chance de estar numa categoria pior de saúde, e o efeito da idade é forte (60+: 4,6×). O <code>svyolr</code> é a ferramenta certa quando o desfecho é ordinal.</p>
 </div>
+</section>
+<section id="o-mapa-dos-modelos-com-desenho" class="level2">
+<h2 class="anchored" data-anchor-id="o-mapa-dos-modelos-com-desenho">O mapa dos modelos com desenho</h2>
+<p>O <code>svyglm</code> cobre a família exponencial pelo argumento <code>family =</code>; e o <code>survey</code> tem uma função para cada tipo de desfecho — os “caminhos” para levar adiante:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>desfecho / objetivo</th>
+<th>função</th>
+<th>observação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>contínuo (linear)</td>
+<td><code>svyglm(..., family = gaussian())</code></td>
+<td>regressão linear</td>
+</tr>
+<tr class="even">
+<td>binário (logística)</td>
+<td><code>svyglm(..., family = quasibinomial())</code></td>
+<td><code>quasi*</code> evita avisos de peso não inteiro</td>
+</tr>
+<tr class="odd">
+<td>contagem (Poisson)</td>
+<td><code>svyglm(..., family = quasipoisson())</code></td>
+<td>taxas e contagens</td>
+</tr>
+<tr class="even">
+<td>positivo e assimétrico</td>
+<td><code>svyglm(..., family = Gamma("log"))</code></td>
+<td>custos, gastos</td>
+</tr>
+<tr class="odd">
+<td>ordinal</td>
+<td><code>svyolr()</code></td>
+<td>odds proporcionais</td>
+</tr>
+<tr class="even">
+<td><strong>sobrevivência / tempo até o evento</strong></td>
+<td><code>svycoxph()</code>, <code>svykm()</code></td>
+<td>Cox e Kaplan–Meier ponderados</td>
+</tr>
+<tr class="odd">
+<td>tabelas / associação</td>
+<td><code>svyloglin()</code>, <code>svychisq()</code></td>
+<td>log-lineares, qui-quadrado</td>
+</tr>
+<tr class="even">
+<td>quantis (p.&nbsp;ex. mediana)</td>
+<td><code>svyquantile()</code></td>
+<td>por domínio, com <code>svyby</code></td>
+</tr>
+<tr class="odd">
+<td>estimador próprio</td>
+<td><code>svymle()</code></td>
+<td>máxima verossimilhança geral</td>
+</tr>
+</tbody>
+</table>
+<p>Testes seguem a mesma lógica: <code>svyttest</code>, <code>svyranktest</code>, <code>regTermTest</code> (Wald para termos de um modelo). O princípio nunca muda — passe o <strong>desenho</strong>, não o <code>data.frame</code>.</p>
 </section>
 </section>
 <section id="parte-7-comparar-2013-2019" class="level1">
@@ -1200,6 +1462,23 @@ raca_corIndígena   1.61  1.19   2.19</code></pre>
 <div class="leitura">
 <p>A história é nítida — e é a tese do workshop. A <strong>autoavaliação de saúde não mudou</strong> (33,8 → 33,9; diferença +0,1, IC [−0,9, 1,0], que inclui o zero). Mas a <strong>saúde mental piorou</strong>: depressão diagnosticada +2,6 pontos (7,6 → 10,2), rastreio PHQ-9 +3,0 (7,9 → 10,8) e ideação suicida +0,9 (3,7 → 4,6) — todas com IC bem afastado do zero. O número-síntese mais comunicado cala justamente a dimensão que mais se moveu — e só os microdados, com o desenho, permitem medir essa mudança com a incerteza correta.</p>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Duas dúvidas frequentes sobre a comparação
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>“Posso comparar o IC de cada ano — se eles se sobrepõem, são estatisticamente iguais?”</strong> Como atalho <strong>visual</strong>, só em parte: se os IC <strong>não</strong> se sobrepõem, a diferença é significativa (o teste da sobreposição é até mais <strong>conservador</strong> que o correto). Mas o inverso <strong>não vale</strong> — dois IC podem se sobrepor e a diferença ainda ser significativa. Por isso o teste rigoroso é feito sobre a <strong>diferença</strong> (com as variâncias somadas), como acima; a sobreposição serve apenas para um olhar rápido no gráfico.</p>
+<p><strong>“As duas PNS são calibradas à mesma projeção de população — é isso que garante a comparação?”</strong> Não: cada edição é calibrada à <strong>projeção do seu próprio ano de referência</strong> (a população de 2013 não é a de 2019). E está correto assim — comparamos a prevalência <em>na população de 2013</em> com a <em>de 2019</em>. A comparabilidade vem de outra coisa: <strong>mesma definição</strong> dos indicadores, <strong>mesma população-alvo</strong> (recorte 18+ nas duas edições) e o tratamento como <strong>amostras independentes</strong>.</p>
+</div>
+</div>
+</div>
 <hr>
 </section>
 </section>
@@ -1238,6 +1517,7 @@ raca_corIndígena   1.61  1.19   2.19</code></pre>
 <ul>
 <li><strong>Silva, P. L. N.</strong> <em>Amostragem com R.</em> Disponível em: <a href="https://amostragemcomr.github.io/livro/" class="uri">https://amostragemcomr.github.io/livro/</a></li>
 <li><strong>Lumley, T.</strong> (2010). <em>Complex Surveys: A Guide to Analysis Using R.</em> Hoboken: Wiley. (pacote <code>survey</code>; Lumley, 2004, <em>Journal of Statistical Software</em>, 9(8).)</li>
+<li><strong>Assunção Sales, G.</strong> <em>PNSIBGE: Downloading, Reading and Analyzing PNS Microdata</em> (pacote R, CRAN) e o tutorial <em>Análise de microdados da PNS com os pacotes PNSIBGE e survey</em> — a via automatizada, complementar ao caminho manual deste material.</li>
 <li><strong>IBGE.</strong> <em>Pesquisa Nacional de Saúde</em> (2013; 2019). Microdados, dicionários, inputs e planos amostrais no FTP: <a href="https://ftp.ibge.gov.br/PNS/" class="uri">https://ftp.ibge.gov.br/PNS/</a>. Página da pesquisa: <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/9160-pesquisa-nacional-de-saude.html" class="uri">https://www.ibge.gov.br/estatisticas/sociais/saude/9160-pesquisa-nacional-de-saude.html</a></li>
 <li><strong>Souza-Júnior, P. R. B. et al.</strong> (2015). <em>Desenho da amostra da Pesquisa Nacional de Saúde 2013.</em> Epidemiologia e Serviços de Saúde, 24(2).</li>
 <li><strong>Stopa, S. R. et al.</strong> (2020). <em>Pesquisa Nacional de Saúde 2019: histórico, métodos e perspectivas.</em> Epidemiologia e Serviços de Saúde, 29(5).</li>

@@ -643,7 +643,7 @@ autoavalMuito ruim
 <h2>Por domínio: <code>svyby</code></h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># svyby(): a mesma estimativa repartida POR um fator (aqui, sexo)</span></span>
-<span id="cb28-2"><a aria-hidden="true" tabindex="-1"></a>sb <span class="ot">&lt;-</span> <span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>sexo, des, svymean, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
+<span id="cb28-2"><a aria-hidden="true" tabindex="-1"></a>sb <span class="ot">&lt;-</span> <span class="fu">svyby</span>(<span class="sc">~</span>saude_ruim, <span class="sc">~</span>sexo, des, svymean, <span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb28-3"><a aria-hidden="true" tabindex="-1"></a><span class="fu">transform</span>(sb, <span class="at">saude_ruim =</span> <span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>saude_ruim,<span class="dv">1</span>),</span>
 <span id="cb28-4"><a aria-hidden="true" tabindex="-1"></a>          <span class="at">ci_l =</span> <span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>ci_l,<span class="dv">1</span>), <span class="at">ci_u =</span> <span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>ci_u,<span class="dv">1</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
@@ -696,15 +696,15 @@ autoavalMuito ruim
 </div>
 </section></section>
 <section>
-<section id="parte-4-vitrines" class="title-slide slide level1 center">
-<h1>Parte 4 · Vitrines</h1>
+<section id="parte-4-aplicações" class="title-slide slide level1 center">
+<h1>Parte 4 · Aplicações</h1>
 
 </section>
 <section id="ideação-suicida-phq-9-item-9" class="slide level2 smaller">
 <h2>Ideação suicida (PHQ-9, item 9)</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des, <span class="at">ideacao =</span> N018 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"2"</span>,<span class="st">"3"</span>,<span class="st">"4"</span>))   <span class="co"># &gt; "nenhum dia"</span></span>
-<span id="cb29-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>ideacao, <span class="sc">~</span>sexo, des, svyciprop, <span class="at">vartype =</span> <span class="st">"ci"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>ideacao, <span class="sc">~</span>sexo, des, svyciprop, <span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
 <span id="cb29-3"><a aria-hidden="true" tabindex="-1"></a>  <span class="fu">transform</span>(<span class="at">ideacao =</span> <span class="fu">round</span>(ideacao<span class="sc">*</span><span class="dv">100</span>,<span class="dv">1</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="kable-table">
@@ -771,12 +771,12 @@ gruposó rastreio (PHQ-9)
 <span id="cb32-4"><a aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">update</span>(des,</span>
 <span id="cb32-5"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">viol_qq     =</span> <span class="fu">rowSums</span>(<span class="fu">sapply</span>(pns19[itens], \(x) (x<span class="sc">==</span><span class="st">"1"</span>) <span class="sc">%in%</span> <span class="cn">TRUE</span>)) <span class="sc">&gt;</span> <span class="dv">0</span>,  <span class="co"># algum item = "Sim"</span></span>
 <span id="cb32-6"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">companheiro =</span> (V006 <span class="sc">==</span> <span class="st">"01"</span>) <span class="sc">%in%</span> <span class="cn">TRUE</span>)</span>
-<span id="cb32-7"><a aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span><span class="fu">as.numeric</span>(<span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>viol_qq, <span class="fu">subset</span>(des, sexo<span class="sc">==</span><span class="st">"Mulher"</span>)))), <span class="dv">1</span>)   <span class="co"># % mulheres c/ violência</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb32-7"><a aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span><span class="fu">as.numeric</span>(<span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>viol_qq, <span class="fu">subset</span>(des, sexo<span class="sc">==</span><span class="st">"Mulher"</span>), <span class="at">na.rm=</span><span class="cn">TRUE</span>))), <span class="dv">1</span>)   <span class="co"># % mulheres c/ violência</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 19.4</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span><span class="fu">as.numeric</span>(<span class="fu">coef</span>(<span class="fu">svyciprop</span>(<span class="sc">~</span>companheiro,</span>
-<span id="cb34-2"><a aria-hidden="true" tabindex="-1"></a>                          <span class="fu">subset</span>(des, sexo<span class="sc">==</span><span class="st">"Mulher"</span> <span class="sc">&amp;</span> viol_qq)))), <span class="dv">1</span>)             <span class="co"># % agressor = companheiro</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb34-2"><a aria-hidden="true" tabindex="-1"></a>                          <span class="fu">subset</span>(des, sexo<span class="sc">==</span><span class="st">"Mulher"</span> <span class="sc">&amp;</span> viol_qq), <span class="at">na.rm=</span><span class="cn">TRUE</span>))), <span class="dv">1</span>)             <span class="co"># % agressor = companheiro</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 16.5</code></pre>
 </div>
