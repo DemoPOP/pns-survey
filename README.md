@@ -1,5 +1,6 @@
 # Explorando dados da PNS com o pacote survey
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21155543.svg)](https://doi.org/10.5281/zenodo.21155543)
 [![Licença: CC BY 4.0](https://img.shields.io/badge/Licen%C3%A7a-CC%20BY%204.0-blue.svg)](https://creativecommons.org/licenses/by/4.0/deed.pt-br)
 [![Site](https://img.shields.io/badge/site-GitHub%20Pages-1d6e56.svg)](https://demopop.github.io/pns-survey/)
 
@@ -32,7 +33,7 @@ Os subconjuntos foram preparados a partir dos [microdados públicos do IBGE](htt
 
 ## Como citar
 
-> Gonçalves, C. C. S. (2026). *Explorando dados da PNS com o pacote survey* [material de workshop]. Workshop de Métodos Demográficos — DEMOPOP, Departamento de Demografia / CEDEPLAR-UFMG. <https://demopop.github.io/pns-survey/>
+> Gonçalves, C. C. S. (2026). *Explorando dados da PNS com o pacote survey* [material de workshop]. Workshop de Métodos Demográficos — DEMOPOP, Departamento de Demografia / CEDEPLAR-UFMG. <https://doi.org/10.5281/zenodo.21155543>
 
 ## Licença
 

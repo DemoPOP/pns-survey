@@ -17,6 +17,7 @@ authors:
     affiliation: "Departamento de Demografia / CEDEPLAR-UFMG"
 date-released: "2026-07-03"
 version: "1.0.0"
+doi: 10.5281/zenodo.21155543
 license: CC-BY-4.0
 url: "https://demopop.github.io/pns-survey/"
 repository-code: "https://github.com/DemoPOP/pns-survey"
