@@ -16,3 +16,9 @@ Thumbs.db
 ~$*
 
 **/*.quarto_ipynb
+
+# microdados brutos do IBGE (grandes; baixar do FTP)
+data/*.txt
+data/*.sas
+data/*.xls
+data/*.xlsx

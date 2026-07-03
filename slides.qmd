@@ -351,7 +351,7 @@ Bate **exatamente** com o divulgado (boa/muito boa 66,1; regular 28,1; ruim/muit
 
 ```{r}
 # svyby(): a mesma estimativa repartida POR um fator (aqui, sexo)
-sb <- svyby(~saude_ruim, ~sexo, des, svymean, vartype = "ci")
+sb <- svyby(~saude_ruim, ~sexo, des, svymean, vartype = "ci", na.rm = TRUE)
 transform(sb, saude_ruim = round(100*saude_ruim,1),
           ci_l = round(100*ci_l,1), ci_u = round(100*ci_u,1))
 ```
@@ -374,13 +374,13 @@ Mas o CV tem limites:
 
 Precisão **não** é o mesmo que validade.
 
-# Parte 4 · Vitrines
+# Parte 4 · Aplicações
 
 ## Ideação suicida (PHQ-9, item 9) {.smaller}
 
 ```{r}
 des <- update(des, ideacao = N018 %in% c("2","3","4"))   # > "nenhum dia"
-svyby(~ideacao, ~sexo, des, svyciprop, vartype = "ci") |>
+svyby(~ideacao, ~sexo, des, svyciprop, vartype = "ci", na.rm = TRUE) |>
   transform(ideacao = round(ideacao*100,1))
 ```
 
@@ -412,9 +412,9 @@ itens <- c("V00201","V00202","V00203","V00204","V00205",      # psicológica
 des <- update(des,
   viol_qq     = rowSums(sapply(pns19[itens], \(x) (x=="1") %in% TRUE)) > 0,  # algum item = "Sim"
   companheiro = (V006 == "01") %in% TRUE)
-round(100*as.numeric(coef(svyciprop(~viol_qq, subset(des, sexo=="Mulher")))), 1)   # % mulheres c/ violência
+round(100*as.numeric(coef(svyciprop(~viol_qq, subset(des, sexo=="Mulher"), na.rm=TRUE))), 1)   # % mulheres c/ violência
 round(100*as.numeric(coef(svyciprop(~companheiro,
-                          subset(des, sexo=="Mulher" & viol_qq)))), 1)             # % agressor = companheiro
+                          subset(des, sexo=="Mulher" & viol_qq), na.rm=TRUE))), 1)             # % agressor = companheiro
 ```
 
 **19,4%** das mulheres sofreram alguma violência nos 12 meses; entre as agredidas, em **16,5%** o **principal agressor foi o companheiro** — a face doméstica, que o microdado isola.
