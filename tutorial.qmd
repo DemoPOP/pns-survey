@@ -67,12 +67,12 @@ Vamos montar o plano da PNS por partes: amostra aleatória simples → estratifi
 
 Antes de montar, vale nomear as peças. Toda **amostragem probabilística** compartilha um princípio: cada unidade da população tem uma probabilidade de seleção conhecida e não nula, e o **peso** de cada unidade é o inverso dela ($w_i = 1/\pi_i$) — é o que permite ir da amostra à população. Os tipos diferem em *como* se atribuem essas probabilidades:
 
-- **Aleatória simples (AAS)** — todas as unidades com a mesma probabilidade, sorteio direto; a referência contra a qual as demais se comparam ([Silva, cap. 4](https://amostragemcomr.github.io/livro/aas.html)).
+- **Aleatória simples (AAS)** — todas as unidades com a mesma probabilidade, sorteio direto; a referência contra a qual as demais se comparam ([Silva & Dias, cap. 4](https://amostragemcomr.github.io/livro/aas.html)).
 - **Estratificada** — divide-se a população em estratos e sorteia-se dentro de cada um; ganha precisão quando os estratos diferem no que se mede ([cap. 11](https://amostragemcomr.github.io/livro/estrat.html)).
 - **Por conglomerados** — sorteiam-se grupos inteiros e, dentro deles, as unidades — em um ou dois estágios; reduz o custo de campo ao preço de mais variância ([cap. 12](https://amostragemcomr.github.io/livro/cong.html)).
 - **Probabilidade proporcional ao tamanho (PPT / PPS)** — unidades maiores (p.ex. setores com mais domicílios) têm probabilidade de seleção maior; é o padrão no primeiro estágio das pesquisas domiciliares — e da PNS ([cap. 10](https://amostragemcomr.github.io/livro/ppt.html)).
 
-Há outros tipos que não trataremos aqui — como a amostragem sistemática (seleção a intervalos fixos numa lista ordenada; [cap. 8](https://amostragemcomr.github.io/livro/AS.html)) e variantes de PPT (Poisson, Pareto). O tratamento completo está no livro *Amostragem com R*, de Pedro L. N. Silva ([amostragemcomr.github.io/livro](https://amostragemcomr.github.io/livro/index.html)), em que esta parte se apoia.
+Há outros tipos que não trataremos aqui — como a amostragem sistemática (seleção a intervalos fixos numa lista ordenada; [cap. 8](https://amostragemcomr.github.io/livro/AS.html)) e variantes de PPT (Poisson, Pareto). O tratamento completo está no livro *Amostragem com R*, de Pedro L. N. Silva e Antonio J. R. Dias ([amostragemcomr.github.io/livro](https://amostragemcomr.github.io/livro/index.html)), em que esta parte se apoia.
 
 O ponto: a PNS **combina** estratificação + conglomerados em dois estágios + PPT no primeiro + pesos + calibração. A crescente a seguir monta essas peças, uma a uma.
 
@@ -160,7 +160,7 @@ E se, antes de sortear, dividíssemos a população em estratos (aqui, as regiõ
 
 Daí a regra: **estratificar ajuda na medida em que os estratos diferem no que se mede**, e (sob alocação proporcional) nunca piora a precisão.
 
-A **alocação** — como repartir a amostra entre os estratos — pode ser **proporcional** ($n_h \propto N_h$, pesos ~iguais, a que usamos abaixo), **uniforme** (mesmo $n_h$ em todos) ou **ótima de Neyman** ($n_h \propto N_h S_h$, mais amostra onde há mais variabilidade; [Silva, cap. 11](https://amostragemcomr.github.io/livro/estrat.html)). A PNS **não** usa proporcional: aloca para garantir um coeficiente de variação-alvo em cada domínio geográfico (capitais, RMs, UFs), o que **sobre-amostra os domínios menores** — e é aí que nascem os **pesos desiguais**, tema que retomamos logo abaixo.
+A **alocação** — como repartir a amostra entre os estratos — pode ser **proporcional** ($n_h \propto N_h$, pesos ~iguais, a que usamos abaixo), **uniforme** (mesmo $n_h$ em todos) ou **ótima de Neyman** ($n_h \propto N_h S_h$, mais amostra onde há mais variabilidade; [Silva & Dias, cap. 11](https://amostragemcomr.github.io/livro/estrat.html)). A PNS **não** usa proporcional: aloca para garantir um coeficiente de variação-alvo em cada domínio geográfico (capitais, RMs, UFs), o que **sobre-amostra os domínios menores** — e é aí que nascem os **pesos desiguais**, tema que retomamos logo abaixo.
 
 ::: {.callout-note collapse="true"}
 ## Decida antes: estratificar por região vai melhorar a precisão? E vai melhorar **igual** para a saúde e para a renda?
@@ -243,7 +243,7 @@ O preço é estatístico. Pessoas do mesmo setor se parecem — mesma vizinhanç
 
 $$\text{deff} \approx 1 + (\bar{m} - 1)\,\rho,$$
 
-onde $\bar{m}$ é o número médio de pessoas por conglomerado na amostra. Os **extremos** dão a intuição: se $\rho = 0$ (pessoas do mesmo setor tão diferentes quanto quaisquer outras), $\text{deff} = 1$ e conglomerar **não custa nada**; se $\rho = 1$ (todas idênticas dentro do setor), $\text{deff} = \bar{m}$ — cada conglomerado rende a informação de **uma só** pessoa, e as outras $\bar{m}-1$ são redundantes. Na prática $0 < \rho < 1$ e o deff fica **entre 1 e $\bar{m}$** (só seria menor que 1 no caso raro de $\rho$ negativo — vizinhos mais *diferentes* que o acaso). A consequência orienta o desenho de qualquer pesquisa: **muitos conglomerados pequenos** rendem mais precisão que **poucos conglomerados grandes** ([Silva, cap. 12](https://amostragemcomr.github.io/livro/cong.html)). A PNS é de dois estágios (UPA → domicílios); em um estágio, sortearíamos a UPA e entrevistaríamos *todos* os seus domicílios.
+onde $\bar{m}$ é o número médio de pessoas por conglomerado na amostra. Os **extremos** dão a intuição: se $\rho = 0$ (pessoas do mesmo setor tão diferentes quanto quaisquer outras), $\text{deff} = 1$ e conglomerar **não custa nada**; se $\rho = 1$ (todas idênticas dentro do setor), $\text{deff} = \bar{m}$ — cada conglomerado rende a informação de **uma só** pessoa, e as outras $\bar{m}-1$ são redundantes. Na prática $0 < \rho < 1$ e o deff fica **entre 1 e $\bar{m}$** (só seria menor que 1 no caso raro de $\rho$ negativo — vizinhos mais *diferentes* que o acaso). A consequência orienta o desenho de qualquer pesquisa: **muitos conglomerados pequenos** rendem mais precisão que **poucos conglomerados grandes** ([Silva & Dias, cap. 12](https://amostragemcomr.github.io/livro/cong.html)). A PNS é de dois estágios (UPA → domicílios); em um estágio, sortearíamos a UPA e entrevistaríamos *todos* os seus domicílios.
 
 ::: {.callout-note collapse="true"}
 ## Decida antes: sorteando 15 municípios e 25 pessoas em cada (n = 375), o erro-padrão vai subir ou descer em relação à AAS?
@@ -447,7 +447,7 @@ Note ainda que, ao contrário da Parte 1, não usamos `fpc` aqui: na PNS a fraç
 
 Os pesos do desenho (`V0029`) já expandem a amostra para a população. Mas, por amostragem, não-resposta e cobertura, a estrutura demográfica da amostra não bate *exatamente* com a conhecida. A **calibração** corrige isso: ajusta os pesos o mínimo necessário para que os totais estimados de variáveis auxiliares — na PNS, a população por sexo e classes de idade — coincidam com as projeções oficiais do IBGE (COPIS), na data de referência da pesquisa.
 
-Formalmente ([Silva, cap. 13](https://amostragemcomr.github.io/livro/calib.html)), buscam-se pesos calibrados $w_i$ tão próximos quanto possível dos pesos de desenho $d_i = 1/\pi_i$ — minimizando uma distância $\sum_{i}(w_i-d_i)^2/(q_i d_i)$ — sujeitos à restrição
+Formalmente ([Silva & Dias, cap. 13](https://amostragemcomr.github.io/livro/calib.html)), buscam-se pesos calibrados $w_i$ tão próximos quanto possível dos pesos de desenho $d_i = 1/\pi_i$ — minimizando uma distância $\sum_{i}(w_i-d_i)^2/(q_i d_i)$ — sujeitos à restrição
 
 $$\sum_{i \in s} w_i\,\mathbf{x}_i = \mathbf{T}_x,$$
 
@@ -900,7 +900,7 @@ Na preparação deste material, o autor utilizou o assistente **Claude** (Anthro
 
 ## Referências
 
-- **Silva, P. L. N.** *Amostragem com R.* Disponível em: <https://amostragemcomr.github.io/livro/>
+- **Silva, P. L. N.; Dias, A. J. R.** (2020). *Amostragem com R.* Disponível em: <https://amostragemcomr.github.io/livro/>
 - **Lumley, T.** (2010). *Complex Surveys: A Guide to Analysis Using R.* Hoboken: Wiley. (pacote `survey`; Lumley, 2004, *Journal of Statistical Software*, 9(8).)
 - **Assunção Sales, G.** *PNSIBGE: Downloading, Reading and Analyzing PNS Microdata* (pacote R, CRAN) e o tutorial *Análise de microdados da PNS com os pacotes PNSIBGE e survey* — a via automatizada, complementar ao caminho manual deste material.
 - **IBGE.** *Pesquisa Nacional de Saúde* (2013; 2019). Microdados, dicionários, inputs e planos amostrais no FTP: <https://ftp.ibge.gov.br/PNS/>. Página da pesquisa: <https://www.ibge.gov.br/estatisticas/sociais/saude/9160-pesquisa-nacional-de-saude.html>

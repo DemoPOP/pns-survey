@@ -552,4 +552,4 @@ Departamento de Demografia / CEDEPLAR-UFMG
 
 Material completo: **demopop.github.io/pns-survey**
 
-Refs.: Silva (*Amostragem com R*) · Lumley (*survey*, JSS 2004) · IBGE (PNS, notas técnicas)
+Refs.: Silva & Dias (*Amostragem com R*, 2020) · Lumley (*survey*, JSS 2004) · IBGE (PNS, notas técnicas)
